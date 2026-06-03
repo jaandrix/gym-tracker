@@ -58,16 +58,19 @@
   .badge { display: inline-block; border-radius: 7px; padding: 3px 9px; font-size: 12px; font-weight: 700; font-family: 'Space Mono', monospace; }
   .btn-primary { width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 10px; }
   .btn-secondary { width: 100%; background: #f1f5f9; color: #64748b; border: none; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 600; }
+  .btn-add-machine { width: 100%; background: #f1f5f9; border: 1.5px dashed #2563eb; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 700; color: #2563eb; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-import-export { width: 100%; background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 13px; padding: 12px; font-size: 14px; cursor: pointer; font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; }
   
   textarea { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 14px; background: #f1f5f9; width: 100%; resize: vertical; min-height: 70px; }
   .section-title { font-weight: 700; font-size: 11px; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; }
   .empty-state { text-align: center; padding: 55px 20px; color: #94a3b8; }
   .empty-state .big { font-size: 52px; margin-bottom: 14px; }
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-  .stat-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; text-align: center; }
-  .stat-val { font-weight: 800; font-size: 22px; font-family: 'Space Mono', monospace; }
-  .stat-lbl { font-size: 10px; color: #64748b; margin-top: 3px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .stat-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .stat-icon { font-size: 22px; margin-bottom: 4px; }
+  .stat-val { font-weight: 800; font-size: 18px; font-family: 'Space Mono', monospace; }
+  .stat-lbl { font-size: 9px; color: #64748b; margin-top: 3px; }
+  .stat-sub { font-size: 8px; color: #94a3b8; margin-top: 2px; }
   
   .cal-wrap { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
   .cal-nav { display: flex; justify-content: space-between; margin-bottom: 13px; }
@@ -120,6 +123,48 @@
   #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
   #toast.show { opacity: 1; }
   .import-input { display: none; }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  .modal-content {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    width: 280px;
+    text-align: center;
+  }
+  .modal-content input {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 12px 0;
+    font-size: 16px;
+  }
+  .modal-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  .modal-buttons button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .modal-buttons button:first-child { background: #0f172a; color: #fff; }
+  .modal-buttons button:last-child { background: #f1f5f9; color: #64748b; }
 </style>
 </head>
 <body>
@@ -139,10 +184,11 @@
 
 <script>
 // CONFIGURACIÓN
-const MACHINES = ["Low Row", "Dual Pully", "Pull Down", "Shoulder Press", "Chest Press", "Cardio", "Pectoral"];
+let MACHINES = ["Low Row", "Dual Pully", "Pull Down", "Shoulder Press", "Chest Press", "Cardio", "Pectoral"];
 const MUSCLE_GROUPS = { "Low Row": "Espalda", "Pull Down": "Espalda", "Dual Pully": "Brazos", "Shoulder Press": "Hombro", "Chest Press": "Pecho", "Pectoral": "Pecho", "Cardio": "Cardio" };
 const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 const DAYS_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const GYM_PRICE = 26.99;
 
 // ESTADO
 let sessions = [];
@@ -153,6 +199,7 @@ let calendarFilter = null;
 let calYear, calMonth;
 let openWeeks = {};
 let deferredInstall = null;
+let showAddMachineModal = false;
 
 const now = new Date();
 calYear = now.getFullYear();
@@ -161,12 +208,15 @@ calMonth = now.getMonth();
 // ALMACENAMIENTO
 function loadSessions() { try { return JSON.parse(localStorage.getItem("gym_sessions") || "[]"); } catch(e) { return []; } }
 function loadWeight() { try { return JSON.parse(localStorage.getItem("gym_weight") || "[]"); } catch(e) { return []; } }
+function loadMachines() { try { return JSON.parse(localStorage.getItem("gym_machines") || JSON.stringify(["Low Row", "Dual Pully", "Pull Down", "Shoulder Press", "Chest Press", "Cardio", "Pectoral"])); } catch(e) { return ["Low Row", "Dual Pully", "Pull Down", "Shoulder Press", "Chest Press", "Cardio", "Pectoral"]; } }
 function save() {
   try { localStorage.setItem("gym_sessions", JSON.stringify(sessions)); } catch(e) {}
   try { localStorage.setItem("gym_weight", JSON.stringify(weightEntries)); } catch(e) {}
+  try { localStorage.setItem("gym_machines", JSON.stringify(MACHINES)); } catch(e) {}
   updateHeader();
   checkFridayReminder();
 }
+MACHINES = loadMachines();
 sessions = loadSessions();
 weightEntries = loadWeight();
 
@@ -181,7 +231,6 @@ function showToast(msg, isError = false) {
 
 function roundPt(n) { return Math.round(n * 10) / 10; }
 
-// Función para convertir coma a punto
 function fixDecimal(val) {
   if (typeof val === 'string') {
     return val.replace(',', '.');
@@ -193,7 +242,6 @@ function calcScore(sets) {
   return sets.reduce((t, s) => {
     if (s.isCardio) {
       const val = parseFloat(fixDecimal(s.value)) || 0;
-      // TODOS los valores de cardio multiplican por 5
       return t + val * 5;
     }
     const weight = parseFloat(fixDecimal(s.weight)) || 0;
@@ -205,6 +253,23 @@ function sessionScore(sess) { return sess.exercises.reduce((a, ex) => a + calcSc
 function getAverageScore() { return sessions.length ? sessions.reduce((a, s) => a + sessionScore(s), 0) / sessions.length : 300; }
 function getMaxScore() { return sessions.length ? Math.max(...sessions.map(sessionScore)) : 0; }
 function getLastSessionScore() { return sessions.length ? sessionScore([...sessions].sort((a, b) => b.date.localeCompare(a.date))[0]) : 0; }
+
+// ESTADÍSTICAS DEL MES ACTUAL
+function getCurrentMonthStats() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const monthSessions = sessions.filter(s => {
+    const d = new Date(s.date);
+    return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+  });
+  const sessionCount = monthSessions.length;
+  const totalPoints = monthSessions.reduce((a, s) => a + sessionScore(s), 0);
+  const avgPoints = sessionCount > 0 ? totalPoints / sessionCount : 0;
+  const totalMinutes = monthSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
+  const costPerSession = sessionCount > 0 ? (GYM_PRICE / sessionCount).toFixed(2) : 0;
+  return { sessionCount, totalPoints, avgPoints, totalMinutes, costPerSession };
+}
 
 function getPersonalRecords() {
   const records = {};
@@ -295,7 +360,7 @@ function checkFridayReminder() {
 
 function exportData() {
   if (!sessions.length) { showToast("No hay datos", true); return; }
-  const backup = { sessions, weightEntries, exportDate: new Date().toISOString() };
+  const backup = { sessions, weightEntries, MACHINES, exportDate: new Date().toISOString() };
   const a = document.createElement("a");
   a.download = `gym_backup_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
   a.href = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }));
@@ -313,9 +378,11 @@ function handleImport(event) {
       const imported = JSON.parse(e.target.result);
       let importedSessions = imported.sessions || (Array.isArray(imported) ? imported : []);
       let importedWeight = imported.weightEntries || [];
+      let importedMachines = imported.MACHINES || MACHINES;
       if (confirm(`¿Importar ${importedSessions.length} sesiones?`)) {
         sessions = importedSessions;
         weightEntries = importedWeight;
+        MACHINES = importedMachines;
         save(); render();
         showToast(`Importadas ${importedSessions.length} sesiones ✅`);
       }
@@ -326,6 +393,28 @@ function handleImport(event) {
 }
 
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; });
+
+function addNewMachine() {
+  const machineName = prompt("Nombre de la nueva máquina:");
+  if (machineName && machineName.trim()) {
+    const newMachine = machineName.trim();
+    if (!MACHINES.includes(newMachine)) {
+      MACHINES.push(newMachine);
+      save();
+      // Actualizar la sesión actual si está en edición
+      if (editingSession && !editingSession.exercises.find(e => e.machine === newMachine)) {
+        editingSession.exercises.push({
+          machine: newMachine,
+          sets: [newMachine === "Cardio" ? { isCardio: true, value: "", unit: "min" } : { isCardio: false, weight: "", reps: "" }]
+        });
+      }
+      render();
+      showToast(`Máquina "${newMachine}" añadida ✅`);
+    } else {
+      showToast("Esa máquina ya existe", true);
+    }
+  }
+}
 
 function newSession() {
   return {
@@ -417,7 +506,7 @@ function renderHome() {
   const goalMet = daysTrained >= 3;
   const goalPercent = Math.min(100, (daysTrained / 3) * 100);
   const installBanner = deferredInstall ? `<div class="install-banner"><h3>📲 Instala la app</h3><button id="btn-install" onclick="installApp()">Instalar</button></div>` : `<div class="install-banner"><h3>📲 Añadir a pantalla de inicio</h3><ul class="install-steps"><li>📱 iPhone: compartir → "Añadir a pantalla de inicio"</li></ul></div>`;
-  return `${renderCalendar()}<div class="stats-grid"><div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-val">${lastScore}</div><div class="stat-lbl">Última sesión</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${avgScore}</div><div class="stat-lbl">Media puntos</div></div></div><div class="goal-meter ${goalMet ? 'goal-met' : ''}"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3 días</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet ? '#16a34a' : '#d97706'}"></div></div><div class="goal-meter-header" style="margin-top:8px"><span>⏱ Tiempo esta semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev ? `<div style="margin-top:8px;text-align:center;font-size:12px">vs semana pasada ${comparison.diff > 0 ? `<span class="trend-up">▲ +${comparison.diff} pts</span>` : comparison.diff < 0 ? `<span class="trend-down">▼ ${comparison.diff} pts</span>` : `<span>= Sin cambios</span>`}</div>` : ''}</div><div class="weekly-progress"><div class="section-title">Progreso últimas 4 semanas</div><div class="week-chart">${weeklyProgress.map(w => `<div class="week-chart-bar"><div class="bar" style="height: ${(w.points / maxPoints) * 40}px; background: ${w.points > 0 ? '#2563eb' : '#e2e8f0'}"></div><div class="label" style="font-size:9px;margin-top:4px">${w.points > 0 ? w.points : '-'}</div></div>`).join("")}</div></div>${installBanner}<div class="section-title">Últimas sesiones</div>${sessions.slice(0, 3).map(renderSessionCard).join("") || `<div class="empty-state"><div class="big">🏋️</div><b>¡Empieza tu primer entreno!</b></div>`}`;
+  return `${renderCalendar()}<div class="stats-grid"><div class="stat-card"><div class="stat-icon">⏪</div><div class="stat-val">${lastScore}</div><div class="stat-lbl">Última sesión</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${avgScore}</div><div class="stat-lbl">Media puntos</div></div></div><div class="goal-meter ${goalMet ? 'goal-met' : ''}"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3 días</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet ? '#16a34a' : '#d97706'}"></div></div><div class="goal-meter-header" style="margin-top:8px"><span>⏱ Tiempo esta semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev ? `<div style="margin-top:8px;text-align:center;font-size:12px">vs semana pasada ${comparison.diff > 0 ? `<span class="trend-up">▲ +${comparison.diff} pts</span>` : comparison.diff < 0 ? `<span class="trend-down">▼ ${comparison.diff} pts</span>` : `<span>= Sin cambios</span>`}</div>` : ''}</div><div class="weekly-progress"><div class="section-title">Progreso últimas 4 semanas</div><div class="week-chart">${weeklyProgress.map(w => `<div class="week-chart-bar"><div class="bar" style="height: ${(w.points / maxPoints) * 40}px; background: ${w.points > 0 ? '#2563eb' : '#e2e8f0'}"></div><div class="label" style="font-size:9px;margin-top:4px">${w.points > 0 ? w.points : '-'}</div></div>`).join("")}</div></div>${installBanner}<div class="section-title">Últimas sesiones</div>${sessions.slice(0, 3).map(renderSessionCard).join("") || `<div class="empty-state"><div class="big">🏋️</div><b>¡Empieza tu primer entreno!</b></div>`}`;
 }
 
 function renderHistory() {
@@ -452,16 +541,28 @@ function toggleWeek(key) { openWeeks[key] = !openWeeks[key]; render(); }
 
 function renderStats() {
   if (!sessions.length) return `<div class="empty-state"><div class="big">📊</div>Aún no hay datos.</div>`;
-  const scores = sessions.map(sessionScore);
-  const total = scores.reduce((a, b) => a + b, 0);
-  const avg = Math.round(total / sessions.length);
-  const totalTime = sessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
+  const totalSessions = sessions.length;
+  const totalPoints = sessions.reduce((a, s) => a + sessionScore(s), 0);
+  const avgGlobal = totalSessions > 0 ? roundPt(totalPoints / totalSessions) : 0;
+  const monthStats = getCurrentMonthStats();
   const records = getPersonalRecords();
   const { groups, total: muscleTotal } = getMuscleGroupScores();
   const maxMuscle = Math.max(...Object.values(groups), 1);
   const muscleHtml = Object.entries(groups).map(([group, score]) => `<div class="muscle-group-card"><div class="muscle-header"><span>${group}</span><span>${Math.round(score)} pts (${muscleTotal > 0 ? Math.round((score / muscleTotal) * 100) : 0}%)</span></div><div class="muscle-bar"><div class="muscle-fill" style="width: ${muscleTotal > 0 ? (score / maxMuscle) * 100 : 0}%; background: ${group === "Cardio" ? "#16a34a" : "#2563eb"}"></div></div></div>`).join("");
   const recordsHtml = Object.entries(records).filter(([_, val]) => val > 0).map(([m, val]) => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span style="font-weight:700">${m}</span><span style="font-family:monospace;color:#2563eb;font-weight:700">${val} pts</span></div>`).join("");
-  return `<div class="stats-grid">${[["🏋️", "Sesiones", sessions.length], ["⭐", "Pts totales", Math.round(total)], ["📊", "Media/sesión", avg + " pts"], ["⏱", "Tiempo total", totalTime + " min"]].map(([i, l, v]) => `<div class="stat-card"><div style="font-size:24px;margin-bottom:6px">${i}</div><div class="stat-val">${v}</div><div style="font-size:10px;color:#64748b;margin-top:3px">${l}</div></div>`).join("")}</div><div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">🏆 Mejores marcas</div>${recordsHtml || "<div style='color:#64748b'>Aún no hay registros</div>"}</div><div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">💪 Distribución muscular</div>${muscleHtml}</div><button class="btn-import-export" onclick="exportData()">💾 Exportar copia</button><button class="btn-import-export" onclick="triggerImport()">📂 Importar copia</button>`;
+  
+  return `<div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 14px;">
+    <div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-val">${totalSessions}</div><div class="stat-lbl">Sesiones totales</div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val">${monthStats.sessionCount}</div><div class="stat-lbl">Sesiones este mes</div><div class="stat-sub">💰 ${monthStats.costPerSession}€/sesión</div></div>
+    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${Math.round(totalPoints)}</div><div class="stat-lbl">Puntos totales</div></div>
+    <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-val">${avgGlobal}</div><div class="stat-lbl">Media global</div></div>
+    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">${Math.round(monthStats.avgPoints)}</div><div class="stat-lbl">Media este mes</div></div>
+    <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">${monthStats.totalMinutes}</div><div class="stat-lbl">Tiempo este mes (min)</div></div>
+  </div>
+  <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">🏆 Mejores marcas</div>${recordsHtml || "<div style='color:#64748b'>Aún no hay registros</div>"}</div>
+  <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">💪 Distribución muscular</div>${muscleHtml}</div>
+  <button class="btn-import-export" onclick="exportData()">💾 Exportar copia</button>
+  <button class="btn-import-export" onclick="triggerImport()">📂 Importar copia</button>`;
 }
 
 function renderBody() {
@@ -483,7 +584,7 @@ function renderForm() {
   setTimeout(() => { bindForm(); }, 0);
   const avgScore = roundPt(getAverageScore());
   const maxScore = roundPt(getMaxScore());
-  return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input date-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" placeholder="📝 Notas (opcional)...">${formSession.notes || ""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button>`;
+  return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input date-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" placeholder="📝 Notas (opcional)...">${formSession.notes || ""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button><button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina nueva</button>`;
 }
 function bindForm() { renderExercises(); renderProgress(); const g = document.getElementById("f-goal"); if (g) g.addEventListener("input", () => renderProgress()); }
 function renderProgress() {
