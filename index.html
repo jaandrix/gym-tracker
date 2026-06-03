@@ -131,10 +131,6 @@
   
   .effort-select { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   .effort-option { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f1f5f9; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-  .effort-option.selected { border-width: 2px; }
-  .effort-option[data-value="1"]:hover, .effort-option[data-value="2"]:hover, .effort-option[data-value="3"]:hover, .effort-option[data-value="4"]:hover { background: #fee2e2; border-color: #dc2626; }
-  .effort-option[data-value="5"]:hover, .effort-option[data-value="6"]:hover, .effort-option[data-value="7"]:hover { background: #fef3c7; border-color: #d97706; }
-  .effort-option[data-value="8"]:hover, .effort-option[data-value="9"]:hover, .effort-option[data-value="10"]:hover { background: #dcfce7; border-color: #16a34a; }
   
   .effort-history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
   .effort-history-date { font-size: 11px; color: #64748b; }
@@ -286,7 +282,6 @@ function getLastExerciseData(machine) {
     if (ex && ex.sets.length > 0) {
       const lastSet = ex.sets[ex.sets.length - 1];
       if (lastSet.isCardio) {
-        // Para cardio: mostrar el último valor
         return `${fixDecimal(lastSet.value) || 0} ${lastSet.unit}`;
       }
       return `${fixDecimal(lastSet.weight) || 0}kg × ${fixDecimal(lastSet.reps) || 0}`;
@@ -301,14 +296,6 @@ function getLastCardioDetails() {
   for (const sess of sorted) {
     const ex = sess.exercises.find(e => e.machine === "Cardio");
     if (ex && ex.sets.length > 0) {
-      const lastSet = ex.sets[ex.sets.length - 1];
-      if (lastSet.isCardio) {
-        const val = parseFloat(fixDecimal(lastSet.value)) || 0;
-        if (lastSet.unit === "min") lastMin = val;
-        else if (lastSet.unit === "km") lastKm = val;
-        else if (lastSet.unit === "kmh") lastKmh = val;
-      }
-      // También buscar en sets anteriores si el último no tiene el dato
       for (const set of ex.sets) {
         if (set.isCardio) {
           const v = parseFloat(fixDecimal(set.value)) || 0;
@@ -649,14 +636,13 @@ function renderForm() {
     if (v <= 4) bgClass = "effort-low";
     else if (v <= 7) bgClass = "effort-mid";
     else bgClass = "effort-high";
-    const selectedClass = v === effort ? "selected" : "";
-    return `<div class="effort-option ${bgClass} ${selectedClass}" data-value="${v}" onclick="setEffort(${v})" style="${v === effort ? 'border-color:' + (v<=4?'#dc2626':v<=7?'#d97706':'#16a34a') + ';border-width:2px' : ''}">${v}</div>`;
+    const selectedStyle = v === effort ? `border-color: ${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'}; border-width: 2px;` : '';
+    return `<div class="effort-option ${bgClass}" data-value="${v}" onclick="setEffort(${v})" style="${selectedStyle}">${v}</div>`;
   }).join("");
   return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input date-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div><div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" placeholder="📝 Notas (opcional)...">${formSession.notes || ""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button><button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina nueva</button>`;
 }
 function setEffort(value) {
   formSession.effort = value;
-  // Actualizar UI
   document.querySelectorAll('.effort-option').forEach(opt => {
     const val = parseInt(opt.dataset.value);
     if (val === value) {
@@ -674,12 +660,24 @@ function setEffort(value) {
 function bindForm() { renderExercises(); renderProgress(); const g = document.getElementById("f-goal"); if (g) g.addEventListener("input", () => renderProgress()); }
 function renderProgress() {
   const goal = parseFloat(document.getElementById("f-goal")?.value) || 0;
-  const sc = roundPt(sessionScore(formSession));
-  const pct = goal > 0 ? Math.min(100, (sc / goal) * 100) : 0;
-  const remaining = Math.max(0, goal - sc);
-  const c = scoreColor(sc, goal);
+  const totalSessionScore = roundPt(sessionScore(formSession));
+  const pct = goal > 0 ? Math.min(100, (totalSessionScore / goal) * 100) : 0;
+  const remaining = Math.max(0, goal - totalSessionScore);
+  const c = scoreColor(totalSessionScore, goal);
   const area = document.getElementById("prog-area");
-  if (area) area.innerHTML = `<div class="prog-wrap"><div class="prog-labels"><span>Progreso sesión</span><span>${Math.round(pct)}% — ${remaining > 0 ? `faltan ${roundPt(remaining)} pts` : "🎉 Meta alcanzada!"}</span></div><div class="prog-bar"><div class="prog-fill" style="width: ${pct}%; background: ${c}"></div></div></div>`;
+  if (area) {
+    area.innerHTML = `<div class="prog-wrap">
+      <div class="prog-labels">
+        <span>🏆 PUNTOS ACTUALES: ${totalSessionScore}</span>
+        <span>🎯 OBJETIVO: ${goal}</span>
+      </div>
+      <div class="prog-labels" style="margin-top: 4px;">
+        <span>Progreso: ${Math.round(pct)}%</span>
+        <span>${remaining > 0 ? `faltan ${roundPt(remaining)} pts` : "🎉 META ALCANZADA!"}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width: ${pct}%; background: ${c}"></div></div>
+    </div>`;
+  }
 }
 function renderExercises() {
   const area = document.getElementById("exercises-area");
@@ -728,7 +726,7 @@ function renderExCard(ex, i) {
   return `<div class="ex-card">
     <div class="ex-title">
       <span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span>
-      <span style="font-size:12px;color:#64748b">${sc} pts</span>
+      <span style="font-size:12px;color:#64748b" class="ex-pts-${i}">${sc} pts</span>
     </div>
     ${rows}
     <button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button>
@@ -739,13 +737,21 @@ function renderExCard(ex, i) {
     ${lastCardioDetails}
   </div>`;
 }
+function updateExerciseUI(exI) {
+  const ex = formSession.exercises[exI];
+  const exSc = roundPt(calcScore(ex.sets));
+  const ptsSpan = document.querySelector(`.ex-pts-${exI}`);
+  if (ptsSpan) ptsSpan.textContent = exSc + " pts";
+}
 function updateSetWeight(exI, setI, field, val) {
   let cleanVal = val.replace(',', '.');
   formSession.exercises[exI].sets[setI][field] = cleanVal;
+  updateExerciseUI(exI);
   renderProgress();
 }
 function updateSetReps(exI, setI, field, val) {
   formSession.exercises[exI].sets[setI][field] = val;
+  updateExerciseUI(exI);
   renderProgress();
 }
 function updateSetCardio(exI, setI, field, val) {
@@ -755,6 +761,7 @@ function updateSetCardio(exI, setI, field, val) {
   } else {
     formSession.exercises[exI].sets[setI][field] = val;
   }
+  updateExerciseUI(exI);
   renderProgress();
 }
 function addSet(exI) {
