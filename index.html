@@ -181,14 +181,24 @@ function showToast(msg, isError = false) {
 
 function roundPt(n) { return Math.round(n * 10) / 10; }
 
+// Función para convertir coma a punto
+function fixDecimal(val) {
+  if (typeof val === 'string') {
+    return val.replace(',', '.');
+  }
+  return val;
+}
+
 function calcScore(sets) {
   return sets.reduce((t, s) => {
     if (s.isCardio) {
-      const val = parseFloat(s.value) || 0;
-      const w = s.unit === "km" ? 20 : s.unit === "kmh" ? 10 : 2;
-      return t + val * w;
+      const val = parseFloat(fixDecimal(s.value)) || 0;
+      // TODOS los valores de cardio multiplican por 5
+      return t + val * 5;
     }
-    return t + (parseFloat(s.weight) || 0) * (parseFloat(s.reps) || 0);
+    const weight = parseFloat(fixDecimal(s.weight)) || 0;
+    const reps = parseFloat(fixDecimal(s.reps)) || 0;
+    return t + weight * reps;
   }, 0);
 }
 function sessionScore(sess) { return sess.exercises.reduce((a, ex) => a + calcScore(ex.sets), 0); }
@@ -208,8 +218,8 @@ function getLastExerciseData(machine) {
     const ex = sess.exercises.find(e => e.machine === machine);
     if (ex && ex.sets.some(s => s.isCardio ? s.value : (s.weight && s.reps))) {
       const lastSet = ex.sets[ex.sets.length - 1];
-      if (lastSet.isCardio) return `${lastSet.value || 0} ${lastSet.unit}`;
-      return `${lastSet.weight || 0}kg × ${lastSet.reps || 0}`;
+      if (lastSet.isCardio) return `${fixDecimal(lastSet.value) || 0} ${lastSet.unit}`;
+      return `${fixDecimal(lastSet.weight) || 0}kg × ${fixDecimal(lastSet.reps) || 0}`;
     }
   }
   return "—";
@@ -257,7 +267,7 @@ function getMuscleGroupScores() {
 }
 
 function addWeight(weight, date) {
-  const weightNum = parseFloat(weight);
+  let weightNum = parseFloat(fixDecimal(weight));
   if (isNaN(weightNum) || weightNum < 20 || weightNum > 300) { showToast("Peso válido: 20-300 kg", true); return; }
   if (!date) { showToast("Selecciona fecha", true); return; }
   const existingIndex = weightEntries.findIndex(w => w.date === date);
@@ -392,7 +402,7 @@ function renderSessionCard(s) {
   const barC = scoreColor(sc, s.goal);
   const d = new Date(s.date + "T12:00:00");
   const dateLabel = `${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} ${d.getFullYear()}`;
-  return `<div class="card" id="card-${s.id}"><div class="card-head" onclick="toggleCard(${s.id})"><div><div class="session-date" style="font-weight:800">${dateLabel} <span style="font-size:11px;color:#64748b">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;color:#64748b;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div></div>${badgeHtml(sc, s.goal)}</div><div class="card-body" id="body-${s.id}" style="display:none"><div class="prog-bar" style="margin-bottom:12px"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${s.exercises.map(ex => { const exSc = roundPt(calcScore(ex.sets)); const hasData = ex.sets.some(st => st.isCardio ? st.value : (st.weight || st.reps)); if (!hasData) return ""; const chips = ex.sets.map(st => st.isCardio ? `<span class="chip" style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${st.value||0} ${st.unit}</span>` : `<span class="chip" style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${st.weight||0}kg×${st.reps||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;color:#64748b;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("")}${s.notes ? `<div class="notes-box" style="margin-top:9px;background:#fffbeb;padding:9px;border-radius:11px;font-size:12px">📝 ${s.notes}</div>` : ""}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div></div>`;
+  return `<div class="card" id="card-${s.id}"><div class="card-head" onclick="toggleCard(${s.id})"><div><div class="session-date" style="font-weight:800">${dateLabel} <span style="font-size:11px;color:#64748b">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;color:#64748b;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div></div>${badgeHtml(sc, s.goal)}</div><div class="card-body" id="body-${s.id}" style="display:none"><div class="prog-bar" style="margin-bottom:12px"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${s.exercises.map(ex => { const exSc = roundPt(calcScore(ex.sets)); const hasData = ex.sets.some(st => st.isCardio ? st.value : (st.weight || st.reps)); if (!hasData) return ""; const chips = ex.sets.map(st => st.isCardio ? `<span class="chip" style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.value)||0} ${st.unit}</span>` : `<span class="chip" style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.weight)||0}kg×${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;color:#64748b;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("")}${s.notes ? `<div class="notes-box" style="margin-top:9px;background:#fffbeb;padding:9px;border-radius:11px;font-size:12px">📝 ${s.notes}</div>` : ""}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div></div>`;
 }
 function toggleCard(id) { const b = document.getElementById("body-" + id); if (b) b.style.display = b.style.display === "none" ? "block" : "none"; }
 function deleteSession(id) { if (confirm("¿Eliminar?")) { sessions = sessions.filter(s => s.id !== id); save(); render(); } }
@@ -495,12 +505,62 @@ function renderExCard(ex, i) {
   const lastRecord = getLastExerciseData(ex.machine);
   const personalRecord = getPersonalRecords()[ex.machine];
   const rows = ex.sets.map((s, j) => {
-    if (s.isCardio) return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Ej: 5.5" value="${s.value}" oninput="updateSet(${i},${j},'value',this.value)"></div><div class="set-input-small"><select onchange="updateSet(${i},${j},'unit',this.value)">${["min", "km", "kmh"].map(u => `<option${s.unit === u ? " selected" : ""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
-    return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="number" step="any" inputmode="decimal" placeholder="Peso kg" value="${s.weight}" oninput="updateSet(${i},${j},'weight',this.value)"></div><div class="set-input-small"><input type="number" step="any" inputmode="numeric" placeholder="Reps" value="${s.reps}" oninput="updateSet(${i},${j},'reps',this.value)"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+    if (s.isCardio) {
+      return `<div class="set-row">
+        <span class="set-num">S${j + 1}</span>
+        <div class="set-input">
+          <input type="text" inputmode="decimal" placeholder="Ej: 5,5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;">
+        </div>
+        <div class="set-input-small">
+          <select onchange="updateSetCardio(${i},${j},'unit',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 8px; font-size:14px; background:#f1f5f9;">
+            ${["min", "km", "kmh"].map(u => `<option${s.unit === u ? " selected" : ""}>${u}</option>`).join("")}
+          </select>
+        </div>
+        <button class="btn-icon" onclick="removeSet(${i},${j})">✕</button>
+      </div>`;
+    }
+    return `<div class="set-row">
+      <span class="set-num">S${j + 1}</span>
+      <div class="set-input">
+        <input type="text" inputmode="decimal" placeholder="Peso kg (ej: 7,5)" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},'weight',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;">
+      </div>
+      <div class="set-input-small">
+        <input type="text" inputmode="numeric" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},'reps',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;">
+      </div>
+      <button class="btn-icon" onclick="removeSet(${i},${j})">✕</button>
+    </div>`;
   }).join("");
-  return `<div class="ex-card"><div class="ex-title"><span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span><span style="font-size:12px;color:#64748b">${sc} pts</span></div>${rows}<button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button><div class="machine-history"><span>📊 Último: ${lastRecord}</span><span>🏆 Récord: ${personalRecord > 0 ? personalRecord + " pts" : "—"}</span></div></div>`;
+  return `<div class="ex-card">
+    <div class="ex-title">
+      <span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span>
+      <span style="font-size:12px;color:#64748b">${sc} pts</span>
+    </div>
+    ${rows}
+    <button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button>
+    <div class="machine-history">
+      <span>📊 Último: ${lastRecord}</span>
+      <span>🏆 Récord: ${personalRecord > 0 ? personalRecord + " pts" : "—"}</span>
+    </div>
+  </div>`;
 }
-function updateSet(exI, setI, field, val) { formSession.exercises[exI].sets[setI][field] = val; renderProgress(); }
+function updateSetWeight(exI, setI, field, val) {
+  let cleanVal = val.replace(',', '.');
+  formSession.exercises[exI].sets[setI][field] = cleanVal;
+  renderProgress();
+}
+function updateSetReps(exI, setI, field, val) {
+  formSession.exercises[exI].sets[setI][field] = val;
+  renderProgress();
+}
+function updateSetCardio(exI, setI, field, val) {
+  if (field === 'value') {
+    let cleanVal = val.replace(',', '.');
+    formSession.exercises[exI].sets[setI][field] = cleanVal;
+  } else {
+    formSession.exercises[exI].sets[setI][field] = val;
+  }
+  renderProgress();
+}
 function addSet(exI) {
   const isCardio = formSession.exercises[exI].machine === "Cardio";
   formSession.exercises[exI].sets.push(isCardio ? { isCardio: true, value: "", unit: "min" } : { isCardio: false, weight: "", reps: "" });
