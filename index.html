@@ -7,31 +7,40 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mis Entrenos">
 <meta name="theme-color" content="#0f172a">
-<title>Mis Entrenos 💪 v3.0 - Logros Completos</title>
+<title>Mis Entrenos 💪 v3.1 - Corregido</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style id="theme-style">
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { background: #f0f2f7; font-family: 'DM Sans', system-ui, sans-serif; color: #0f172a; overflow: hidden; height: 100dvh; transition: background 0.2s, color 0.2s; }
   #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; transition: background 0.2s; }
   
-  /* TEMA OSCURO */
+  /* TEMA OSCURO - CORREGIDO (texto claro en fondos oscuros) */
   body.dark, body.dark #app { background: #0a0a0f; }
   body.dark .card, body.dark .form-card, body.dark .ex-card, body.dark .stat-card, 
   body.dark .cal-wrap, body.dark .weekly-progress, body.dark .weight-chart-container,
   body.dark .muscle-group-card, body.dark .week-block, body.dark .goal-meter,
   body.dark .weight-chart-container, body.dark .install-banner { background: #1a1a2e; border-color: #2a2a3e; color: #e2e8f0; }
   body.dark .form-input, body.dark .set-input input, body.dark .set-input-small input,
-  body.dark .set-input-small select, body.dark textarea, body.dark .form-stat { background: #2a2a3e; border-color: #3a3a4e; color: #e2e8f0; }
+  body.dark .set-input-small select, body.dark textarea, body.dark .form-stat { background: #2a2a3e; border-color: #3a3a4e; color: #ffffff; }
+  body.dark .form-input::placeholder, body.dark .set-input input::placeholder { color: #94a3b8; }
   body.dark .prog-bar, body.dark .goal-meter-bar, body.dark .muscle-bar, body.dark .weight-bar { background: #2a2a3e; }
   body.dark #nav { background: #1a1a2e; border-top-color: #2a2a3e; }
-  body.dark .btn-secondary, body.dark .btn-import-export, body.dark .btn-add-machine { background: #2a2a3e; color: #94a3b8; }
-  body.dark .effort-option { background: #2a2a3e; border-color: #3a3a4e; }
-  body.dark .install-banner { background: #1a1a2e; border: 1px solid #2a2a3e; }
-  body.dark .stat-card, body.dark .cal-wrap, body.dark .goal-meter { background: #1a1a2e; }
+  body.dark #nav button { color: #94a3b8; }
+  body.dark #nav button.active { background: #ffffff; color: #0f172a; border-top-color: #ffffff; border-radius: 12px 12px 0 0; }
+  body.dark .btn-secondary, body.dark .btn-import-export, body.dark .btn-add-machine { background: #2a2a3e; color: #e2e8f0; }
+  body.dark .effort-option { background: #2a2a3e; border-color: #3a3a4e; color: #e2e8f0; }
+  body.dark .install-banner { background: #1a1a2e; border: 1px solid #2a2a3e; color: #e2e8f0; }
+  body.dark .stat-card, body.dark .cal-wrap, body.dark .goal-meter { background: #1a1a2e; color: #e2e8f0; }
   body.dark .category-header { background: rgba(255,255,255,0.08); color: #e2e8f0; }
   body.dark .achievement-locked { opacity: 0.7; background: #1a1a2e; border-color: #2a2a3e; color: #94a3b8; }
   body.dark .achievement-unlocked { background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(240,198,116,0.05)); border-color: #d4af37; color: #e2e8f0; }
   body.dark .achievement-unlocked strong, body.dark .achievement-unlocked div { color: #e2e8f0; }
+  body.dark .machine-history { color: #94a3b8; }
+  body.dark .ex-title span { color: #e2e8f0; }
+  body.dark .set-num { color: #94a3b8; }
+  body.dark .prog-labels { color: #94a3b8; }
+  body.dark .section-title { color: #94a3b8; }
+  body.dark .stat-lbl, body.dark .stat-sub { color: #94a3b8; }
   
   /* TEMA CLARO */
   body.light, body.light #app { background: #f0f2f7; }
@@ -42,6 +51,8 @@
   body.light .form-input, body.light .set-input input, body.light .set-input-small input,
   body.light .set-input-small select, body.light textarea, body.light .form-stat { background: #f1f5f9; border-color: #e2e8f0; color: #0f172a; }
   body.light #nav { background: #fff; border-top-color: #e2e8f0; }
+  body.light #nav button { color: #94a3b8; }
+  body.light #nav button.active { background: #0f172a; color: #fff; border-top-color: #0f172a; border-radius: 12px 12px 0 0; }
   body.light .btn-secondary, body.light .btn-import-export { background: #f1f5f9; }
   body.light .category-header { background: rgba(0,0,0,0.05); }
   body.light .achievement-locked { opacity: 0.6; background: #f8f9fa; border-color: #e2e8f0; color: #64748b; }
@@ -54,6 +65,8 @@
   body.mint .muscle-group-card, body.mint .week-block, body.mint .goal-meter,
   body.mint .install-banner { background: #ffffff; border-color: #c8e6c9; color: #1b5e20; }
   body.mint #nav { background: #ffffff; border-top-color: #c8e6c9; }
+  body.mint #nav button { color: #6b8c42; }
+  body.mint #nav button.active { background: #2e7d32; color: #fff; border-top-color: #2e7d32; border-radius: 12px 12px 0 0; }
   body.mint .btn-primary { background: #2e7d32; }
   body.mint #header { background: #1b5e20; }
   body.mint .achievement-locked { opacity: 0.6; background: #f1f8e9; border-color: #c8e6c9; color: #6b8c42; }
@@ -66,6 +79,8 @@
   body.purple .muscle-group-card, body.purple .week-block, body.purple .goal-meter,
   body.purple .install-banner { background: #ffffff; border-color: #ce93d8; color: #4a148c; }
   body.purple #nav { background: #ffffff; border-top-color: #ce93d8; }
+  body.purple #nav button { color: #9c27b0; }
+  body.purple #nav button.active { background: #6a1b9a; color: #fff; border-top-color: #6a1b9a; border-radius: 12px 12px 0 0; }
   body.purple .btn-primary { background: #6a1b9a; }
   body.purple #header { background: #4a148c; }
   body.purple .achievement-locked { opacity: 0.6; background: #faf0fc; border-color: #e1bee7; color: #9c27b0; }
@@ -77,11 +92,9 @@
   #header p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-family: 'Space Mono', monospace; }
   #btn-new { background: #fff; color: #0f172a; border: none; border-radius: 10px; padding: 9px 15px; font-weight: 700; font-size: 14px; cursor: pointer; }
   #content { flex: 1; overflow-y: auto; padding: 14px; -webkit-overflow-scrolling: touch; }
-  #nav { display: flex; background: #fff; border-top: 1.5px solid #e2e8f0; flex-shrink: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
-  #nav button { flex: 1; background: none; border: none; padding: 11px 0 6px; cursor: pointer; color: #94a3b8; border-top: 2.5px solid transparent; }
-  #nav button.active { color: #0f172a; border-top-color: #0f172a; }
-  body.mint #nav button.active { color: #2e7d32; border-top-color: #2e7d32; }
-  body.purple #nav button.active { color: #6a1b9a; border-top-color: #6a1b9a; }
+  #nav { display: flex; flex-shrink: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  #nav button { flex: 1; background: none; border: none; padding: 11px 0 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; }
+  #nav button.active { font-weight: 800; }
   #nav button .nav-icon { font-size: 21px; display: block; }
   #nav button .nav-label { font-size: 10px; font-weight: 700; margin-top: 2px; }
   
@@ -93,48 +106,48 @@
   .form-stat-label { font-size: 10px; color: #64748b; margin-top: 4px; }
   .form-row { margin-bottom: 14px; }
   .form-label { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px; display: block; }
-  .form-input { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 16px; background: #f1f5f9; font-family: 'Space Mono', monospace; outline: none; }
+  .form-input { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; font-size: 16px; font-family: 'Space Mono', monospace; outline: none; }
   .form-input:focus { border-color: #2563eb; background: #fff; }
   .row-2cols { display: flex; gap: 12px; }
   .row-2cols > * { flex: 1; }
   
-  .ex-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .ex-card { border-radius: 14px; padding: 14px; margin-bottom: 12px; }
   .ex-title { font-weight: 800; font-size: 15px; display: flex; justify-content: space-between; margin-bottom: 12px; }
   .set-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
-  .set-num { font-size: 12px; color: #64748b; min-width: 32px; font-family: 'Space Mono', monospace; font-weight: 700; }
+  .set-num { font-size: 12px; min-width: 32px; font-family: 'Space Mono', monospace; font-weight: 700; }
   .set-input { flex: 2; min-width: 80px; }
   .set-input-small { flex: 1; min-width: 60px; }
-  .set-input input, .set-input-small input, .set-input select { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 12px 10px; font-size: 15px; background: #f1f5f9; font-family: 'Space Mono', monospace; outline: none; }
+  .set-input input, .set-input-small input, .set-input select { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 12px 10px; font-size: 15px; font-family: 'Space Mono', monospace; outline: none; }
   .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; padding: 8px 10px; border-radius: 10px; color: #dc2626; }
   .btn-add-set { background: none; border: 1.5px dashed #e2e8f0; border-radius: 10px; color: #64748b; font-size: 13px; padding: 10px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: 600; }
-  .machine-history { font-size: 11px; color: #64748b; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+  .machine-history { font-size: 11px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
   
   .prog-wrap { margin-bottom: 16px; }
-  .prog-labels { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 6px; font-weight: 700; }
+  .prog-labels { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; font-weight: 700; }
   .prog-bar { height: 10px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
   .prog-fill { height: 100%; border-radius: 99px; transition: width .3s; }
   
   .badge { display: inline-block; border-radius: 7px; padding: 3px 9px; font-size: 12px; font-weight: 700; font-family: 'Space Mono', monospace; }
   .btn-primary { width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 10px; }
-  .btn-secondary { width: 100%; background: #f1f5f9; color: #64748b; border: none; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 600; }
-  .btn-add-machine { width: 100%; background: #f1f5f9; border: 1.5px dashed #2563eb; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 700; color: #2563eb; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn-import-export { width: 100%; background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 13px; padding: 12px; font-size: 14px; cursor: pointer; font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-secondary { width: 100%; border: none; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 600; }
+  .btn-add-machine { width: 100%; border: 1.5px dashed #2563eb; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 700; color: #2563eb; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; }
+  .btn-import-export { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 13px; padding: 12px; font-size: 14px; cursor: pointer; font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; }
   
-  textarea { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 14px; background: #f1f5f9; width: 100%; resize: vertical; min-height: 70px; }
-  .section-title { font-weight: 700; font-size: 11px; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; }
-  .empty-state { text-align: center; padding: 55px 20px; color: #94a3b8; }
+  textarea { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 14px; width: 100%; resize: vertical; min-height: 70px; }
+  .section-title { font-weight: 700; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; }
+  .empty-state { text-align: center; padding: 55px 20px; }
   .empty-state .big { font-size: 52px; margin-bottom: 14px; }
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-  .stat-card { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 8px; text-align: center; }
+  .stat-card { border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 8px; text-align: center; }
   .stat-icon { font-size: 22px; margin-bottom: 4px; }
   .stat-val { font-weight: 800; font-size: 18px; font-family: 'Space Mono', monospace; }
-  .stat-lbl { font-size: 9px; color: #64748b; margin-top: 3px; }
-  .stat-sub { font-size: 8px; color: #94a3b8; margin-top: 2px; }
+  .stat-lbl { font-size: 9px; margin-top: 3px; }
+  .stat-sub { font-size: 8px; margin-top: 2px; }
   
-  .cal-wrap { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+  .cal-wrap { border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
   .cal-nav { display: flex; justify-content: space-between; margin-bottom: 13px; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-  .cal-day-hdr { text-align: center; font-size: 9px; font-weight: 700; color: #94a3b8; padding: 2px 0 6px; }
+  .cal-day-hdr { text-align: center; font-size: 9px; font-weight: 700; padding: 2px 0 6px; }
   .cal-day { border-radius: 9px; padding: 5px 2px; text-align: center; cursor: default; border: 1.5px solid transparent; }
   .cal-day.has-session { cursor: pointer; }
   .cal-day.today { background: #0f172a; color: #fff; }
@@ -147,42 +160,42 @@
   .cal-dot.silver { background: #a8a9ad; }
   .cal-dot.red { background: #dc2626; }
   
-  .goal-meter { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 14px; }
+  .goal-meter { border-radius: 12px; padding: 12px; margin-bottom: 14px; }
   .goal-meter-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; font-weight: 700; }
   .goal-meter-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
   .goal-meter-fill { height: 100%; border-radius: 99px; }
   
-  .weekly-progress { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+  .weekly-progress { border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 14px; margin-bottom: 14px; }
   .week-chart { display: flex; align-items: flex-end; gap: 6px; margin-top: 10px; }
   .week-chart-bar { flex: 1; text-align: center; }
   .week-chart-bar .bar { height: 40px; background: #2563eb; border-radius: 4px 4px 0 0; min-height: 4px; }
   
-  .weight-chart-container { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+  .weight-chart-container { border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
   .weight-entry { margin-bottom: 10px; }
-  .weight-bar { background: #f1f5f9; border-radius: 10px; height: 32px; overflow: hidden; }
+  .weight-bar { border-radius: 10px; height: 32px; overflow: hidden; }
   .weight-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #16a34a); border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 11px; font-weight: 600; }
   
-  .muscle-group-card { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .muscle-group-card { border-radius: 12px; padding: 12px; margin-bottom: 10px; }
   .muscle-header { font-weight: 800; font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; }
   .muscle-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
   .muscle-fill { height: 100%; border-radius: 99px; }
   
-  .week-block { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 16px; margin-bottom: 13px; overflow: hidden; }
+  .week-block { border: 1.5px solid #e2e8f0; border-radius: 16px; margin-bottom: 13px; overflow: hidden; }
   .week-head { padding: 13px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
   .week-stats-row { display: flex; gap: 8px; margin-bottom: 13px; }
-  .week-stat { flex: 1; background: #f1f5f9; border-radius: 11px; padding: 10px 8px; text-align: center; }
+  .week-stat { flex: 1; border-radius: 11px; padding: 10px 8px; text-align: center; }
   .week-stat-val { font-size: 16px; font-weight: 800; font-family: 'Space Mono', monospace; }
   .chevron { font-size: 12px; transition: transform .2s; display: inline-block; }
   .chevron.open { transform: rotate(90deg); }
   
-  .install-banner { background: #0f172a; border-radius: 16px; padding: 16px; margin-bottom: 14px; color: #fff; }
+  .install-banner { border-radius: 16px; padding: 16px; margin-bottom: 14px; }
   .install-steps { margin-top: 8px; list-style: none; }
-  .install-steps li { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+  .install-steps li { font-size: 12px; margin-bottom: 4px; }
   #btn-install { background: #fff; color: #0f172a; border: none; border-radius: 10px; padding: 10px 18px; font-weight: 800; font-size: 13px; cursor: pointer; margin-top: 11px; }
   
   .trend-up { color: #16a34a; }
   .trend-down { color: #dc2626; }
-  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
   #toast.show { opacity: 1; }
   .import-input { display: none; }
   
@@ -192,10 +205,10 @@
   .effort-high { background: #dcfce7; color: #16a34a; }
   
   .effort-select { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-  .effort-option { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; background: #f1f5f9; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+  .effort-option { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; cursor: pointer; font-weight: 600; transition: all 0.2s; }
   
   .effort-history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-  .effort-history-date { font-size: 11px; color: #64748b; }
+  .effort-history-date { font-size: 11px; }
   .effort-history-value { font-weight: 700; font-size: 13px; }
   
   .achievement-card { border-radius: 12px; padding: 12px; margin-bottom: 8px; transition: all 0.2s; border: 1.5px solid; }
@@ -247,7 +260,6 @@ let calYear, calMonth;
 let openWeeks = {};
 let openCategories = {};
 let deferredInstall = null;
-let charts = {};
 
 const BIRTHDAY = "2001-10-28";
 const GYM_PRICE = 26.99;
@@ -260,9 +272,8 @@ function updateMachinesWithCardioLast() {
   MACHINES = [...MACHINES_BASE.filter(m => m !== "Cardio"), "Cardio"];
 }
 
-// ==================== DEFINICIÓN COMPLETA DE LOGROS (~130) ====================
+// ==================== DEFINICIÓN COMPLETA DE LOGROS ====================
 const ACHIEVEMENTS_DB = {
-  // ASISTENCIA (8)
   "first_workout": { name: "Primer Paso", desc: "Completa tu primer entrenamiento", category: "asistencia", target: 1, type: "sessions" },
   "warm_up": { name: "Calentando Motores", desc: "Completa 5 entrenamientos", category: "asistencia", target: 5, type: "sessions" },
   "routine": { name: "La Rutina Empieza", desc: "Completa 10 entrenamientos", category: "asistencia", target: 10, type: "sessions" },
@@ -271,146 +282,48 @@ const ACHIEVEMENTS_DB = {
   "veteran": { name: "Veterano del Gimnasio", desc: "Completa 100 entrenamientos", category: "asistencia", target: 100, type: "sessions" },
   "unbreakable": { name: "Incombustible", desc: "Completa 250 entrenamientos", category: "asistencia", target: 250, type: "sessions" },
   "legend": { name: "Leyenda del Hierro", desc: "Completa 500 entrenamientos", category: "asistencia", target: 500, type: "sessions" },
-  
-  // RACHA SEMANAS (6)
   "streak_3": { name: "En Marcha", desc: "3 semanas consecutivas yendo al gimnasio", category: "racha", target: 3, type: "streak_weeks" },
   "streak_7": { name: "Semana Perfecta", desc: "7 semanas consecutivas yendo al gimnasio", category: "racha", target: 7, type: "streak_weeks" },
   "streak_14": { name: "Dos Semanas de Acero", desc: "14 semanas consecutivas yendo al gimnasio", category: "racha", target: 14, type: "streak_weeks" },
   "streak_30": { name: "Mes Imparable", desc: "30 semanas consecutivas yendo al gimnasio", category: "racha", target: 30, type: "streak_weeks" },
   "streak_60": { name: "Imparable", desc: "60 semanas consecutivas yendo al gimnasio", category: "racha", target: 60, type: "streak_weeks" },
   "streak_365": { name: "Un Año de Disciplina", desc: "52 semanas consecutivas (1 año)", category: "racha", target: 52, type: "streak_weeks" },
-  
-  // FUERZA / RÉCORDS (10)
-  "first_pr": { name: "Primer Récord Personal", desc: "Supera tu mejor marca en cualquier ejercicio", category: "fuerza", target: 1, type: "pr_count" },
-  "breaking_limits": { name: "Rompiendo Límites", desc: "Consigue 5 récords personales", category: "fuerza", target: 5, type: "pr_count" },
-  "stronger": { name: "Más Fuerte que Ayer", desc: "Consigue 10 récords personales", category: "fuerza", target: 10, type: "pr_count" },
-  "superation": { name: "Superación Constante", desc: "Consigue 25 récords personales", category: "fuerza", target: 25, type: "pr_count" },
-  "beast_mode": { name: "Modo Bestia", desc: "Consigue 50 récords personales", category: "fuerza", target: 50, type: "pr_count" },
-  "pr_hunter": { name: "Cazador de Récords", desc: "Consigue 100 récords personales", category: "fuerza", target: 100, type: "pr_count" },
-  "first_increase": { name: "Primer Incremento", desc: "Aumenta 2.5kg en una máquina", category: "fuerza", target: 2.5, type: "weight_increase" },
-  "progressing": { name: "Progresando", desc: "Aumenta 5kg en una máquina", category: "fuerza", target: 5, type: "weight_increase" },
-  "strength_dev": { name: "Fuerza en Desarrollo", desc: "Aumenta 10kg en una máquina", category: "fuerza", target: 10, type: "weight_increase" },
-  "double_weight": { name: "Peso Duplicado", desc: "Duplica el peso inicial en una máquina", category: "fuerza", target: 2, type: "double_weight" },
-  
-  // VOLUMEN (series, repeticiones, kg) (15)
-  "100_sets": { name: "Cien Series Después", desc: "Completa 100 series", category: "volumen", target: 100, type: "total_sets" },
-  "500_sets": { name: "Especialista", desc: "Completa 500 series", category: "volumen", target: 500, type: "total_sets" },
-  "1000_sets": { name: "Máquina de Series", desc: "Completa 1.000 series", category: "volumen", target: 1000, type: "total_sets" },
-  "5000_sets": { name: "Incansable", desc: "Completa 5.000 series", category: "volumen", target: 5000, type: "total_sets" },
-  "10000_sets": { name: "Maestro del Volumen", desc: "Completa 10.000 series", category: "volumen", target: 10000, type: "total_sets" },
-  "10000_reps": { name: "Diez Mil Repeticiones", desc: "Acumula 10.000 repeticiones", category: "volumen", target: 10000, type: "total_reps" },
-  "50000_reps": { name: "Cincuenta Mil Repeticiones", desc: "Acumula 50.000 repeticiones", category: "volumen", target: 50000, type: "total_reps" },
-  "100000_reps": { name: "Cien Mil Repeticiones", desc: "Acumula 100.000 repeticiones", category: "volumen", target: 100000, type: "total_reps" },
-  "1000kg": { name: "Una Tonelada", desc: "Mueve 1.000 kg acumulados", category: "volumen", target: 1000, type: "total_kg" },
-  "10000kg": { name: "Diez Toneladas", desc: "Mueve 10.000 kg acumulados", category: "volumen", target: 10000, type: "total_kg" },
-  "100000kg": { name: "Cien Toneladas", desc: "Mueve 100.000 kg acumulados", category: "volumen", target: 100000, type: "total_kg" },
-  "500000kg": { name: "Fuerza Monumental", desc: "Mueve 500.000 kg acumulados", category: "volumen", target: 500000, type: "total_kg" },
-  
-  // PUNTOS POR SESIÓN (9 hitos: 2000,3000,4000,5000,6000,7000,8000,9000,10000)
-  "session_2000": { name: "2.000 pts en una sesión", desc: "Alcanza 2.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 2000, type: "session_points" },
-  "session_3000": { name: "3.000 pts en una sesión", desc: "Alcanza 3.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 3000, type: "session_points" },
-  "session_4000": { name: "4.000 pts en una sesión", desc: "Alcanza 4.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 4000, type: "session_points" },
-  "session_5000": { name: "5.000 pts en una sesión", desc: "Alcanza 5.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 5000, type: "session_points" },
-  "session_6000": { name: "6.000 pts en una sesión", desc: "Alcanza 6.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 6000, type: "session_points" },
-  "session_7000": { name: "7.000 pts en una sesión", desc: "Alcanza 7.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 7000, type: "session_points" },
-  "session_8000": { name: "8.000 pts en una sesión", desc: "Alcanza 8.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 8000, type: "session_points" },
-  "session_9000": { name: "9.000 pts en una sesión", desc: "Alcanza 9.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 9000, type: "session_points" },
-  "session_10000": { name: "10.000 pts en una sesión", desc: "Alcanza 10.000 puntos en un solo entrenamiento", category: "puntos_sesion", target: 10000, type: "session_points" },
-  
-  // PUNTOS ACUMULADOS (10 hitos: 10k,25k,50k,75k,100k,150k,200k,300k,400k,500k)
-  "total_10000": { name: "10.000 puntos acumulados", desc: "Acumula 10.000 puntos totales", category: "puntos_total", target: 10000, type: "total_points" },
-  "total_25000": { name: "25.000 puntos acumulados", desc: "Acumula 25.000 puntos totales", category: "puntos_total", target: 25000, type: "total_points" },
-  "total_50000": { name: "50.000 puntos acumulados", desc: "Acumula 50.000 puntos totales", category: "puntos_total", target: 50000, type: "total_points" },
-  "total_75000": { name: "75.000 puntos acumulados", desc: "Acumula 75.000 puntos totales", category: "puntos_total", target: 75000, type: "total_points" },
-  "total_100000": { name: "100.000 puntos acumulados", desc: "Acumula 100.000 puntos totales", category: "puntos_total", target: 100000, type: "total_points" },
-  "total_150000": { name: "150.000 puntos acumulados", desc: "Acumula 150.000 puntos totales", category: "puntos_total", target: 150000, type: "total_points" },
-  "total_200000": { name: "200.000 puntos acumulados", desc: "Acumula 200.000 puntos totales", category: "puntos_total", target: 200000, type: "total_points" },
-  "total_300000": { name: "300.000 puntos acumulados", desc: "Acumula 300.000 puntos totales", category: "puntos_total", target: 300000, type: "total_points" },
-  "total_400000": { name: "400.000 puntos acumulados", desc: "Acumula 400.000 puntos totales", category: "puntos_total", target: 400000, type: "total_points" },
-  "total_500000": { name: "500.000 puntos acumulados", desc: "Acumula 500.000 puntos totales", category: "puntos_total", target: 500000, type: "total_points" },
-  
-  // NIVELES (4)
+  "first_pr": { name: "Primer Récord Personal", desc: "Supera tu mejor marca", category: "fuerza", target: 1, type: "pr_count" },
+  "breaking_limits": { name: "Rompiendo Límites", desc: "5 récords personales", category: "fuerza", target: 5, type: "pr_count" },
+  "stronger": { name: "Más Fuerte que Ayer", desc: "10 récords personales", category: "fuerza", target: 10, type: "pr_count" },
+  "100_sets": { name: "100 Series", desc: "Completa 100 series", category: "volumen", target: 100, type: "total_sets" },
+  "500_sets": { name: "500 Series", desc: "Completa 500 series", category: "volumen", target: 500, type: "total_sets" },
+  "1000_sets": { name: "1.000 Series", desc: "Completa 1.000 series", category: "volumen", target: 1000, type: "total_sets" },
+  "10000_reps": { name: "10.000 Repeticiones", desc: "Acumula 10.000 repeticiones", category: "volumen", target: 10000, type: "total_reps" },
+  "1000kg": { name: "1.000 kg", desc: "Mueve 1.000 kg", category: "volumen", target: 1000, type: "total_kg" },
+  "10000kg": { name: "10.000 kg", desc: "Mueve 10.000 kg", category: "volumen", target: 10000, type: "total_kg" },
+  "session_2000": { name: "2.000 pts/sesión", desc: "Alcanza 2.000 puntos en una sesión", category: "puntos_sesion", target: 2000, type: "session_points" },
+  "session_5000": { name: "5.000 pts/sesión", desc: "Alcanza 5.000 puntos en una sesión", category: "puntos_sesion", target: 5000, type: "session_points" },
+  "session_10000": { name: "10.000 pts/sesión", desc: "Alcanza 10.000 puntos en una sesión", category: "puntos_sesion", target: 10000, type: "session_points" },
+  "total_10000": { name: "10.000 pts totales", desc: "Acumula 10.000 puntos", category: "puntos_total", target: 10000, type: "total_points" },
+  "total_50000": { name: "50.000 pts totales", desc: "Acumula 50.000 puntos", category: "puntos_total", target: 50000, type: "total_points" },
+  "total_100000": { name: "100.000 pts totales", desc: "Acumula 100.000 puntos", category: "puntos_total", target: 100000, type: "total_points" },
   "level_30": { name: "Nivel 30", desc: "Alcanza el nivel 30", category: "niveles", target: 30, type: "level" },
   "level_50": { name: "Nivel 50", desc: "Alcanza el nivel 50", category: "niveles", target: 50, type: "level" },
-  "level_80": { name: "Nivel 80", desc: "Alcanza el nivel 80", category: "niveles", target: 80, type: "level" },
   "level_100": { name: "Nivel 100", desc: "Alcanza el nivel 100", category: "niveles", target: 100, type: "level" },
-  
-  // MAQUINAS - Primer uso (6)
-  "chest_first": { name: "Primer Empujón", desc: "Usa Chest Press por primera vez", category: "maquinas", target: 1, type: "machine_first", machine: "Chest Press" },
-  "shoulder_first": { name: "Primer Press Militar", desc: "Usa Shoulder Press por primera vez", category: "maquinas", target: 1, type: "machine_first", machine: "Shoulder Press" },
-  "pulldown_first": { name: "Primer Tirón", desc: "Usa Pull Down por primera vez", category: "maquinas", target: 1, type: "machine_first", machine: "Pull Down" },
-  "lowrow_first": { name: "Remero Novato", desc: "Usa Low Row por primera vez", category: "maquinas", target: 1, type: "machine_first", machine: "Low Row" },
-  "dual_first": { name: "Dominando las Poleas", desc: "Usa Dual Pulley por primera vez", category: "maquinas", target: 1, type: "machine_first", machine: "Dual Pully" },
-  "pectoral_first": { name: "Pectoral Inicial", desc: "Usa Pectoral por primera vez", category: "maquinas", target: 1, type: "machine_first", machine: "Pectoral" },
-  
-  // MAQUINAS - Especialización (10, 25, 50, 100 entrenamientos por máquina)
-  "chest_10": { name: "Aprendiz del Pecho", desc: "10 entrenamientos con Chest Press", category: "maquinas", target: 10, type: "machine_sessions", machine: "Chest Press" },
-  "chest_25": { name: "Especialista en Pecho", desc: "25 entrenamientos con Chest Press", category: "maquinas", target: 25, type: "machine_sessions", machine: "Chest Press" },
-  "chest_50": { name: "Maestro del Chest Press", desc: "50 entrenamientos con Chest Press", category: "maquinas", target: 50, type: "machine_sessions", machine: "Chest Press" },
-  "chest_100": { name: "Leyenda del Pecho", desc: "100 entrenamientos con Chest Press", category: "maquinas", target: 100, type: "machine_sessions", machine: "Chest Press" },
-  "shoulder_10": { name: "Hombros de Acero I", desc: "10 entrenamientos con Shoulder Press", category: "maquinas", target: 10, type: "machine_sessions", machine: "Shoulder Press" },
-  "shoulder_25": { name: "Hombros de Acero II", desc: "25 entrenamientos con Shoulder Press", category: "maquinas", target: 25, type: "machine_sessions", machine: "Shoulder Press" },
-  "shoulder_50": { name: "Titán de los Hombros", desc: "50 entrenamientos con Shoulder Press", category: "maquinas", target: 50, type: "machine_sessions", machine: "Shoulder Press" },
-  "pulldown_10": { name: "Constructor de Espalda", desc: "10 entrenamientos con Pull Down", category: "maquinas", target: 10, type: "machine_sessions", machine: "Pull Down" },
-  "pulldown_25": { name: "Dominador de la Espalda", desc: "25 entrenamientos con Pull Down", category: "maquinas", target: 25, type: "machine_sessions", machine: "Pull Down" },
-  "pulldown_50": { name: "Alas de Acero", desc: "50 entrenamientos con Pull Down", category: "maquinas", target: 50, type: "machine_sessions", machine: "Pull Down" },
-  "lowrow_10": { name: "Remero Experto", desc: "10 entrenamientos con Low Row", category: "maquinas", target: 10, type: "machine_sessions", machine: "Low Row" },
-  "lowrow_25": { name: "Maestro del Low Row", desc: "25 entrenamientos con Low Row", category: "maquinas", target: 25, type: "machine_sessions", machine: "Low Row" },
-  "dual_10": { name: "Especialista en Poleas", desc: "10 entrenamientos con Dual Pulley", category: "maquinas", target: 10, type: "machine_sessions", machine: "Dual Pully" },
-  "dual_25": { name: "Maestro del Cable", desc: "25 entrenamientos con Dual Pulley", category: "maquinas", target: 25, type: "machine_sessions", machine: "Dual Pully" },
-  
-  // CARDIO (13)
+  "chest_first": { name: "Primer Empujón", desc: "Usa Chest Press", category: "maquinas", target: 1, type: "machine_first", machine: "Chest Press" },
+  "shoulder_first": { name: "Press Militar", desc: "Usa Shoulder Press", category: "maquinas", target: 1, type: "machine_first", machine: "Shoulder Press" },
+  "pulldown_first": { name: "Primer Tirón", desc: "Usa Pull Down", category: "maquinas", target: 1, type: "machine_first", machine: "Pull Down" },
+  "lowrow_first": { name: "Remero Novato", desc: "Usa Low Row", category: "maquinas", target: 1, type: "machine_first", machine: "Low Row" },
   "first_km": { name: "Primer Kilómetro", desc: "Completa 1 km de cardio", category: "cardio", target: 1, type: "cardio_km" },
-  "cardio_5km": { name: "Corredor Novato", desc: "Completa 5 km de cardio", category: "cardio", target: 5, type: "cardio_km" },
-  "cardio_10km": { name: "Ritmo Constante", desc: "Completa 10 km de cardio", category: "cardio", target: 10, type: "cardio_km" },
-  "cardio_50km": { name: "Fondo en Desarrollo", desc: "Completa 50 km de cardio", category: "cardio", target: 50, type: "cardio_km" },
-  "cardio_100km": { name: "Centenario del Cardio", desc: "Completa 100 km de cardio", category: "cardio", target: 100, type: "cardio_km" },
-  "cardio_500km": { name: "Cardio Legendario", desc: "Completa 500 km de cardio", category: "cardio", target: 500, type: "cardio_km" },
-  "cardio_5min": { name: "Corazón en Marcha", desc: "Mantén 5 minutos seguidos de cardio", category: "cardio", target: 5, type: "cardio_streak_min" },
-  "cardio_15min": { name: "Resistencia Básica", desc: "Mantén 15 minutos seguidos de cardio", category: "cardio", target: 15, type: "cardio_streak_min" },
-  "cardio_30min": { name: "Fondo Sólido", desc: "Mantén 30 minutos seguidos de cardio", category: "cardio", target: 30, type: "cardio_streak_min" },
-  "cardio_60min": { name: "Pulmones de Hierro", desc: "Mantén 60 minutos seguidos de cardio", category: "cardio", target: 60, type: "cardio_streak_min" },
-  
-  // GRUPOS MUSCULARES (12)
-  "chest_day": { name: "Primer Día de Pecho", desc: "Completa tu primer entrenamiento de pecho", category: "grupos", target: 1, type: "muscle_first", muscle: "Pecho" },
-  "chest_25": { name: "Constructor de Pectorales", desc: "25 entrenamientos de pecho", category: "grupos", target: 25, type: "muscle_sessions", muscle: "Pecho" },
-  "chest_100": { name: "Maestro del Pecho", desc: "100 entrenamientos de pecho", category: "grupos", target: 100, type: "muscle_sessions", muscle: "Pecho" },
-  "back_day": { name: "Primer Día de Espalda", desc: "Completa tu primer entrenamiento de espalda", category: "grupos", target: 1, type: "muscle_first", muscle: "Espalda" },
-  "back_25": { name: "Espalda en Construcción", desc: "25 entrenamientos de espalda", category: "grupos", target: 25, type: "muscle_sessions", muscle: "Espalda" },
-  "back_100": { name: "Rey de la Espalda", desc: "100 entrenamientos de espalda", category: "grupos", target: 100, type: "muscle_sessions", muscle: "Espalda" },
-  "shoulder_day": { name: "Primer Día de Hombros", desc: "Completa tu primer entrenamiento de hombros", category: "grupos", target: 1, type: "muscle_first", muscle: "Hombro" },
-  "shoulder_25": { name: "Hombros de Acero", desc: "25 entrenamientos de hombros", category: "grupos", target: 25, type: "muscle_sessions", muscle: "Hombro" },
-  "shoulder_100": { name: "Titán de los Hombros", desc: "100 entrenamientos de hombros", category: "grupos", target: 100, type: "muscle_sessions", muscle: "Hombro" },
-  "arms_day": { name: "Primer Día de Brazos", desc: "Completa tu primer entrenamiento de brazos", category: "grupos", target: 1, type: "muscle_first", muscle: "Brazos" },
-  "arms_25": { name: "Constructor de Brazos", desc: "25 entrenamientos de brazos", category: "grupos", target: 25, type: "muscle_sessions", muscle: "Brazos" },
-  "arms_100": { name: "Brazos de Acero", desc: "100 entrenamientos de brazos", category: "grupos", target: 100, type: "muscle_sessions", muscle: "Brazos" },
-  
-  // DISCIPLINA (7)
-  "week_complete": { name: "Semana Completa", desc: "Entrena al menos 3 veces en una semana", category: "disciplina", target: 3, type: "week_goal" },
-  "two_weeks": { name: "Dos Semanas Consecutivas", desc: "Cumple el objetivo semanal durante 2 semanas seguidas", category: "disciplina", target: 2, type: "streak_weeks_goal" },
-  "month_no_fail": { name: "Un Mes Sin Fallar", desc: "Cumple el objetivo semanal durante 4 semanas seguidas", category: "disciplina", target: 4, type: "streak_weeks_goal" },
-  "three_months": { name: "Tres Meses Constantes", desc: "Cumple el objetivo semanal durante 12 semanas seguidas", category: "disciplina", target: 12, type: "streak_weeks_goal" },
-  "half_year": { name: "Medio Año de Disciplina", desc: "Cumple el objetivo semanal durante 26 semanas seguidas", category: "disciplina", target: 26, type: "streak_weeks_goal" },
-  "one_year_iron": { name: "Un Año de Hierro", desc: "Cumple el objetivo semanal durante 52 semanas seguidas", category: "disciplina", target: 52, type: "streak_weeks_goal" },
-  "comeback": { name: "Siempre Vuelves", desc: "Registra un entrenamiento después de 14 días sin actividad", category: "disciplina", target: 14, type: "comeback_days" },
-  
-  // OCULTOS (8)
-  "birthday": { name: "Entrenamiento de Cumpleaños", desc: "Entrena el día de tu cumpleaños (28 de octubre)", category: "ocultos", target: 1, type: "birthday" },
-  "early_bird": { name: "Madrugador", desc: "Completa un entrenamiento antes de las 07:00", category: "ocultos", target: 1, type: "early_bird" },
-  "night_owl": { name: "Búho Nocturno", desc: "Completa un entrenamiento después de las 22:00", category: "ocultos", target: 1, type: "night_owl" },
-  "monday_iron": { name: "Lunes de Hierro", desc: "Completa un entrenamiento un lunes", category: "ocultos", target: 1, type: "monday" },
-  "christmas": { name: "Navidad Fitness", desc: "Entrena el 25 de diciembre", category: "ocultos", target: 1, type: "christmas" },
-  "newyear": { name: "Fin de Año Activo", desc: "Entrena el 31 de diciembre", category: "ocultos", target: 1, type: "newyear" },
-  "express": { name: "Sesión Express", desc: "Completa un entrenamiento en menos de 15 minutos", category: "ocultos", target: 1, type: "express" },
-  "marathon": { name: "Maratón de Hierro", desc: "Completa una sesión de más de 90 minutos", category: "ocultos", target: 1, type: "long_session" },
-  
-  // ÉPICOS (6)
-  "centenario": { name: "Centenario", desc: "Completa 100 entrenamientos", category: "epicos", target: 100, type: "sessions" },
+  "cardio_10km": { name: "10 km de cardio", desc: "Completa 10 km de cardio", category: "cardio", target: 10, type: "cardio_km" },
+  "cardio_100km": { name: "100 km de cardio", desc: "Completa 100 km de cardio", category: "cardio", target: 100, type: "cardio_km" },
+  "chest_day": { name: "Primer Día de Pecho", desc: "Entrena pecho", category: "grupos", target: 1, type: "muscle_first", muscle: "Pecho" },
+  "back_day": { name: "Primer Día de Espalda", desc: "Entrena espalda", category: "grupos", target: 1, type: "muscle_first", muscle: "Espalda" },
+  "week_complete": { name: "Semana Completa", desc: "Entrena 3 días en una semana", category: "disciplina", target: 3, type: "week_goal" },
+  "birthday": { name: "Cumpleaños Fitness", desc: "Entrena el día de tu cumpleaños", category: "ocultos", target: 1, type: "birthday" },
+  "early_bird": { name: "Madrugador", desc: "Entrena antes de las 7:00", category: "ocultos", target: 1, type: "early_bird" },
+  "night_owl": { name: "Búho Nocturno", desc: "Entrena después de las 22:00", category: "ocultos", target: 1, type: "night_owl" },
+  "express": { name: "Sesión Express", desc: "Entreno de menos de 15 min", category: "ocultos", target: 1, type: "express" },
+  "marathon": { name: "Maratón de Hierro", desc: "Sesión de más de 90 min", category: "ocultos", target: 1, type: "long_session" },
+  "centenario": { name: "Centenario", desc: "100 entrenamientos", category: "epicos", target: 100, type: "sessions" },
   "one_year_training": { name: "Un Año Entrenando", desc: "365 días desde tu primera sesión", category: "epicos", target: 365, type: "days_since_first" },
-  "master_all_machines": { name: "Maestro de Todas las Máquinas", desc: "Obtén 50+ sesiones en todas las máquinas base", category: "epicos", target: 6, type: "master_all" },
-  "never_give_up": { name: "Constancia Legendaria", desc: "Mantén 3+ sesiones/semana durante 12 semanas seguidas", category: "epicos", target: 12, type: "constant_weeks" },
-  "legend_of_iron": { name: "Leyenda del Hierro", desc: "Desbloquea 50 logros", category: "epicos", target: 50, type: "total_achievements" },
-  "legs_first": { name: "Primer Día de Piernas", desc: "Usa una máquina de piernas (cuando la añadas)", category: "epicos", target: 1, type: "machine_first_legs" }
+  "never_give_up": { name: "Constancia Legendaria", desc: "12 semanas con 3+ sesiones", category: "epicos", target: 12, type: "constant_weeks" }
 };
 
 // ==================== FUNCIONES DE ALMACENAMIENTO ====================
@@ -552,7 +465,6 @@ function getLastCardioDetails() {
           else if (set.unit === "kmh" && lastKmh === null) lastKmh = v;
         }
       }
-      if (lastMin !== null && lastKm !== null && lastKmh !== null) break;
     }
   }
   return { min: lastMin, km: lastKm, kmh: lastKmh };
@@ -572,9 +484,7 @@ function getCurrentWeekStats() {
 function getCardioStats() {
   let totalKm = 0, totalMin = 0, totalKmh = 0, sessionsWithCardio = 0;
   sessions.forEach(s => { s.exercises.forEach(ex => { if (ex.machine === "Cardio") { ex.sets.forEach(set => { if (set.isCardio) { const val = parseFloat(set.value) || 0; if (set.unit === "km") totalKm += val; if (set.unit === "min") totalMin += val; if (set.unit === "kmh") totalKmh += val; if (set.unit === "km" || set.unit === "min") sessionsWithCardio++; } }); } }); });
-  let maxCardioStreak = 0;
-  sessions.forEach(s => { s.exercises.forEach(ex => { if (ex.machine === "Cardio") { let streak = 0; ex.sets.forEach(set => { if (set.isCardio && set.unit === "min") streak += parseFloat(set.value) || 0; }); maxCardioStreak = Math.max(maxCardioStreak, streak); } }); });
-  return { totalKm, totalMin, totalKmh, avgKmh: sessionsWithCardio ? totalKmh / sessionsWithCardio : 0, maxCardioStreak };
+  return { totalKm, totalMin, totalKmh, avgKmh: sessionsWithCardio ? totalKmh / sessionsWithCardio : 0 };
 }
 
 // ==================== SISTEMA DE EXP Y LOGROS ====================
@@ -595,7 +505,7 @@ function unlockAchievement(id) {
   if (achievements[id]) return false;
   achievements[id] = { unlockedAt: new Date().toISOString() };
   const ach = ACHIEVEMENTS_DB[id];
-  if (ach) { showToast(`🏆 ¡LOGRO DESBLOQUEADO! ${ach.name} 🏆`, false, true); addExp(500); }
+  if (ach) { showToast(`🏆 ${ach.name}`, false, true); addExp(500); }
   saveAll();
   return true;
 }
@@ -613,7 +523,7 @@ function calculateStatsForAchievements() {
   Object.values(records).forEach(v => { if (v > 0) prCount++; });
   const totalPoints = getTotalPoints();
   const maxSessionPoints = sessions.length ? Math.max(...sessions.map(sessionScore)) : 0;
-  return { totalSessions, totalSets, totalReps, totalKg, cardioKm: cardioStats.totalKm, cardioMaxStreak: cardioStats.maxCardioStreak, daysSinceFirst, prCount, totalPoints, maxSessionPoints };
+  return { totalSessions, totalSets, totalReps, totalKg, cardioKm: cardioStats.totalKm, daysSinceFirst, prCount, totalPoints, maxSessionPoints };
 }
 
 function getStreakWeeks() {
@@ -642,33 +552,10 @@ function getConstantWeeksStreak() {
   return maxStreak;
 }
 
-function getStreakWeeksGoal() {
-  if (!sessions.length) return 0;
-  const weeksMap = new Map();
-  sessions.forEach(s => { const week = weekStart(s.date); if (!weeksMap.has(week)) weeksMap.set(week, new Set()); weeksMap.get(week).add(s.date); });
-  const weeks = Array.from(weeksMap.keys()).sort();
-  let streak = 0, maxStreak = 0;
-  for (const week of weeks) { if (weeksMap.get(week).size >= 3) streak++; else streak = 0; maxStreak = Math.max(maxStreak, streak); }
-  return maxStreak;
-}
-
-function getMachineSessionsCount(machine) {
-  return sessions.filter(s => s.exercises.some(e => e.machine === machine && e.sets.some(set => !set.isCardio && (set.weight || set.reps)))).length;
-}
-
-function getMuscleSessionsCount(muscle) {
-  const machinesForMuscle = Object.entries(MUSCLE_GROUPS).filter(([_, g]) => g === muscle).map(([m]) => m);
-  return sessions.filter(s => s.exercises.some(e => machinesForMuscle.includes(e.machine) && e.sets.some(set => !set.isCardio && (set.weight || set.reps)))).length;
-}
-
 function checkAchievements() {
   const stats = calculateStatsForAchievements();
   const streakWeeks = getStreakWeeks();
   const constantWeeks = getConstantWeeksStreak();
-  const streakWeeksGoal = getStreakWeeksGoal();
-  const records = getPersonalRecords();
-  const initialWeights = JSON.parse(localStorage.getItem("gym_initial_weights") || "{}");
-  
   for (const [id, ach] of Object.entries(ACHIEVEMENTS_DB)) {
     if (achievements[id]) continue;
     let achieved = false;
@@ -681,39 +568,20 @@ function checkAchievements() {
       case "total_kg": if (stats.totalKg >= ach.target) achieved = true; break;
       case "level": if (userLevel >= ach.target) achieved = true; break;
       case "cardio_km": if (stats.cardioKm >= ach.target) achieved = true; break;
-      case "cardio_streak_min": if (stats.cardioMaxStreak >= ach.target) achieved = true; break;
       case "days_since_first": if (stats.daysSinceFirst >= ach.target) achieved = true; break;
       case "constant_weeks": if (constantWeeks >= ach.target) achieved = true; break;
       case "week_goal": if (getCurrentWeekStats().daysTrained >= ach.target) achieved = true; break;
-      case "streak_weeks_goal": if (streakWeeksGoal >= ach.target) achieved = true; break;
-      case "comeback_days": { const sorted = [...sessions].sort((a,b)=>b.date.localeCompare(a.date)); for (let i=0; i<sorted.length-1; i++) { const diff = (new Date(sorted[i].date) - new Date(sorted[i+1].date)) / (1000*60*60*24); if (diff >= ach.target) { achieved = true; break; } } break; }
       case "session_points": if (stats.maxSessionPoints >= ach.target) achieved = true; break;
       case "total_points": if (stats.totalPoints >= ach.target) achieved = true; break;
-      case "machine_first": if (sessions.some(s => s.exercises.some(e => e.machine === ach.machine && e.sets.some(set => !set.isCardio && (set.weight || set.reps))))) achieved = true; break;
-      case "machine_sessions": if (getMachineSessionsCount(ach.machine) >= ach.target) achieved = true; break;
-      case "machine_first_legs": if (MACHINES_BASE.some(m => m.toLowerCase().includes("pierna") || m.toLowerCase().includes("leg")) && sessions.some(s => s.exercises.some(e => e.machine.toLowerCase().includes("pierna") || e.machine.toLowerCase().includes("leg")))) achieved = true; break;
-      case "muscle_first": if (getMuscleSessionsCount(ach.muscle) >= ach.target) achieved = true; break;
-      case "muscle_sessions": if (getMuscleSessionsCount(ach.muscle) >= ach.target) achieved = true; break;
-      case "weight_increase": { for (const [machine, current] of Object.entries(records)) { const initial = initialWeights[machine] || current; if (current - initial >= ach.target) { achieved = true; break; } } break; }
-      case "double_weight": { for (const [machine, current] of Object.entries(records)) { const initial = initialWeights[machine] || current; if (current >= initial * ach.target) { achieved = true; break; } } break; }
-      case "master_all": { const baseMachines = ["Chest Press", "Shoulder Press", "Pull Down", "Low Row", "Dual Pully", "Pectoral"]; let count = 0; for (const m of baseMachines) { if (getMachineSessionsCount(m) >= 50) count++; } if (count >= ach.target) achieved = true; break; }
-      case "total_achievements": if (Object.keys(achievements).length + 1 >= ach.target) achieved = true; break;
+      case "machine_first": if (sessions.some(s => s.exercises.some(e => e.machine === ach.machine))) achieved = true; break;
+      case "muscle_first": const muscleGroups = Object.entries(MUSCLE_GROUPS).filter(([_, g]) => g === ach.muscle).map(([m]) => m); if (sessions.some(s => s.exercises.some(e => muscleGroups.includes(e.machine)))) achieved = true; break;
       case "birthday": if (sessions.some(s => s.date === BIRTHDAY)) achieved = true; break;
       case "early_bird": if (sessions.some(s => { const h = new Date(s.date + "T" + (s.time || "12:00")).getHours(); return h < 7; })) achieved = true; break;
       case "night_owl": if (sessions.some(s => { const h = new Date(s.date + "T" + (s.time || "12:00")).getHours(); return h >= 22; })) achieved = true; break;
-      case "monday": if (sessions.some(s => new Date(s.date).getDay() === 1)) achieved = true; break;
-      case "christmas": if (sessions.some(s => s.date.endsWith("-12-25"))) achieved = true; break;
-      case "newyear": if (sessions.some(s => s.date.endsWith("-12-31"))) achieved = true; break;
       case "express": if (sessions.some(s => (s.duration || 0) < 15)) achieved = true; break;
       case "long_session": if (sessions.some(s => (s.duration || 0) > 90)) achieved = true; break;
     }
     if (achieved) unlockAchievement(id);
-  }
-  
-  // Guardar pesos iniciales para futuros logros de incremento
-  if (Object.keys(initialWeights).length === 0 && sessions.length > 0) {
-    const currentRecords = getPersonalRecords();
-    localStorage.setItem("gym_initial_weights", JSON.stringify(currentRecords));
   }
   saveAll();
 }
@@ -731,10 +599,10 @@ function showView(v) {
   if (nb) nb.classList.add("active");
   document.getElementById("btn-new").style.display = v === "form" ? "none" : "";
   render();
-  setTimeout(() => { if (v === "stats" || v === "body") initCharts(); }, 100);
+  setTimeout(() => { if (v === "stats" || v === "body") initCharts(); }, 200);
 }
 
-function toggleTheme(theme) { document.body.className = theme; localStorage.setItem("gym_theme", theme); render(); }
+function toggleTheme(theme) { document.body.className = theme; localStorage.setItem("gym_theme", theme); render(); setTimeout(() => initCharts(), 100); }
 function toggleWeek(key) { openWeeks[key] = !openWeeks[key]; render(); }
 function toggleCategory(cat) { openCategories[cat] = !openCategories[cat]; render(); }
 function togglePlannedDay(date) { const idx = plannedDays.indexOf(date); if (idx >= 0) plannedDays.splice(idx, 1); else plannedDays.push(date); saveAll(); render(); }
@@ -776,7 +644,7 @@ function renderSessionCard(s) {
   const effort = s.effort || null;
   let effortHtml = "";
   if (effort) { const effortColors = getEffortColor(effort); effortHtml = `<div class="effort-badge" style="background:${effortColors.bg}; color:${effortColors.color}">💪 Esfuerzo: ${effort}/10</div>`; }
-  return `<div class="card" id="card-${s.id}"><div style="padding:12px"><div style="display:flex;justify-content:space-between"><div><div style="font-weight:800">${dateLabel} <span style="font-size:11px;color:#64748b">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;color:#64748b;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc, s.goal)}</div><div class="prog-bar" style="margin:12px 0"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${s.exercises.map(ex => { const exSc = roundPt(calcScore(ex.sets)); const chips = ex.sets.map(st => st.isCardio ? `<span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.value)||0} ${st.unit}</span>` : `<span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.weight)||0}kg×${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;color:#64748b;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("")}${s.notes ? `<div style="margin-top:9px;background:#fffbeb;padding:9px;border-radius:11px;font-size:12px">📝 ${s.notes}</div>` : ""}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div></div>`;
+  return `<div class="card" id="card-${s.id}"><div style="padding:12px"><div style="display:flex;justify-content:space-between"><div><div style="font-weight:800">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc, s.goal)}</div><div class="prog-bar" style="margin:12px 0"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${s.exercises.map(ex => { const exSc = roundPt(calcScore(ex.sets)); const chips = ex.sets.map(st => st.isCardio ? `<span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.value)||0} ${st.unit}</span>` : `<span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.weight)||0}kg × ${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("")}${s.notes ? `<div style="margin-top:9px;background:#fffbeb;padding:9px;border-radius:11px;font-size:12px">📝 ${s.notes}</div>` : ""}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div></div>`;
 }
 
 function deleteSession(id) { if (confirm("¿Eliminar?")) { sessions = sessions.filter(s => s.id !== id); saveAll(); checkAchievements(); render(); } }
@@ -810,7 +678,7 @@ function renderHome() {
 
 function renderHistory() {
   const list = calendarFilter ? sessions.filter(s => s.date === calendarFilter) : sessions;
-  const filterBar = calendarFilter ? `<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">📅 ${calendarFilter} <button onclick="calendarFilter=null;render()" style="background:none;border:none;color:#64748b">✕ Quitar</button></div>` : "";
+  const filterBar = calendarFilter ? `<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">📅 ${calendarFilter} <button onclick="calendarFilter=null;render()" style="background:none;border:none;cursor:pointer">✕ Quitar</button></div>` : "";
   return `${filterBar}<div class="section-title">${calendarFilter ? "Sesiones del " + calendarFilter : "Historial completo"} (${list.length})</div>${list.length ? list.map(renderSessionCard).join("") : `<div class="empty-state"><div class="big">📋</div>No hay entrenos aquí.</div>`}`;
 }
 
@@ -819,7 +687,7 @@ function renderWeekly() {
   const weeks = {};
   sessions.forEach(s => { const key = weekStart(s.date); if (!weeks[key]) weeks[key] = []; weeks[key].push(s); });
   const weeksSorted = Object.entries(weeks).sort((a, b) => b[0].localeCompare(a[0]));
-  let html = `<div class="section-title">📅 Planificar días (toca un día en el calendario de inicio)</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].map(day => `<button style="background:#f1f5f9;border:none;border-radius:10px;padding:8px 12px;font-size:12px" onclick="alert('Ve al calendario en la pestaña Inicio y toca cualquier día para planificarlo. Se marcará en color plata.')">📅 ${day}</button>`).join("")}</div><div class="section-title">Resumen por semana</div>`;
+  let html = `<div class="section-title">📅 Planificar días (toca un día en el calendario de inicio)</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].map(day => `<button style="background:#f1f5f9;border:none;border-radius:10px;padding:8px 12px;font-size:12px;cursor:pointer" onclick="alert('Ve al calendario en la pestaña Inicio y toca cualquier día para planificarlo. Se marcará en color plata.')">📅 ${day}</button>`).join("")}</div><div class="section-title">Resumen por semana</div>`;
   weeksSorted.forEach(([monKey, weekSessions]) => {
     const totalScore = weekSessions.reduce((a, s) => a + sessionScore(s), 0);
     const totalTime = weekSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
@@ -832,13 +700,33 @@ function renderWeekly() {
     const sun = new Date(monKey + "T12:00:00"); sun.setDate(sun.getDate() + 6);
     const weekLabel = `${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0, 3)} – ${sun.getDate()} ${MONTHS[sun.getMonth()].slice(0, 3)}`;
     const sessRows = weekSessions.slice().sort((a, b) => a.date.localeCompare(b.date)).map(s => { const sc = roundPt(sessionScore(s)); const d = new Date(s.date + "T12:00:00"); return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f1f5f9"><span>${DAYS_ES[d.getDay()].slice(0, 3)} ${d.getDate()}</span><span>${s.duration} min</span>${badgeHtml(sc, s.goal)}</div>`; }).join("");
-    html += `<div class="week-block"><div class="week-head" onclick="toggleWeek('${monKey}')"><div><div style="font-weight:800;font-size:12px">${weekLabel}</div><div style="font-size:11px;color:#64748b">${weekSessions.length} sesión${weekSessions.length > 1 ? "es" : ""} · ${Math.round(totalScore)} pts</div></div><div style="display:flex;align-items:center;gap:8px">${badgeHtml(totalScore, totalGoal)}<span class="chevron${isOpen ? " open" : ""}">›</span></div></div>${isOpen ? `<div class="card-body" style="padding:13px 15px"><div class="week-stats-row"><div class="week-stat"><div class="week-stat-val">${weekSessions.length}</div><div class="week-stat-lbl">Sesiones</div></div><div class="week-stat"><div class="week-stat-val">${Math.round(totalScore)}</div><div class="week-stat-lbl">Pts total</div></div><div class="week-stat"><div class="week-stat-val">${avgScore}</div><div class="week-stat-lbl">Pts/sesión</div></div><div class="week-stat"><div class="week-stat-val">${totalTime}<span style="font-size:10px"> min</span></div><div class="week-stat-lbl">Tiempo</div></div></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div><div class="week-session-list" style="margin-top:13px">${sessRows}</div></div>` : ""}</div>`;
+    html += `<div class="week-block"><div class="week-head" onclick="toggleWeek('${monKey}')"><div><div style="font-weight:800;font-size:12px">${weekLabel}</div><div style="font-size:11px;opacity:0.7">${weekSessions.length} sesión${weekSessions.length > 1 ? "es" : ""} · ${Math.round(totalScore)} pts</div></div><div style="display:flex;align-items:center;gap:8px">${badgeHtml(totalScore, totalGoal)}<span class="chevron${isOpen ? " open" : ""}">›</span></div></div>${isOpen ? `<div class="card-body" style="padding:13px 15px"><div class="week-stats-row"><div class="week-stat"><div class="week-stat-val">${weekSessions.length}</div><div class="week-stat-lbl">Sesiones</div></div><div class="week-stat"><div class="week-stat-val">${Math.round(totalScore)}</div><div class="week-stat-lbl">Pts total</div></div><div class="week-stat"><div class="week-stat-val">${avgScore}</div><div class="week-stat-lbl">Pts/sesión</div></div><div class="week-stat"><div class="week-stat-val">${totalTime}<span style="font-size:10px"> min</span></div><div class="week-stat-lbl">Tiempo</div></div></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div><div class="week-session-list" style="margin-top:13px">${sessRows}</div></div>` : ""}</div>`;
   });
   return html;
 }
 
 function renderStats() {
-  if (!sessions.length) return `<div class="empty-state"><div class="big">📊</div>Aún no hay datos.</div>`;
+  if (!sessions.length) return `<div class="empty-state"><div class="big">📊</div><b>Aún no hay datos.</b><br><small>Los gráficos aparecerán cuando tengas sesiones registradas</small></div>`;
+  
+  setTimeout(() => {
+    const lastSessions = [...sessions].sort((a,b)=>a.date.localeCompare(b.date)).slice(-15);
+    const weeklyAttendance = (() => {
+      const weeks = {};
+      sessions.forEach(s => { const week = weekStart(s.date); weeks[week] = (weeks[week] || 0) + 1; });
+      return Object.entries(weeks).slice(-12).map(([week, count]) => ({ week: week.slice(5), count }));
+    })();
+    
+    const ctx1 = document.getElementById('pointsChart')?.getContext('2d');
+    const ctx2 = document.getElementById('effortChart')?.getContext('2d');
+    const ctx3 = document.getElementById('attendanceChart')?.getContext('2d');
+    const ctx4 = document.getElementById('durationChart')?.getContext('2d');
+    
+    if (ctx1 && lastSessions.length) { if (window.pointsChart) window.pointsChart.destroy(); window.pointsChart = new Chart(ctx1, { type: 'line', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Puntos', data: lastSessions.map(s=>sessionScore(s)), borderColor: '#2563eb', tension: 0.3, fill: false }, { label: 'Media', data: lastSessions.map(()=>getAverageScore()), borderColor: '#d97706', borderDash: [5], fill: false }] } }); }
+    if (ctx2 && lastSessions.length && lastSessions.some(s=>s.effort)) { if (window.effortChart) window.effortChart.destroy(); window.effortChart = new Chart(ctx2, { type: 'bar', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Esfuerzo (1-10)', data: lastSessions.map(s=>s.effort || 5), backgroundColor: '#d4af37' }] } }); }
+    if (ctx3 && weeklyAttendance.length) { if (window.attendanceChart) window.attendanceChart.destroy(); window.attendanceChart = new Chart(ctx3, { type: 'bar', data: { labels: weeklyAttendance.map(w=>w.week), datasets: [{ label: 'Sesiones por semana', data: weeklyAttendance.map(w=>w.count), backgroundColor: '#16a34a' }] } }); }
+    if (ctx4 && lastSessions.length) { if (window.durationChart) window.durationChart.destroy(); window.durationChart = new Chart(ctx4, { type: 'line', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Duración (min)', data: lastSessions.map(s=>s.duration || 45), borderColor: '#dc2626', tension: 0.3, fill: false }] } }); }
+  }, 200);
+  
   const totalSessions = sessions.length;
   const totalPoints = getTotalPoints();
   const avgGlobal = totalSessions > 0 ? roundPt(totalPoints / totalSessions) : 0;
@@ -848,35 +736,18 @@ function renderStats() {
   const maxMuscle = Math.max(...Object.values(groups), 1);
   const cardioStats = getCardioStats();
   const effortHistory = getEffortHistory();
-  const sessionsByWeek = {};
-  sessions.forEach(s => { const week = weekStart(s.date); sessionsByWeek[week] = (sessionsByWeek[week] || 0) + 1; });
-  const weeklyAttendance = Object.entries(sessionsByWeek).slice(-12).map(([week, count]) => ({ week: week.slice(5), count }));
-  
-  setTimeout(() => {
-    const lastSessions = [...sessions].sort((a,b)=>a.date.localeCompare(b.date)).slice(-15);
-    const ctx1 = document.getElementById('pointsChart')?.getContext('2d');
-    const ctx2 = document.getElementById('effortChart')?.getContext('2d');
-    const ctx3 = document.getElementById('attendanceChart')?.getContext('2d');
-    const ctx4 = document.getElementById('durationChart')?.getContext('2d');
-    if (ctx1) { if (window.pointsChart) window.pointsChart.destroy(); window.pointsChart = new Chart(ctx1, { type: 'line', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Puntos', data: lastSessions.map(s=>sessionScore(s)), borderColor: '#2563eb', tension: 0.3 }, { label: 'Media', data: lastSessions.map(()=>getAverageScore()), borderColor: '#d97706', borderDash: [5] }] } }); }
-    if (ctx2 && lastSessions.some(s=>s.effort)) { if (window.effortChart) window.effortChart.destroy(); window.effortChart = new Chart(ctx2, { type: 'bar', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Esfuerzo (1-10)', data: lastSessions.map(s=>s.effort || 5), backgroundColor: '#d4af37' }] } }); }
-    if (ctx3) { if (window.attendanceChart) window.attendanceChart.destroy(); window.attendanceChart = new Chart(ctx3, { type: 'bar', data: { labels: weeklyAttendance.map(w=>w.week), datasets: [{ label: 'Sesiones por semana', data: weeklyAttendance.map(w=>w.count), backgroundColor: '#16a34a' }] } }); }
-    if (ctx4) { if (window.durationChart) window.durationChart.destroy(); window.durationChart = new Chart(ctx4, { type: 'line', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Duración (min)', data: lastSessions.map(s=>s.duration || 45), borderColor: '#dc2626', tension: 0.3 }] } }); }
-    const weightCtx = document.getElementById('weightChart')?.getContext('2d');
-    if (weightCtx && weightEntries.length) { if (window.weightChart) window.weightChart.destroy(); window.weightChart = new Chart(weightCtx, { type: 'line', data: { labels: weightEntries.map(w=>w.date.slice(5)), datasets: [{ label: 'Peso (kg)', data: weightEntries.map(w=>w.weight), borderColor: '#16a34a', tension: 0.3, fill: true }] } }); }
-  }, 100);
   
   const muscleHtml = Object.entries(groups).map(([group, score]) => `<div class="muscle-group-card"><div class="muscle-header"><span>${group}</span><span>${Math.round(score)} pts (${muscleTotal > 0 ? Math.round((score / muscleTotal) * 100) : 0}%)</span></div><div class="muscle-bar"><div class="muscle-fill" style="width: ${muscleTotal > 0 ? (score / maxMuscle) * 100 : 0}%; background: ${group === "Cardio" ? "#16a34a" : "#2563eb"}"></div></div></div>`).join("");
-  const recordsHtml = Object.entries(records).filter(([_, val]) => val > 0).map(([m, val]) => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span style="font-weight:700">${m}</span><span style="font-family:monospace;color:#2563eb;font-weight:700">${val} pts</span></div>`).join("");
+  const recordsHtml = Object.entries(records).filter(([_, val]) => val > 0).map(([m, val]) => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f0"><span style="font-weight:700">${m}</span><span style="font-family:monospace;font-weight:700">${val} pts</span></div>`).join("");
   const effortHistoryHtml = effortHistory.length > 0 ? `<div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">📈 Progreso de esfuerzo (últimas 10 sesiones)</div>${effortHistory.map(e => { const effortColors = getEffortColor(e.effort); return `<div class="effort-history-item"><span class="effort-history-date">${e.date.slice(5)}</span><span class="effort-history-value" style="background:${effortColors.bg}; color:${effortColors.color}; padding:2px 8px; border-radius:20px">${e.effort}/10</span><span>${e.score} pts</span></div>`; }).join("")}</div>` : "";
   
   return `<div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 14px;"><div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-val">${totalSessions}</div><div class="stat-lbl">Sesiones totales</div></div><div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val">${monthStats.sessionCount}</div><div class="stat-lbl">Sesiones este mes</div><div class="stat-sub">💰 ${monthStats.costPerSession}€/sesión</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${Math.round(totalPoints)}</div><div class="stat-lbl">Puntos totales</div></div><div class="stat-card"><div class="stat-icon">📊</div><div class="stat-val">${avgGlobal}</div><div class="stat-lbl">Media global</div></div><div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">${Math.round(monthStats.avgPoints)}</div><div class="stat-lbl">Media este mes</div></div><div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">${monthStats.totalMinutes}</div><div class="stat-lbl">Tiempo este mes (min)</div></div></div>
-  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">📈 Puntos por sesión vs Media</div><canvas id="pointsChart"></canvas></div>
-  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">💪 Evolución del Esfuerzo</div><canvas id="effortChart"></canvas></div>
-  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">📅 Asistencia por Semanas</div><canvas id="attendanceChart"></canvas></div>
-  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">⏱ Duración de Sesiones</div><canvas id="durationChart"></canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">📈 Puntos por sesión vs Media</div><canvas id="pointsChart" style="min-height:200px"><canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">💪 Evolución del Esfuerzo</div><canvas id="effortChart" style="min-height:200px"></canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">📅 Asistencia por Semanas</div><canvas id="attendanceChart" style="min-height:200px"></canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">⏱ Duración de Sesiones</div><canvas id="durationChart" style="min-height:200px"></canvas></div>
   ${effortHistoryHtml}
-  <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">🏆 Mejores marcas</div>${recordsHtml || "<div style='color:#64748b'>Aún no hay registros</div>"}</div>
+  <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">🏆 Mejores marcas</div>${recordsHtml || "<div style='opacity:0.6'>Aún no hay registros</div>"}</div>
   <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">💪 Distribución muscular</div>${muscleHtml}</div>
   <div class="card" style="padding:16px;margin-bottom:11px"><div class="section-title">🏃 ESTADÍSTICAS DE CARDIO</div><div class="stats-grid"><div class="stat-card"><div class="stat-val">${cardioStats.totalKm.toFixed(1)}</div><div class="stat-lbl">Km totales</div></div><div class="stat-card"><div class="stat-val">${Math.round(cardioStats.totalMin)}</div><div class="stat-lbl">Min totales</div></div><div class="stat-card"><div class="stat-val">${cardioStats.avgKmh.toFixed(1)}</div><div class="stat-lbl">Velocidad media (km/h)</div></div></div></div>
   <button class="btn-import-export" onclick="exportData()">💾 Exportar copia</button>
@@ -891,25 +762,24 @@ function renderBody() {
   const variation = (lastWeight && firstWeight) ? (lastWeight - firstWeight).toFixed(1) : null;
   const weightHistoryHtml = sortedWeights.slice(-12).map(w => `<div class="weight-entry"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">${w.date.slice(5)}</span><span style="font-family:monospace;font-weight:700">${w.weight} kg</span></div><div class="weight-bar"><div class="weight-fill" style="width: ${Math.min(100, Math.max(5, ((w.weight - 40) / 60) * 100))}%">${((w.weight - 40) / 60) * 100 > 15 ? w.weight + " kg" : ""}</div></div></div>`).join("");
   
-  return `<div class="weight-chart-container"><div class="section-title">⚖️ Registrar peso semanal</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><input type="number" step="0.1" id="new-weight" placeholder="Peso en kg" value="${lastWeight || ""}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><input type="date" id="weight-date" value="${todayStr}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><button onclick="addWeight(document.getElementById('new-weight').value, document.getElementById('weight-date').value)" style="background:#0f172a;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-weight:700">Guardar</button></div>${sortedWeights.length ? `<div style="margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800">${lastWeight}</div><div style="font-size:10px">kg actuales</div></div><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800;color:${variation > 0 ? '#dc2626' : variation < 0 ? '#16a34a' : '#64748b'}">${variation > 0 ? '+' : ''}${variation}</div><div style="font-size:10px">variación total</div></div></div><div class="section-title">📊 Historial de peso</div>${weightHistoryHtml}</div><canvas id="weightChart"></canvas>` : '<div class="empty-state"><div class="big">⚖️</div><b>Aún no hay registros de peso</b></div>'}<div class="card" style="padding:16px;margin-top:12px"><div class="section-title">📌 Consejo</div><div style="font-size:12px;color:#64748b">Registra tu peso el mismo día cada semana (ej. lunes en ayunas) para ver tendencias reales.</div></div></div>`;
+  setTimeout(() => {
+    const ctx = document.getElementById('weightChart')?.getContext('2d');
+    if (ctx && weightEntries.length) { if (window.weightChart) window.weightChart.destroy(); window.weightChart = new Chart(ctx, { type: 'line', data: { labels: weightEntries.map(w=>w.date.slice(5)), datasets: [{ label: 'Peso (kg)', data: weightEntries.map(w=>w.weight), borderColor: '#16a34a', tension: 0.3, fill: true }] } }); }
+  }, 200);
+  
+  return `<div class="weight-chart-container"><div class="section-title">⚖️ Registrar peso semanal</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><input type="number" step="0.1" id="new-weight" placeholder="Peso en kg" value="${lastWeight || ""}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><input type="date" id="weight-date" value="${todayStr}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><button onclick="addWeight(document.getElementById('new-weight').value, document.getElementById('weight-date').value)" style="background:#0f172a;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer">Guardar</button></div>${sortedWeights.length ? `<div style="margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800">${lastWeight}</div><div style="font-size:10px">kg actuales</div></div><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800;color:${variation > 0 ? '#dc2626' : variation < 0 ? '#16a34a' : '#64748b'}">${variation > 0 ? '+' : ''}${variation}</div><div style="font-size:10px">variación total</div></div></div><div class="section-title">📊 Historial de peso</div>${weightHistoryHtml}</div><canvas id="weightChart"></canvas>` : '<div class="empty-state"><div class="big">⚖️</div><b>Aún no hay registros de peso</b></div>'}<div class="card" style="padding:16px;margin-top:12px"><div class="section-title">📌 Consejo</div><div style="font-size:12px;opacity:0.7">Registra tu peso el mismo día cada semana (ej. lunes en ayunas) para ver tendencias reales.</div></div></div>`;
 }
 
 function renderAchievements() {
-  const categories = { 
-    asistencia: [], racha: [], fuerza: [], volumen: [], 
-    puntos_sesion: [], puntos_total: [], niveles: [], maquinas: [], 
-    cardio: [], grupos: [], disciplina: [], ocultos: [], epicos: [] 
-  };
-  for (const [id, ach] of Object.entries(ACHIEVEMENTS_DB)) { 
-    if (categories[ach.category]) categories[ach.category].push({ id, ...ach }); 
-  }
+  const categories = { asistencia: [], racha: [], fuerza: [], volumen: [], puntos_sesion: [], puntos_total: [], niveles: [], maquinas: [], cardio: [], grupos: [], disciplina: [], ocultos: [], epicos: [] };
+  for (const [id, ach] of Object.entries(ACHIEVEMENTS_DB)) { if (categories[ach.category]) categories[ach.category].push({ id, ...ach }); }
   let html = `<div class="level-card"><div style="font-size:12px">NIVEL ${userLevel}</div><div class="level-number">${userLevel}</div><div class="prog-bar" style="background:rgba(0,0,0,0.2)"><div class="prog-fill" style="width:${(userExp/(userLevel*1000))*100}%;background:#0f172a"></div></div><div style="font-size:11px;margin-top:5px">${userExp}/${userLevel*1000} EXP</div><div style="font-size:10px;margin-top:8px">🏆 Logros desbloqueados: ${Object.keys(achievements).length}/${Object.keys(ACHIEVEMENTS_DB).length}</div></div>`;
   for (const [catName, catAchs] of Object.entries(categories)) {
     if (catAchs.length === 0) continue;
     const unlockedCount = catAchs.filter(a => achievements[a.id]).length;
     const isOpen = openCategories[catName];
     const catDisplayName = { asistencia:"Asistencia", racha:"Racha", fuerza:"Fuerza", volumen:"Volumen", puntos_sesion:"Puntos por Sesión", puntos_total:"Puntos Totales", niveles:"Niveles", maquinas:"Máquinas", cardio:"Cardio", grupos:"Grupos Musculares", disciplina:"Disciplina", ocultos:"Ocultos", epicos:"Épicos" }[catName] || catName;
-    html += `<div style="margin-bottom:10px"><div class="category-header" onclick="toggleCategory('${catName}')"><span>🏆 ${catDisplayName} (${unlockedCount}/${catAchs.length})</span><span class="chevron${isOpen ? " open" : ""}">›</span></div>${isOpen ? `<div class="category-content">${catAchs.map(a => `<div class="achievement-card ${achievements[a.id] ? 'achievement-unlocked' : 'achievement-locked'}"><div><strong>${a.name}</strong></div><div style="font-size:11px">${a.desc}</div>${achievements[a.id] ? `<div style="font-size:10px;color:#d4af37;margin-top:4px">✅ Desbloqueado el ${new Date(achievements[a.id].unlockedAt).toLocaleDateString()}</div>` : `<div style="font-size:10px;color:#64748b">🔒 Pendiente</div>`}</div>`).join("")}</div>` : ""}</div>`;
+    html += `<div style="margin-bottom:10px"><div class="category-header" onclick="toggleCategory('${catName}')"><span>🏆 ${catDisplayName} (${unlockedCount}/${catAchs.length})</span><span class="chevron${isOpen ? " open" : ""}">›</span></div>${isOpen ? `<div class="category-content">${catAchs.map(a => `<div class="achievement-card ${achievements[a.id] ? 'achievement-unlocked' : 'achievement-locked'}"><div><strong>${a.name}</strong></div><div style="font-size:11px">${a.desc}</div>${achievements[a.id] ? `<div style="font-size:10px;color:#d4af37;margin-top:4px">✅ Desbloqueado</div>` : `<div style="font-size:10px;opacity:0.5">🔒 Pendiente</div>`}</div>`).join("")}</div>` : ""}</div>`;
   }
   return html;
 }
@@ -923,7 +793,7 @@ function renderForm() {
   const maxScore = roundPt(getMaxScore());
   const effort = formSession.effort || 5;
   const effortOptions = [1,2,3,4,5,6,7,8,9,10].map(v => { let bgClass = v <= 4 ? "effort-low" : v <= 7 ? "effort-mid" : "effort-high"; const selectedStyle = v === effort ? `border-color: ${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'}; border-width: 2px;` : ''; return `<div class="effort-option ${bgClass}" data-value="${v}" onclick="setEffort(${v})" style="${selectedStyle}">${v}</div>`; }).join("");
-  return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input date-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div><div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" placeholder="📝 Notas (opcional)...">${formSession.notes || ""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button><button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina nueva</button>`;
+  return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div><div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" placeholder="📝 Notas (opcional)...">${formSession.notes || ""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button><button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina nueva</button>`;
 }
 
 function setEffort(value) { formSession.effort = value; renderProgress(); }
@@ -945,14 +815,14 @@ function renderExCard(ex, i) {
   const lastRecord = getLastExerciseData(ex.machine); 
   const personalRecord = getPersonalRecords()[ex.machine]; 
   let lastCardioDetails = ""; 
-  if (ex.machine === "Cardio") { const cardioDetails = getLastCardioDetails(); const parts = []; if (cardioDetails.min !== null) parts.push(`🏃 ${cardioDetails.min} min`); if (cardioDetails.km !== null) parts.push(`🔄 ${cardioDetails.km} km`); if (cardioDetails.kmh !== null) parts.push(`⚡ ${cardioDetails.kmh} km/h`); if (parts.length) lastCardioDetails = `<div style="font-size:10px; margin-top:4px; color:#64748b">📊 Último cardio: ${parts.join(" · ")}</div>`; }
+  if (ex.machine === "Cardio") { const cardioDetails = getLastCardioDetails(); const parts = []; if (cardioDetails.min !== null) parts.push(`🏃 ${cardioDetails.min} min`); if (cardioDetails.km !== null) parts.push(`🔄 ${cardioDetails.km} km`); if (cardioDetails.kmh !== null) parts.push(`⚡ ${cardioDetails.kmh} km/h`); if (parts.length) lastCardioDetails = `<div style="font-size:10px; margin-top:4px">📊 Último cardio: ${parts.join(" · ")}</div>`; }
   const rows = ex.sets.map((s, j) => { 
     if (s.isCardio) { 
-      return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Ej: 5,5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 8px; font-size:14px; background:#f1f5f9;">${["min", "km", "kmh"].map(u => `<option${s.unit === u ? " selected" : ""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`; 
+      return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Ej: 5,5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" class="form-input" style="padding:12px 8px;">${["min", "km", "kmh"].map(u => `<option${s.unit === u ? " selected" : ""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`; 
     }
-    return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Peso kg (ej: 7,5)" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},'weight',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;"></div><div class="set-input-small"><input type="text" inputmode="numeric" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},'reps',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+    return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},'weight',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" inputmode="numeric" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},'reps',this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
   }).join("");
-  return `<div class="ex-card"><div class="ex-title"><span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span><span style="font-size:12px;color:#64748b" class="ex-pts-${i}">${sc} pts</span></div>${rows}<button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button><div class="machine-history"><span>📊 Último registro: ${lastRecord}</span><span>🏆 Récord: ${personalRecord > 0 ? personalRecord + " pts" : "—"}</span></div>${lastCardioDetails}</div>`;
+  return `<div class="ex-card"><div class="ex-title"><span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span><span style="font-size:12px" class="ex-pts-${i}">${sc} pts</span></div>${rows}<button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button><div class="machine-history"><span>📊 Último registro: ${lastRecord}</span><span>🏆 Récord: ${personalRecord > 0 ? personalRecord + " pts" : "—"}</span></div>${lastCardioDetails}</div>`;
 }
 
 function updateExerciseUI(exI) { const ex = formSession.exercises[exI]; const exSc = roundPt(calcScore(ex.sets)); const ptsSpan = document.querySelector(`.ex-pts-${exI}`); if (ptsSpan) ptsSpan.textContent = exSc + " pts"; }
@@ -1048,6 +918,7 @@ function handleImport(event) {
         saveAll(); 
         checkAchievements(); 
         render(); 
+        setTimeout(() => { if (currentView === "stats") initCharts(); }, 300);
         showToast(`Importadas ${importedSessions.length} sesiones ✅`); 
       } 
     } catch (err) { showToast("Archivo inválido", true); } 
