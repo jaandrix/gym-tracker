@@ -7,22 +7,70 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mis Entrenos">
 <meta name="theme-color" content="#0f172a">
-<title>Mis Entrenos 💪</title>
-<style>
+<title>Mis Entrenos 💪 v2.0 - Completa</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style id="theme-style">
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { background: #f0f2f7; font-family: 'DM Sans', system-ui, sans-serif; color: #0f172a; overflow: hidden; height: 100dvh; }
-  #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; background: #f0f2f7; }
+  body { background: #f0f2f7; font-family: 'DM Sans', system-ui, sans-serif; color: #0f172a; overflow: hidden; height: 100dvh; transition: background 0.2s, color 0.2s; }
+  #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; transition: background 0.2s; }
   
+  /* TEMA OSCURO */
+  body.dark, body.dark #app { background: #0a0a0f; }
+  body.dark .card, body.dark .form-card, body.dark .ex-card, body.dark .stat-card, 
+  body.dark .cal-wrap, body.dark .weekly-progress, body.dark .weight-chart-container,
+  body.dark .muscle-group-card, body.dark .week-block, body.dark .goal-meter,
+  body.dark .weight-chart-container, body.dark .install-banner { background: #1a1a2e; border-color: #2a2a3e; color: #e2e8f0; }
+  body.dark .form-input, body.dark .set-input input, body.dark .set-input-small input,
+  body.dark .set-input-small select, body.dark textarea, body.dark .form-stat { background: #2a2a3e; border-color: #3a3a4e; color: #e2e8f0; }
+  body.dark .prog-bar, body.dark .goal-meter-bar, body.dark .muscle-bar, body.dark .weight-bar { background: #2a2a3e; }
+  body.dark #nav { background: #1a1a2e; border-top-color: #2a2a3e; }
+  body.dark .btn-secondary, body.dark .btn-import-export, body.dark .btn-add-machine { background: #2a2a3e; color: #94a3b8; }
+  body.dark .effort-option { background: #2a2a3e; border-color: #3a3a4e; }
+  body.dark .install-banner { background: #1a1a2e; border: 1px solid #2a2a3e; }
+  body.dark .stat-card, body.dark .cal-wrap, body.dark .goal-meter { background: #1a1a2e; }
+  
+  /* TEMA CLARO */
+  body.light, body.light #app { background: #f0f2f7; }
+  body.light .card, body.light .form-card, body.light .ex-card, body.light .stat-card,
+  body.light .cal-wrap, body.light .weekly-progress, body.light .weight-chart-container,
+  body.light .muscle-group-card, body.light .week-block, body.light .goal-meter,
+  body.light .install-banner { background: #fff; border-color: #e2e8f0; color: #0f172a; }
+  body.light .form-input, body.light .set-input input, body.light .set-input-small input,
+  body.light .set-input-small select, body.light textarea, body.light .form-stat { background: #f1f5f9; border-color: #e2e8f0; color: #0f172a; }
+  body.light #nav { background: #fff; border-top-color: #e2e8f0; }
+  body.light .btn-secondary, body.light .btn-import-export { background: #f1f5f9; }
+  
+  /* TEMA VERDE MENTA */
+  body.mint, body.mint #app { background: #e8f5e9; }
+  body.mint .card, body.mint .form-card, body.mint .ex-card, body.mint .stat-card,
+  body.mint .cal-wrap, body.mint .weekly-progress, body.mint .weight-chart-container,
+  body.mint .muscle-group-card, body.mint .week-block, body.mint .goal-meter,
+  body.mint .install-banner { background: #ffffff; border-color: #c8e6c9; color: #1b5e20; }
+  body.mint #nav { background: #ffffff; border-top-color: #c8e6c9; }
+  body.mint .btn-primary { background: #2e7d32; }
+  body.mint #header { background: #1b5e20; }
+  
+  /* TEMA MORADO */
+  body.purple, body.purple #app { background: #f3e5f5; }
+  body.purple .card, body.purple .form-card, body.purple .ex-card, body.purple .stat-card,
+  body.purple .cal-wrap, body.purple .weekly-progress, body.purple .weight-chart-container,
+  body.purple .muscle-group-card, body.purple .week-block, body.purple .goal-meter,
+  body.purple .install-banner { background: #ffffff; border-color: #ce93d8; color: #4a148c; }
+  body.purple #nav { background: #ffffff; border-top-color: #ce93d8; }
+  body.purple .btn-primary { background: #6a1b9a; }
+  body.purple #header { background: #4a148c; }
+  
+  /* Estilos comunes (manteniendo los originales) */
   #header { background: #0f172a; color: #fff; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
   #header h1 { font-size: 20px; font-weight: 800; }
   #header p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-family: 'Space Mono', monospace; }
   #btn-new { background: #fff; color: #0f172a; border: none; border-radius: 10px; padding: 9px 15px; font-weight: 700; font-size: 14px; cursor: pointer; }
-  
   #content { flex: 1; overflow-y: auto; padding: 14px; -webkit-overflow-scrolling: touch; }
-  
   #nav { display: flex; background: #fff; border-top: 1.5px solid #e2e8f0; flex-shrink: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   #nav button { flex: 1; background: none; border: none; padding: 11px 0 6px; cursor: pointer; color: #94a3b8; border-top: 2.5px solid transparent; }
   #nav button.active { color: #0f172a; border-top-color: #0f172a; }
+  body.mint #nav button.active { color: #2e7d32; border-top-color: #2e7d32; }
+  body.purple #nav button.active { color: #6a1b9a; border-top-color: #6a1b9a; }
   #nav button .nav-icon { font-size: 21px; display: block; }
   #nav button .nav-label { font-size: 10px; font-weight: 700; margin-top: 2px; }
   
@@ -79,6 +127,9 @@
   .cal-day { border-radius: 9px; padding: 5px 2px; text-align: center; cursor: default; border: 1.5px solid transparent; }
   .cal-day.has-session { cursor: pointer; }
   .cal-day.today { background: #0f172a; color: #fff; }
+  .cal-day.planned { background: #cbd5e1; color: #0f172a; }
+  body.mint .cal-day.planned { background: #a5d6a7; }
+  body.purple .cal-day.planned { background: #ce93d8; }
   .cal-day .day-num { font-size: 12px; font-weight: 600; }
   .cal-dot { width: 5px; height: 5px; border-radius: 50%; margin: 3px auto 0; }
   .cal-dot.gold { background: #d4af37; }
@@ -135,6 +186,24 @@
   .effort-history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
   .effort-history-date { font-size: 11px; color: #64748b; }
   .effort-history-value { font-weight: 700; font-size: 13px; }
+  
+  /* Nuevos estilos para logros */
+  .achievement-card { border-radius: 12px; padding: 12px; margin-bottom: 8px; transition: all 0.2s; border: 1.5px solid; }
+  .achievement-unlocked { opacity: 1; background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(240,198,116,0.05)); }
+  .achievement-locked { opacity: 0.6; filter: grayscale(0.2); }
+  .level-card { text-align: center; padding: 16px; border-radius: 16px; margin-bottom: 14px; background: linear-gradient(135deg, #d4af37, #f0c674); color: #0f172a; }
+  .level-number { font-size: 48px; font-weight: 800; font-family: 'Space Mono', monospace; }
+  .category-header { cursor: pointer; padding: 12px; border-radius: 12px; margin-bottom: 6px; font-weight: 800; display: flex; justify-content: space-between; background: rgba(0,0,0,0.05); }
+  .theme-selector { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  .theme-btn { flex: 1; padding: 8px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid transparent; }
+  .theme-btn.active { border-color: #2563eb; }
+  .theme-dark { background: #0a0a0f; color: white; }
+  .theme-light { background: #f0f2f7; color: #0f172a; }
+  .theme-mint { background: #e8f5e9; color: #1b5e20; }
+  .theme-purple { background: #f3e5f5; color: #4a148c; }
+  .toast-achievement { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #d4af37, #f0c674); color: #0f172a; padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; z-index: 1000; animation: slideUp 0.3s ease; max-width: 90%; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+  @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  canvas { max-height: 200px; width: 100%; margin: 10px 0; }
 </style>
 </head>
 <body>
@@ -147,45 +216,19 @@
     <button onclick="showView('weekly')" id="nav-weekly"><span class="nav-icon">📆</span><span class="nav-label">Semanas</span></button>
     <button onclick="showView('stats')" id="nav-stats"><span class="nav-icon">📊</span><span class="nav-label">Stats</span></button>
     <button onclick="showView('body')" id="nav-body"><span class="nav-icon">⚖️</span><span class="nav-label">Peso</span></button>
+    <button onclick="showView('achievements')" id="nav-achievements"><span class="nav-icon">🏆</span><span class="nav-label">Logros</span></button>
   </nav>
 </div>
 <div id="toast"></div>
 <input type="file" id="import-file" class="import-input" accept=".json" onchange="handleImport(event)">
 
 <script>
-// CONFIGURACIÓN
+// ==================== CONFIGURACIÓN ORIGINAL (MANTENIDA) ====================
 let MACHINES_BASE = ["Low Row", "Dual Pully", "Pull Down", "Shoulder Press", "Chest Press", "Pectoral"];
 let MACHINES = [];
-
-function updateMachinesWithCardioLast() {
-  MACHINES = [...MACHINES_BASE.filter(m => m !== "Cardio"), "Cardio"];
-}
-function loadMachines() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("gym_machines"));
-    if (saved && Array.isArray(saved)) {
-      MACHINES_BASE = saved.filter(m => m !== "Cardio");
-      updateMachinesWithCardioLast();
-    } else {
-      updateMachinesWithCardioLast();
-    }
-  } catch(e) {
-    updateMachinesWithCardioLast();
-  }
-  return MACHINES;
-}
-function saveMachines() {
-  try { localStorage.setItem("gym_machines", JSON.stringify(MACHINES_BASE)); } catch(e) {}
-}
-
-const MUSCLE_GROUPS = { "Low Row": "Espalda", "Pull Down": "Espalda", "Dual Pully": "Brazos", "Shoulder Press": "Hombro", "Chest Press": "Pecho", "Pectoral": "Pecho", "Cardio": "Cardio" };
-const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-const DAYS_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-const GYM_PRICE = 26.99;
-
-// ESTADO
 let sessions = [];
 let weightEntries = [];
+let plannedDays = [];
 let currentView = "home";
 let editingSession = null;
 let calendarFilter = null;
@@ -193,80 +236,110 @@ let calYear, calMonth;
 let openWeeks = {};
 let deferredInstall = null;
 
-const now = new Date();
-calYear = now.getFullYear();
-calMonth = now.getMonth();
+// NUEVO: Sistema de logros y niveles
+let achievements = {};
+let userLevel = 1;
+let userExp = 0;
+let openCategories = {};
 
-// ALMACENAMIENTO
+const BIRTHDAY = "2001-10-28";
+const GYM_PRICE = 26.99;
+const MUSCLE_GROUPS = { "Low Row": "Espalda", "Pull Down": "Espalda", "Dual Pully": "Brazos", "Shoulder Press": "Hombro", "Chest Press": "Pecho", "Pectoral": "Pecho", "Cardio": "Cardio" };
+const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const DAYS_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// Definición de logros (igual que la lista que diste, adaptada)
+const ACHIEVEMENTS_DB = {
+  "first_workout": { name: "Primer Paso", desc: "Completa tu primer entrenamiento", category: "asistencia", target: 1, type: "sessions" },
+  "warm_up": { name: "Calentando Motores", desc: "Completa 5 entrenamientos", category: "asistencia", target: 5, type: "sessions" },
+  "routine": { name: "La Rutina Empieza", desc: "Completa 10 entrenamientos", category: "asistencia", target: 10, type: "sessions" },
+  "constancy": { name: "Constancia Inicial", desc: "Completa 25 entrenamientos", category: "asistencia", target: 25, type: "sessions" },
+  "habit": { name: "Ya Es Costumbre", desc: "Completa 50 entrenamientos", category: "asistencia", target: 50, type: "sessions" },
+  "veteran": { name: "Veterano del Gimnasio", desc: "Completa 100 entrenamientos", category: "asistencia", target: 100, type: "sessions" },
+  "unbreakable": { name: "Incombustible", desc: "Completa 250 entrenamientos", category: "asistencia", target: 250, type: "sessions" },
+  "legend": { name: "Leyenda del Hierro", desc: "Completa 500 entrenamientos", category: "asistencia", target: 500, type: "sessions" },
+  "streak_3": { name: "En Marcha", desc: "3 semanas consecutivas yendo al gimnasio", category: "racha", target: 3, type: "streak_weeks" },
+  "streak_7": { name: "Semana Perfecta", desc: "7 semanas consecutivas yendo al gimnasio", category: "racha", target: 7, type: "streak_weeks" },
+  "streak_14": { name: "Dos Semanas de Acero", desc: "14 semanas consecutivas yendo al gimnasio", category: "racha", target: 14, type: "streak_weeks" },
+  "streak_30": { name: "Mes Imparable", desc: "30 semanas consecutivas yendo al gimnasio", category: "racha", target: 30, type: "streak_weeks" },
+  "streak_60": { name: "Imparable", desc: "60 semanas consecutivas yendo al gimnasio", category: "racha", target: 60, type: "streak_weeks" },
+  "streak_365": { name: "Un Año de Disciplina", desc: "52 semanas consecutivas (1 año)", category: "racha", target: 52, type: "streak_weeks" },
+  "first_pr": { name: "Primer Récord Personal", desc: "Supera tu mejor marca en cualquier ejercicio", category: "fuerza", target: 1, type: "pr_count" },
+  "breaking_limits": { name: "Rompiendo Límites", desc: "Consigue 5 récords personales", category: "fuerza", target: 5, type: "pr_count" },
+  "stronger": { name: "Más Fuerte que Ayer", desc: "Consigue 10 récords personales", category: "fuerza", target: 10, type: "pr_count" },
+  "100_sets": { name: "Cien Series Después", desc: "Completa 100 series", category: "volumen", target: 100, type: "total_sets" },
+  "500_sets": { name: "Especialista", desc: "Completa 500 series", category: "volumen", target: 500, type: "total_sets" },
+  "1000_sets": { name: "Máquina de Series", desc: "Completa 1.000 series", category: "volumen", target: 1000, type: "total_sets" },
+  "10000_reps": { name: "Diez Mil Repeticiones", desc: "Acumula 10.000 repeticiones", category: "volumen", target: 10000, type: "total_reps" },
+  "1000kg": { name: "Una Tonelada", desc: "Mueve 1.000 kg acumulados", category: "volumen", target: 1000, type: "total_kg" },
+  "10000kg": { name: "Diez Toneladas", desc: "Mueve 10.000 kg acumulados", category: "volumen", target: 10000, type: "total_kg" },
+  "level_30": { name: "Nivel 30", desc: "Alcanza el nivel 30", category: "niveles", target: 30, type: "level" },
+  "level_50": { name: "Nivel 50", desc: "Alcanza el nivel 50", category: "niveles", target: 50, type: "level" },
+  "level_80": { name: "Nivel 80", desc: "Alcanza el nivel 80", category: "niveles", target: 80, type: "level" },
+  "level_100": { name: "Nivel 100", desc: "Alcanza el nivel 100", category: "niveles", target: 100, type: "level" },
+  "birthday": { name: "Entrenamiento de Cumpleaños", desc: "Entrena el día de tu cumpleaños", category: "ocultos", target: 1, type: "birthday" },
+  "early_bird": { name: "Madrugador", desc: "Completa un entrenamiento antes de las 07:00", category: "ocultos", target: 1, type: "early_bird" },
+  "night_owl": { name: "Búho Nocturno", desc: "Completa un entrenamiento después de las 22:00", category: "ocultos", target: 1, type: "night_owl" },
+  "monday_iron": { name: "Lunes de Hierro", desc: "Completa un entrenamiento un lunes", category: "ocultos", target: 1, type: "monday" },
+  "christmas": { name: "Navidad Fitness", desc: "Entrena el 25 de diciembre", category: "ocultos", target: 1, type: "christmas" },
+  "newyear": { name: "Fin de Año Activo", desc: "Entrena el 31 de diciembre", category: "ocultos", target: 1, type: "newyear" },
+  "express": { name: "Sesión Express", desc: "Completa un entrenamiento en menos de 15 minutos", category: "ocultos", target: 1, type: "express" },
+  "marathon": { name: "Maratón de Hierro", desc: "Completa una sesión de más de 90 minutos", category: "ocultos", target: 1, type: "long_session" },
+  "centenario": { name: "Centenario", desc: "Completa 100 entrenamientos", category: "epicos", target: 100, type: "sessions" },
+  "one_year_training": { name: "Un Año Entrenando", desc: "365 días desde tu primera sesión", category: "epicos", target: 365, type: "days_since_first" },
+  "cardio_legend": { name: "Cardio Legendario", desc: "Acumula 500 km de cardio", category: "epicos", target: 500, type: "cardio_km" },
+  "never_give_up": { name: "Constancia Legendaria", desc: "Mantén 3+ sesiones/semana durante 12 semanas seguidas", category: "epicos", target: 12, type: "constant_weeks" },
+  "chest_first": { name: "Primer Empujón", desc: "Usa Chest Press", category: "maquinas", target: 1, type: "machine_first", machine: "Chest Press" },
+  "shoulder_first": { name: "Primer Press Militar", desc: "Usa Shoulder Press", category: "maquinas", target: 1, type: "machine_first", machine: "Shoulder Press" },
+  "pulldown_first": { name: "Primer Tirón", desc: "Usa Pull Down", category: "maquinas", target: 1, type: "machine_first", machine: "Pull Down" },
+  "lowrow_first": { name: "Remero Novato", desc: "Usa Low Row", category: "maquinas", target: 1, type: "machine_first", machine: "Low Row" },
+  "dual_first": { name: "Dominando las Poleas", desc: "Usa Dual Pulley", category: "maquinas", target: 1, type: "machine_first", machine: "Dual Pully" },
+  "legs_first": { name: "Primer Día de Piernas", desc: "Usa una máquina de piernas", category: "maquinas", target: 1, type: "machine_first_legs" }
+};
+
+// Funciones de almacenamiento (originales + nuevas)
+function updateMachinesWithCardioLast() { MACHINES = [...MACHINES_BASE.filter(m => m !== "Cardio"), "Cardio"]; }
+function loadMachines() { try { const saved = JSON.parse(localStorage.getItem("gym_machines")); if (saved && Array.isArray(saved)) { MACHINES_BASE = saved.filter(m => m !== "Cardio"); updateMachinesWithCardioLast(); } else { updateMachinesWithCardioLast(); } } catch(e) { updateMachinesWithCardioLast(); } return MACHINES; }
+function saveMachines() { try { localStorage.setItem("gym_machines", JSON.stringify(MACHINES_BASE)); } catch(e) {} }
 function loadSessions() { try { return JSON.parse(localStorage.getItem("gym_sessions") || "[]"); } catch(e) { return []; } }
 function loadWeight() { try { return JSON.parse(localStorage.getItem("gym_weight") || "[]"); } catch(e) { return []; } }
-function save() {
-  try { localStorage.setItem("gym_sessions", JSON.stringify(sessions)); } catch(e) {}
-  try { localStorage.setItem("gym_weight", JSON.stringify(weightEntries)); } catch(e) {}
-  saveMachines();
-  updateHeader();
-  checkFridayReminder();
-}
-MACHINES = loadMachines();
-sessions = loadSessions();
-weightEntries = loadWeight();
+function loadPlannedDays() { try { return JSON.parse(localStorage.getItem("gym_planned") || "[]"); } catch(e) { return []; } }
+function loadAchievements() { try { return JSON.parse(localStorage.getItem("gym_achievements") || "{}"); } catch(e) { return {}; } }
+function loadExp() { try { return JSON.parse(localStorage.getItem("gym_exp") || '{"level":1,"exp":0}'); } catch(e) { return { level: 1, exp: 0 }; } }
+function loadTheme() { try { return localStorage.getItem("gym_theme") || "light"; } catch(e) { return "light"; } }
 
-function showToast(msg, isError = false) {
+function saveAll() { 
+  try { 
+    localStorage.setItem("gym_sessions", JSON.stringify(sessions)); 
+    localStorage.setItem("gym_weight", JSON.stringify(weightEntries)); 
+    localStorage.setItem("gym_planned", JSON.stringify(plannedDays)); 
+    localStorage.setItem("gym_achievements", JSON.stringify(achievements)); 
+    localStorage.setItem("gym_exp", JSON.stringify({ level: userLevel, exp: userExp })); 
+    saveMachines(); 
+  } catch(e) {} 
+}
+
+// Funciones originales (todas)
+function showToast(msg, isError = false, isAchievement = false) {
   const toast = document.getElementById("toast");
   toast.textContent = msg;
-  toast.style.background = isError ? "#dc2626" : "#0f172a";
+  toast.style.background = isAchievement ? "linear-gradient(135deg, #d4af37, #f0c674)" : (isError ? "#dc2626" : "#0f172a");
+  toast.style.color = isAchievement ? "#0f172a" : "white";
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 2500);
-  setTimeout(() => { toast.style.background = "#0f172a"; }, 2600);
 }
 
 function roundPt(n) { return Math.round(n * 10) / 10; }
-
-function fixDecimal(val) {
-  if (typeof val === 'string') {
-    return val.replace(',', '.');
-  }
-  return val;
-}
-
-function getEffortColor(level) {
-  if (level <= 4) return { bg: "#fee2e2", color: "#dc2626", label: "🔴 Bajo" };
-  if (level <= 7) return { bg: "#fef3c7", color: "#d97706", label: "🟡 Medio" };
-  return { bg: "#dcfce7", color: "#16a34a", label: "🟢 Alto" };
-}
-
-function calcScore(sets) {
-  return sets.reduce((t, s) => {
-    if (s.isCardio) {
-      const val = parseFloat(fixDecimal(s.value)) || 0;
-      return t + val * 5;
-    }
-    const weight = parseFloat(fixDecimal(s.weight)) || 0;
-    const reps = parseFloat(fixDecimal(s.reps)) || 0;
-    return t + weight * reps;
-  }, 0);
-}
+function fixDecimal(val) { if (typeof val === 'string') return val.replace(',', '.'); return val; }
+function calcScore(sets) { return sets.reduce((t, s) => { if (s.isCardio) { const val = parseFloat(fixDecimal(s.value)) || 0; return t + val * 5; } const weight = parseFloat(fixDecimal(s.weight)) || 0; const reps = parseFloat(fixDecimal(s.reps)) || 0; return t + weight * reps; }, 0); }
 function sessionScore(sess) { return sess.exercises.reduce((a, ex) => a + calcScore(ex.sets), 0); }
 function getAverageScore() { return sessions.length ? sessions.reduce((a, s) => a + sessionScore(s), 0) / sessions.length : 300; }
 function getMaxScore() { return sessions.length ? Math.max(...sessions.map(sessionScore)) : 0; }
 function getLastSessionScore() { return sessions.length ? sessionScore([...sessions].sort((a, b) => b.date.localeCompare(a.date))[0]) : 0; }
-
-// ESTADÍSTICAS DEL MES ACTUAL
-function getCurrentMonthStats() {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-  const monthSessions = sessions.filter(s => {
-    const d = new Date(s.date);
-    return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
-  });
-  const sessionCount = monthSessions.length;
-  const totalPoints = monthSessions.reduce((a, s) => a + sessionScore(s), 0);
-  const avgPoints = sessionCount > 0 ? totalPoints / sessionCount : 0;
-  const totalMinutes = monthSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
-  const costPerSession = sessionCount > 0 ? (GYM_PRICE / sessionCount).toFixed(2) : 0;
-  return { sessionCount, totalPoints, avgPoints, totalMinutes, costPerSession };
-}
+function scoreColor(score, goal) { const pct = goal > 0 ? score / goal : 0; return pct >= 1 ? "#16a34a" : pct >= 0.6 ? "#d97706" : "#2563eb"; }
+function badgeHtml(score, goal) { const c = scoreColor(score, goal); return `<span class="badge" style="background:${c}18;color:${c}">${roundPt(score)} pts</span>`; }
+function getEffortColor(level) { if (level <= 4) return { bg: "#fee2e2", color: "#dc2626", label: "🔴 Bajo" }; if (level <= 7) return { bg: "#fef3c7", color: "#d97706", label: "🟡 Medio" }; return { bg: "#dcfce7", color: "#16a34a", label: "🟢 Alto" }; }
+function weekStart(dateStr) { const d = new Date(dateStr + "T12:00:00"); const day = d.getDay(); const diff = (day === 0) ? -6 : 1 - day; d.setDate(d.getDate() + diff); return d.toISOString().slice(0, 10); }
 
 function getPersonalRecords() {
   const records = {};
@@ -275,15 +348,56 @@ function getPersonalRecords() {
   return records;
 }
 
+function getCurrentMonthStats() {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const monthSessions = sessions.filter(s => { const d = new Date(s.date); return d.getFullYear() === currentYear && d.getMonth() === currentMonth; });
+  const sessionCount = monthSessions.length;
+  const totalPoints = monthSessions.reduce((a, s) => a + sessionScore(s), 0);
+  const avgPoints = sessionCount > 0 ? totalPoints / sessionCount : 0;
+  const totalMinutes = monthSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
+  const costPerSession = sessionCount > 0 ? (GYM_PRICE / sessionCount).toFixed(2) : 0;
+  return { sessionCount, totalPoints, avgPoints, totalMinutes, costPerSession };
+}
+
+function getComparisonVsPrevWeek() {
+  const currentMonday = weekStart(new Date().toISOString().slice(0, 10));
+  const prevMondayDate = new Date(currentMonday + "T12:00:00");
+  prevMondayDate.setDate(prevMondayDate.getDate() - 7);
+  const prevMonday = prevMondayDate.toISOString().slice(0, 10);
+  const currentPoints = sessions.filter(s => weekStart(s.date) === currentMonday).reduce((a, s) => a + sessionScore(s), 0);
+  const prevPoints = sessions.filter(s => weekStart(s.date) === prevMonday).reduce((a, s) => a + sessionScore(s), 0);
+  if (prevPoints === 0) return { diff: 0, percent: 0, hasPrev: false };
+  return { diff: roundPt(currentPoints - prevPoints), percent: Math.round(((currentPoints - prevPoints) / prevPoints) * 100), hasPrev: true };
+}
+
+function getWeeklyProgress() {
+  const weeks = [];
+  const today = new Date();
+  for (let i = 3; i >= 0; i--) {
+    const mondayDate = new Date(today);
+    mondayDate.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1) - (i * 7));
+    const monday = mondayDate.toISOString().slice(0, 10);
+    weeks.push({ week: monday, points: roundPt(sessions.filter(s => weekStart(s.date) === monday).reduce((a, s) => a + sessionScore(s), 0)) });
+  }
+  return weeks;
+}
+
+function getMuscleGroupScores() {
+  const groups = { Espalda: 0, Brazos: 0, Hombro: 0, Pecho: 0, Cardio: 0 };
+  sessions.forEach(sess => { sess.exercises.forEach(ex => { const group = MUSCLE_GROUPS[ex.machine]; if (group) groups[group] += calcScore(ex.sets); }); });
+  const total = Object.values(groups).reduce((a, b) => a + b, 0);
+  return { groups, total };
+}
+
 function getLastExerciseData(machine) {
   const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
   for (const sess of sorted) {
     const ex = sess.exercises.find(e => e.machine === machine);
     if (ex && ex.sets.length > 0) {
       const lastSet = ex.sets[ex.sets.length - 1];
-      if (lastSet.isCardio) {
-        return `${fixDecimal(lastSet.value) || 0} ${lastSet.unit}`;
-      }
+      if (lastSet.isCardio) return `${fixDecimal(lastSet.value) || 0} ${lastSet.unit}`;
       return `${fixDecimal(lastSet.weight) || 0}kg × ${fixDecimal(lastSet.reps) || 0}`;
     }
   }
@@ -312,155 +426,122 @@ function getLastCardioDetails() {
 
 function getEffortHistory() {
   const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
-  return sorted.slice(0, 10).map(s => ({
-    date: s.date,
-    effort: s.effort || null,
-    score: sessionScore(s)
-  })).filter(s => s.effort !== null && s.effort !== undefined);
+  return sorted.slice(0, 10).map(s => ({ date: s.date, effort: s.effort || null, score: sessionScore(s) })).filter(s => s.effort !== null);
 }
 
-function weekStart(dateStr) {
-  const d = new Date(dateStr + "T12:00:00");
-  const day = d.getDay();
-  const diff = (day === 0) ? -6 : 1 - day;
-  d.setDate(d.getDate() + diff);
-  return d.toISOString().slice(0, 10);
-}
 function getCurrentWeekStats() {
   const currentMonday = weekStart(new Date().toISOString().slice(0, 10));
   const weekSessions = sessions.filter(s => weekStart(s.date) === currentMonday);
   return { daysTrained: new Set(weekSessions.map(s => s.date)).size, totalMinutes: weekSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0) };
 }
-function getComparisonVsPrevWeek() {
-  const currentMonday = weekStart(new Date().toISOString().slice(0, 10));
-  const prevMondayDate = new Date(currentMonday + "T12:00:00");
-  prevMondayDate.setDate(prevMondayDate.getDate() - 7);
-  const prevMonday = prevMondayDate.toISOString().slice(0, 10);
-  const currentPoints = sessions.filter(s => weekStart(s.date) === currentMonday).reduce((a, s) => a + sessionScore(s), 0);
-  const prevPoints = sessions.filter(s => weekStart(s.date) === prevMonday).reduce((a, s) => a + sessionScore(s), 0);
-  if (prevPoints === 0) return { diff: 0, percent: 0, hasPrev: false };
-  return { diff: roundPt(currentPoints - prevPoints), percent: Math.round(((currentPoints - prevPoints) / prevPoints) * 100), hasPrev: true };
+
+function getCardioStats() {
+  let totalKm = 0, totalMin = 0, totalKmh = 0, sessionsWithCardio = 0;
+  sessions.forEach(s => { s.exercises.forEach(ex => { if (ex.machine === "Cardio") { ex.sets.forEach(set => { if (set.isCardio) { const val = parseFloat(set.value) || 0; if (set.unit === "km") totalKm += val; if (set.unit === "min") totalMin += val; if (set.unit === "kmh") totalKmh += val; if (set.unit === "km" || set.unit === "min") sessionsWithCardio++; } }); } }); });
+  return { totalKm, totalMin, totalKmh, avgKmh: sessionsWithCardio ? totalKmh / sessionsWithCardio : 0 };
 }
-function getWeeklyProgress() {
-  const weeks = [];
-  const today = new Date();
-  for (let i = 3; i >= 0; i--) {
-    const mondayDate = new Date(today);
-    mondayDate.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1) - (i * 7));
-    const monday = mondayDate.toISOString().slice(0, 10);
-    weeks.push({ week: monday, points: roundPt(sessions.filter(s => weekStart(s.date) === monday).reduce((a, s) => a + sessionScore(s), 0)) });
+
+// NUEVAS FUNCIONES: Sistema de EXP y Logros
+function addExp(amount) {
+  userExp += amount;
+  let leveledUp = false;
+  while (userExp >= userLevel * 1000) {
+    userExp -= userLevel * 1000;
+    userLevel++;
+    leveledUp = true;
+    showToast(`🎉 ¡SUBIDA DE NIVEL! Ahora eres nivel ${userLevel} 🎉`, false, true);
   }
-  return weeks;
+  if (leveledUp) checkAchievements();
+  saveAll();
 }
 
-function getMuscleGroupScores() {
-  const groups = { Espalda: 0, Brazos: 0, Hombro: 0, Pecho: 0, Cardio: 0 };
-  sessions.forEach(sess => { sess.exercises.forEach(ex => { const group = MUSCLE_GROUPS[ex.machine]; if (group) groups[group] += calcScore(ex.sets); }); });
-  const total = Object.values(groups).reduce((a, b) => a + b, 0);
-  return { groups, total };
+function unlockAchievement(id) {
+  if (achievements[id]) return false;
+  achievements[id] = { unlockedAt: new Date().toISOString() };
+  const ach = ACHIEVEMENTS_DB[id];
+  if (ach) { showToast(`🏆 ¡LOGRO DESBLOQUEADO! ${ach.name} 🏆`, false, true); addExp(500); }
+  saveAll();
+  return true;
 }
 
-function addWeight(weight, date) {
-  let weightNum = parseFloat(fixDecimal(weight));
-  if (isNaN(weightNum) || weightNum < 20 || weightNum > 300) { showToast("Peso válido: 20-300 kg", true); return; }
-  if (!date) { showToast("Selecciona fecha", true); return; }
-  const existingIndex = weightEntries.findIndex(w => w.date === date);
-  if (existingIndex >= 0) {
-    if (confirm(`¿Sobrescribir ${date} (${weightEntries[existingIndex].weight} kg → ${weightNum} kg)?`)) weightEntries[existingIndex].weight = weightNum;
-    else return;
-  } else weightEntries.push({ date, weight: weightNum });
-  weightEntries.sort((a, b) => a.date.localeCompare(b.date));
-  save(); render();
-  showToast(`Peso registrado: ${weightNum} kg ✅`);
-}
-function clearAllWeight() {
-  if (confirm("¿Eliminar TODOS los registros de peso?")) { weightEntries = []; save(); render(); showToast("Registros de peso eliminados"); }
+function calculateStatsForAchievements() {
+  const totalSessions = sessions.length;
+  const totalSets = sessions.reduce((a, s) => a + s.exercises.reduce((b, ex) => b + ex.sets.length, 0), 0);
+  let totalReps = 0, totalKg = 0;
+  sessions.forEach(s => { s.exercises.forEach(ex => { ex.sets.forEach(set => { if (!set.isCardio) { totalReps += parseFloat(set.reps) || 0; totalKg += (parseFloat(set.weight) || 0) * (parseFloat(set.reps) || 0); } }); }); });
+  const cardioStats = getCardioStats();
+  const firstSessionDate = sessions.length ? new Date([...sessions].sort((a,b)=>a.date.localeCompare(b.date))[0].date) : null;
+  const daysSinceFirst = firstSessionDate ? Math.floor((new Date() - firstSessionDate) / (1000*60*60*24)) : 0;
+  let prCount = 0;
+  const records = getPersonalRecords();
+  Object.values(records).forEach(v => { if (v > 0) prCount++; });
+  return { totalSessions, totalSets, totalReps, totalKg, cardioKm: cardioStats.totalKm, daysSinceFirst, prCount };
 }
 
-function checkFridayReminder() {
-  const today = new Date();
-  const isFriday = today.getDay() === 5;
-  const lastReminder = localStorage.getItem("last_export_reminder");
-  const todayStr = today.toISOString().slice(0, 10);
-  if (isFriday && lastReminder !== todayStr && sessions.length > 0) {
-    setTimeout(() => { if (confirm("📅 ¡Viernes de respaldo! ¿Exportar copia?")) exportData(); localStorage.setItem("last_export_reminder", todayStr); }, 500);
+function getStreakWeeks() {
+  if (!sessions.length) return 0;
+  const weeksSet = new Set();
+  sessions.forEach(s => { weeksSet.add(weekStart(s.date)); });
+  const weeks = Array.from(weeksSet).sort();
+  let streak = 1, maxStreak = 1;
+  for (let i = 1; i < weeks.length; i++) {
+    const prev = new Date(weeks[i-1] + "T12:00:00");
+    const curr = new Date(weeks[i] + "T12:00:00");
+    const diffDays = (curr - prev) / (1000*60*60*24);
+    if (diffDays <= 7) streak++; else streak = 1;
+    maxStreak = Math.max(maxStreak, streak);
   }
+  return maxStreak;
 }
 
-function exportData() {
-  if (!sessions.length) { showToast("No hay datos", true); return; }
-  const backup = { sessions, weightEntries, MACHINES: MACHINES_BASE, exportDate: new Date().toISOString() };
-  const a = document.createElement("a");
-  a.download = `gym_backup_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`;
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }));
-  a.click();
-  URL.revokeObjectURL(a.href);
-  showToast(`Exportadas ${sessions.length} sesiones ✅`);
-}
-function triggerImport() { document.getElementById("import-file").click(); }
-function handleImport(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const imported = JSON.parse(e.target.result);
-      let importedSessions = imported.sessions || (Array.isArray(imported) ? imported : []);
-      let importedWeight = imported.weightEntries || [];
-      let importedMachines = imported.MACHINES || MACHINES_BASE;
-      if (confirm(`¿Importar ${importedSessions.length} sesiones?`)) {
-        sessions = importedSessions;
-        weightEntries = importedWeight;
-        MACHINES_BASE = importedMachines;
-        updateMachinesWithCardioLast();
-        save(); render();
-        showToast(`Importadas ${importedSessions.length} sesiones ✅`);
-      }
-    } catch (err) { showToast("Archivo inválido", true); }
-  };
-  reader.readAsText(file);
-  event.target.value = "";
+function getConstantWeeksStreak() {
+  if (!sessions.length) return 0;
+  const weeksMap = new Map();
+  sessions.forEach(s => { const week = weekStart(s.date); if (!weeksMap.has(week)) weeksMap.set(week, new Set()); weeksMap.get(week).add(s.date); });
+  const weeks = Array.from(weeksMap.keys()).sort();
+  let streak = 0, maxStreak = 0;
+  for (const week of weeks) { if (weeksMap.get(week).size >= 3) streak++; else streak = 0; maxStreak = Math.max(maxStreak, streak); }
+  return maxStreak;
 }
 
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; });
-
-function addNewMachine() {
-  const machineName = prompt("Nombre de la nueva máquina:");
-  if (machineName && machineName.trim()) {
-    const newMachine = machineName.trim();
-    if (!MACHINES_BASE.includes(newMachine) && newMachine !== "Cardio") {
-      MACHINES_BASE.push(newMachine);
-      updateMachinesWithCardioLast();
-      saveMachines();
-      if (editingSession && !editingSession.exercises.find(e => e.machine === newMachine)) {
-        editingSession.exercises.push({
-          machine: newMachine,
-          sets: [{ isCardio: false, weight: "", reps: "" }]
-        });
-      }
-      render();
-      showToast(`Máquina "${newMachine}" añadida ✅`);
-    } else {
-      showToast("Esa máquina ya existe", true);
+function checkAchievements() {
+  const stats = calculateStatsForAchievements();
+  const streakWeeks = getStreakWeeks();
+  const constantWeeks = getConstantWeeksStreak();
+  for (const [id, ach] of Object.entries(ACHIEVEMENTS_DB)) {
+    if (achievements[id]) continue;
+    let achieved = false;
+    switch (ach.type) {
+      case "sessions": if (stats.totalSessions >= ach.target) achieved = true; break;
+      case "streak_weeks": if (streakWeeks >= ach.target) achieved = true; break;
+      case "pr_count": if (stats.prCount >= ach.target) achieved = true; break;
+      case "total_sets": if (stats.totalSets >= ach.target) achieved = true; break;
+      case "total_reps": if (stats.totalReps >= ach.target) achieved = true; break;
+      case "total_kg": if (stats.totalKg >= ach.target) achieved = true; break;
+      case "level": if (userLevel >= ach.target) achieved = true; break;
+      case "cardio_km": if (stats.cardioKm >= ach.target) achieved = true; break;
+      case "days_since_first": if (stats.daysSinceFirst >= ach.target) achieved = true; break;
+      case "constant_weeks": if (constantWeeks >= ach.target) achieved = true; break;
+      case "machine_first": if (sessions.some(s => s.exercises.some(e => e.machine === ach.machine && e.sets.some(set => !set.isCardio && (set.weight || set.reps))))) achieved = true; break;
+      case "machine_first_legs": if (MACHINES_BASE.some(m => m.toLowerCase().includes("pierna") || m.toLowerCase().includes("leg")) && sessions.some(s => s.exercises.some(e => e.machine.toLowerCase().includes("pierna") || e.machine.toLowerCase().includes("leg")))) achieved = true; break;
+      case "birthday": if (sessions.some(s => s.date === BIRTHDAY)) achieved = true; break;
+      case "early_bird": if (sessions.some(s => { const h = new Date(s.date + "T" + (s.time || "12:00")).getHours(); return h < 7; })) achieved = true; break;
+      case "night_owl": if (sessions.some(s => { const h = new Date(s.date + "T" + (s.time || "12:00")).getHours(); return h >= 22; })) achieved = true; break;
+      case "monday": if (sessions.some(s => new Date(s.date).getDay() === 1)) achieved = true; break;
+      case "christmas": if (sessions.some(s => s.date.endsWith("-12-25"))) achieved = true; break;
+      case "newyear": if (sessions.some(s => s.date.endsWith("-12-31"))) achieved = true; break;
+      case "express": if (sessions.some(s => (s.duration || 0) < 15)) achieved = true; break;
+      case "long_session": if (sessions.some(s => (s.duration || 0) > 90)) achieved = true; break;
     }
+    if (achieved) unlockAchievement(id);
   }
+  saveAll();
 }
 
-function newSession() {
-  return {
-    id: Date.now(),
-    date: new Date().toISOString().slice(0, 10),
-    duration: 45,
-    goal: Math.round(getAverageScore()),
-    effort: 5,
-    exercises: MACHINES.map(m => ({ machine: m, sets: [m === "Cardio" ? { isCardio: true, value: "", unit: "min" } : { isCardio: false, weight: "", reps: "" }] })),
-    notes: ""
-  };
-}
-
+// Funciones de UI (originales + nuevas)
 function updateHeader() {
   const total = sessions.reduce((a, s) => a + sessionScore(s), 0);
-  document.getElementById("header-sub").textContent = `${sessions.length} sesiones · ${Math.round(total)} pts`;
+  document.getElementById("header-sub").textContent = `${sessions.length} sesiones · ${Math.round(total)} pts · Nv${userLevel}`;
 }
 
 function showView(v) {
@@ -468,24 +549,19 @@ function showView(v) {
   document.querySelectorAll("#nav button").forEach(b => b.classList.remove("active"));
   const nb = document.getElementById("nav-" + v);
   if (nb) nb.classList.add("active");
-  document.getElementById("nav").style.display = "flex";
   document.getElementById("btn-new").style.display = v === "form" ? "none" : "";
   render();
+  setTimeout(() => { if (v === "stats" || v === "body") initCharts(); }, 100);
 }
-function showNew() { editingSession = newSession(); currentView = "form"; render(); }
-function showEdit(id) { editingSession = JSON.parse(JSON.stringify(sessions.find(s => s.id === id))); currentView = "form"; render(); }
-function render() {
-  updateHeader();
-  const c = document.getElementById("content");
-  if (currentView === "home") c.innerHTML = renderHome();
-  else if (currentView === "history") c.innerHTML = renderHistory();
-  else if (currentView === "weekly") c.innerHTML = renderWeekly();
-  else if (currentView === "stats") c.innerHTML = renderStats();
-  else if (currentView === "body") c.innerHTML = renderBody();
-  else if (currentView === "form") c.innerHTML = renderForm();
-}
-function scoreColor(score, goal) { const pct = goal > 0 ? score / goal : 0; return pct >= 1 ? "#16a34a" : pct >= 0.6 ? "#d97706" : "#2563eb"; }
-function badgeHtml(score, goal) { const c = scoreColor(score, goal); return `<span class="badge" style="background:${c}18;color:${c}">${roundPt(score)} pts</span>`; }
+
+function toggleTheme(theme) { document.body.className = theme; localStorage.setItem("gym_theme", theme); render(); }
+function toggleWeek(key) { openWeeks[key] = !openWeeks[key]; render(); }
+function toggleCategory(cat) { openCategories[cat] = !openCategories[cat]; render(); }
+function togglePlannedDay(date) { const idx = plannedDays.indexOf(date); if (idx >= 0) plannedDays.splice(idx, 1); else plannedDays.push(date); saveAll(); render(); }
+
+function calPrev() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } render(); }
+function calNext() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } render(); }
+function calClick(date) { calendarFilter = date; showView("history"); }
 
 function renderCalendar() {
   const avgScore = getAverageScore();
@@ -501,20 +577,15 @@ function renderCalendar() {
   for (let d = 1; d <= days; d++) {
     const key = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     const data = sessMap[key];
+    const isPlanned = plannedDays.includes(key);
     const isToday = key === todayStr;
     let dotClass = "";
-    if (data) {
-      if (data.score > avgScore) dotClass = "gold";
-      else if (Math.abs(data.score - avgScore) < 0.1) dotClass = "silver";
-      else dotClass = "red";
-    }
-    cells += `<div class="cal-day ${data ? "has-session" : ""} ${isToday ? "today" : ""}" ${data ? `onclick="calClick('${key}')"` : ""}><div class="day-num">${d}</div>${data ? `<div class="cal-dot ${dotClass}"></div>` : ""}</div>`;
+    if (data) { if (data.score > avgScore) dotClass = "gold"; else if (Math.abs(data.score - avgScore) < 0.1) dotClass = "silver"; else dotClass = "red"; }
+    const plannedClass = isPlanned && !data ? "planned" : "";
+    cells += `<div class="cal-day ${data ? "has-session" : ""} ${isToday ? "today" : ""} ${plannedClass}" onclick="${data ? `calClick('${key}')` : `togglePlannedDay('${key}')`}"><div class="day-num">${d}</div>${data ? `<div class="cal-dot ${dotClass}"></div>` : isPlanned ? `<div style="font-size:10px">📅</div>` : ""}</div>`;
   }
-  return `<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()">‹</button><span>${MONTHS[calMonth]} ${calYear}</span><button onclick="calNext()">›</button></div><div class="cal-grid">${cells}</div><div style="display:flex; gap:12px; justify-content:center; margin-top:12px; font-size:10px"><span>🟡 Supera media</span><span>⚪ Iguala media</span><span>🔴 Debajo media</span></div></div>`;
+  return `<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()">‹</button><span>${MONTHS[calMonth]} ${calYear}</span><button onclick="calNext()">›</button></div><div class="cal-grid">${cells}</div><div style="display:flex; gap:12px; justify-content:center; margin-top:12px; font-size:10px"><span>🟡 Supera media</span><span>⚪ Iguala media</span><span>🔴 Debajo media</span><span>📅 Planeado</span></div></div>`;
 }
-function calPrev() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } render(); }
-function calNext() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } render(); }
-function calClick(date) { calendarFilter = date; showView("history"); }
 
 function renderSessionCard(s) {
   const sc = roundPt(sessionScore(s));
@@ -524,14 +595,14 @@ function renderSessionCard(s) {
   const dateLabel = `${d.getDate()} ${MONTHS[d.getMonth()].slice(0, 3)} ${d.getFullYear()}`;
   const effort = s.effort || null;
   let effortHtml = "";
-  if (effort) {
-    const effortColors = getEffortColor(effort);
-    effortHtml = `<div class="effort-badge" style="background:${effortColors.bg}; color:${effortColors.color}">💪 Esfuerzo: ${effort}/10</div>`;
-  }
-  return `<div class="card" id="card-${s.id}"><div class="card-head" onclick="toggleCard(${s.id})"><div><div class="session-date" style="font-weight:800">${dateLabel} <span style="font-size:11px;color:#64748b">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;color:#64748b;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc, s.goal)}</div><div class="card-body" id="body-${s.id}" style="display:none"><div class="prog-bar" style="margin-bottom:12px"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${s.exercises.map(ex => { const exSc = roundPt(calcScore(ex.sets)); const hasData = ex.sets.some(st => st.isCardio ? st.value : (st.weight || st.reps)); if (!hasData) return ""; const chips = ex.sets.map(st => st.isCardio ? `<span class="chip" style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.value)||0} ${st.unit}</span>` : `<span class="chip" style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.weight)||0}kg×${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;color:#64748b;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("")}${s.notes ? `<div class="notes-box" style="margin-top:9px;background:#fffbeb;padding:9px;border-radius:11px;font-size:12px">📝 ${s.notes}</div>` : ""}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div></div>`;
+  if (effort) { const effortColors = getEffortColor(effort); effortHtml = `<div class="effort-badge" style="background:${effortColors.bg}; color:${effortColors.color}">💪 Esfuerzo: ${effort}/10</div>`; }
+  return `<div class="card" id="card-${s.id}"><div style="padding:12px"><div style="display:flex;justify-content:space-between"><div><div style="font-weight:800">${dateLabel} <span style="font-size:11px;color:#64748b">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;color:#64748b;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc, s.goal)}</div><div class="prog-bar" style="margin:12px 0"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${s.exercises.map(ex => { const exSc = roundPt(calcScore(ex.sets)); const chips = ex.sets.map(st => st.isCardio ? `<span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.value)||0} ${st.unit}</span>` : `<span style="background:#f1f5f9;padding:3px 8px;border-radius:6px;margin:2px;display:inline-block;font-size:11px">${fixDecimal(st.weight)||0}kg×${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;color:#64748b;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("")}${s.notes ? `<div style="margin-top:9px;background:#fffbeb;padding:9px;border-radius:11px;font-size:12px">📝 ${s.notes}</div>` : ""}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div></div>`;
 }
-function toggleCard(id) { const b = document.getElementById("body-" + id); if (b) b.style.display = b.style.display === "none" ? "block" : "none"; }
-function deleteSession(id) { if (confirm("¿Eliminar?")) { sessions = sessions.filter(s => s.id !== id); save(); render(); } }
+
+function deleteSession(id) { if (confirm("¿Eliminar?")) { sessions = sessions.filter(s => s.id !== id); saveAll(); checkAchievements(); render(); } }
+function showEdit(id) { editingSession = JSON.parse(JSON.stringify(sessions.find(s => s.id === id))); currentView = "form"; render(); }
+function showNew() { editingSession = { id: Date.now(), date: new Date().toISOString().slice(0, 10), duration: 45, goal: Math.round(getAverageScore()), effort: 5, exercises: MACHINES.map(m => ({ machine: m, sets: [m === "Cardio" ? { isCardio: true, value: "", unit: "min" } : { isCardio: false, weight: "", reps: "" }] })), notes: "" }; currentView = "form"; render(); }
+function cancelForm() { editingSession = null; showView("home"); }
 
 function renderHome() {
   const avgScore = roundPt(getAverageScore());
@@ -544,8 +615,17 @@ function renderHome() {
   const maxPoints = Math.max(...weeklyProgress.map(w => w.points), 1);
   const goalMet = daysTrained >= 3;
   const goalPercent = Math.min(100, (daysTrained / 3) * 100);
+  const streakWeeks = getStreakWeeks();
+  const nextLevelExp = userLevel * 1000 - userExp;
+  const expPercent = (userExp / (userLevel * 1000)) * 100;
   const installBanner = deferredInstall ? `<div class="install-banner"><h3>📲 Instala la app</h3><button id="btn-install" onclick="installApp()">Instalar</button></div>` : `<div class="install-banner"><h3>📲 Añadir a pantalla de inicio</h3><ul class="install-steps"><li>📱 iPhone: compartir → "Añadir a pantalla de inicio"</li></ul></div>`;
-  return `${renderCalendar()}<div class="stats-grid"><div class="stat-card"><div class="stat-icon">⏪</div><div class="stat-val">${lastScore}</div><div class="stat-lbl">Última sesión</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${avgScore}</div><div class="stat-lbl">Media global</div></div><div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">${monthAvg}</div><div class="stat-lbl">Media este mes</div></div></div><div class="goal-meter ${goalMet ? 'goal-met' : ''}"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3 días</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet ? '#16a34a' : '#d97706'}"></div></div><div class="goal-meter-header" style="margin-top:8px"><span>⏱ Tiempo esta semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev ? `<div style="margin-top:8px;text-align:center;font-size:12px">vs semana pasada ${comparison.diff > 0 ? `<span class="trend-up">▲ +${comparison.diff} pts</span>` : comparison.diff < 0 ? `<span class="trend-down">▼ ${comparison.diff} pts</span>` : `<span>= Sin cambios</span>`}</div>` : ''}</div><div class="weekly-progress"><div class="section-title">Progreso últimas 4 semanas</div><div class="week-chart">${weeklyProgress.map(w => `<div class="week-chart-bar"><div class="bar" style="height: ${(w.points / maxPoints) * 40}px; background: ${w.points > 0 ? '#2563eb' : '#e2e8f0'}"></div><div class="label" style="font-size:9px;margin-top:4px">${w.points > 0 ? w.points : '-'}</div></div>`).join("")}</div></div>${installBanner}<div class="section-title">Últimas sesiones</div>${sessions.slice(0, 3).map(renderSessionCard).join("") || `<div class="empty-state"><div class="big">🏋️</div><b>¡Empieza tu primer entreno!</b></div>`}`;
+  return `${renderCalendar()}
+  <div class="level-card" style="background:linear-gradient(135deg, #d4af37, #f0c674);color:#0f172a"><div style="font-size:12px">NIVEL ${userLevel}</div><div class="level-number">${userLevel}</div><div class="prog-bar" style="background:rgba(0,0,0,0.2)"><div class="prog-fill" style="width:${expPercent}%;background:#0f172a"></div></div><div style="font-size:11px;margin-top:5px">${userExp}/${userLevel*1000} EXP · ${nextLevelExp} EXP para nivel ${userLevel+1}</div></div>
+  <div class="stats-grid"><div class="stat-card"><div class="stat-icon">⏪</div><div class="stat-val">${lastScore}</div><div class="stat-lbl">Última sesión</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${avgScore}</div><div class="stat-lbl">Media global</div></div><div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">${monthAvg}</div><div class="stat-lbl">Media este mes</div></div></div>
+  <div class="theme-selector"><div class="theme-btn theme-dark ${document.body.className === 'dark' ? 'active' : ''}" onclick="toggleTheme('dark')">🌙 Oscuro</div><div class="theme-btn theme-light ${document.body.className === 'light' ? 'active' : ''}" onclick="toggleTheme('light')">☀️ Claro</div><div class="theme-btn theme-mint ${document.body.className === 'mint' ? 'active' : ''}" onclick="toggleTheme('mint')">🌿 Menta</div><div class="theme-btn theme-purple ${document.body.className === 'purple' ? 'active' : ''}" onclick="toggleTheme('purple')">🔮 Morado</div></div>
+  <div class="goal-meter"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3 días</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet ? '#16a34a' : '#d97706'}"></div></div><div class="goal-meter-header" style="margin-top:8px"><span>⏱ Tiempo esta semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev ? `<div style="margin-top:8px;text-align:center;font-size:12px">vs semana pasada ${comparison.diff > 0 ? `<span class="trend-up">▲ +${comparison.diff} pts</span>` : comparison.diff < 0 ? `<span class="trend-down">▼ ${comparison.diff} pts</span>` : `<span>= Sin cambios</span>`}</div>` : ''}</div>
+  <div class="weekly-progress"><div class="section-title">Progreso últimas 4 semanas</div><div class="week-chart">${weeklyProgress.map(w => `<div class="week-chart-bar"><div class="bar" style="height: ${(w.points / maxPoints) * 40}px; background: ${w.points > 0 ? '#2563eb' : '#e2e8f0'}"></div><div class="label" style="font-size:9px;margin-top:4px">${w.points > 0 ? w.points : '-'}</div></div>`).join("")}</div></div>
+  ${installBanner}<div class="section-title">Últimas sesiones</div>${sessions.slice(0, 3).map(renderSessionCard).join("") || `<div class="empty-state"><div class="big">🏋️</div><b>¡Empieza tu primer entreno!</b></div>`}`;
 }
 
 function renderHistory() {
@@ -559,7 +639,7 @@ function renderWeekly() {
   const weeks = {};
   sessions.forEach(s => { const key = weekStart(s.date); if (!weeks[key]) weeks[key] = []; weeks[key].push(s); });
   const weeksSorted = Object.entries(weeks).sort((a, b) => b[0].localeCompare(a[0]));
-  let html = "";
+  let html = `<div class="section-title">📅 Planificar días (toca un día en el calendario de inicio)</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"].map(day => `<button style="background:#f1f5f9;border:none;border-radius:10px;padding:8px 12px;font-size:12px" onclick="alert('Ve al calendario en la pestaña Inicio y toca cualquier día para planificarlo. Se marcará en color plata.')">📅 ${day}</button>`).join("")}</div><div class="section-title">Resumen por semana</div>`;
   weeksSorted.forEach(([monKey, weekSessions]) => {
     const totalScore = weekSessions.reduce((a, s) => a + sessionScore(s), 0);
     const totalTime = weekSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
@@ -574,9 +654,8 @@ function renderWeekly() {
     const sessRows = weekSessions.slice().sort((a, b) => a.date.localeCompare(b.date)).map(s => { const sc = roundPt(sessionScore(s)); const d = new Date(s.date + "T12:00:00"); return `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f1f5f9"><span>${DAYS_ES[d.getDay()].slice(0, 3)} ${d.getDate()}</span><span>${s.duration} min</span>${badgeHtml(sc, s.goal)}</div>`; }).join("");
     html += `<div class="week-block"><div class="week-head" onclick="toggleWeek('${monKey}')"><div><div style="font-weight:800;font-size:12px">${weekLabel}</div><div style="font-size:11px;color:#64748b">${weekSessions.length} sesión${weekSessions.length > 1 ? "es" : ""} · ${Math.round(totalScore)} pts</div></div><div style="display:flex;align-items:center;gap:8px">${badgeHtml(totalScore, totalGoal)}<span class="chevron${isOpen ? " open" : ""}">›</span></div></div>${isOpen ? `<div class="card-body" style="padding:13px 15px"><div class="week-stats-row"><div class="week-stat"><div class="week-stat-val">${weekSessions.length}</div><div class="week-stat-lbl">Sesiones</div></div><div class="week-stat"><div class="week-stat-val">${Math.round(totalScore)}</div><div class="week-stat-lbl">Pts total</div></div><div class="week-stat"><div class="week-stat-val">${avgScore}</div><div class="week-stat-lbl">Pts/sesión</div></div><div class="week-stat"><div class="week-stat-val">${totalTime}<span style="font-size:10px"> min</span></div><div class="week-stat-lbl">Tiempo</div></div></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div><div class="week-session-list" style="margin-top:13px">${sessRows}</div></div>` : ""}</div>`;
   });
-  return `<div class="section-title">Resumen por semana</div>${html}`;
+  return html;
 }
-function toggleWeek(key) { openWeeks[key] = !openWeeks[key]; render(); }
 
 function renderStats() {
   if (!sessions.length) return `<div class="empty-state"><div class="big">📊</div>Aún no hay datos.</div>`;
@@ -587,26 +666,37 @@ function renderStats() {
   const records = getPersonalRecords();
   const { groups, total: muscleTotal } = getMuscleGroupScores();
   const maxMuscle = Math.max(...Object.values(groups), 1);
+  const cardioStats = getCardioStats();
+  const effortHistory = getEffortHistory();
+  const sessionsByWeek = {};
+  sessions.forEach(s => { const week = weekStart(s.date); sessionsByWeek[week] = (sessionsByWeek[week] || 0) + 1; });
+  const weeklyAttendance = Object.entries(sessionsByWeek).slice(-12).map(([week, count]) => ({ week: week.slice(5), count }));
+  
+  setTimeout(() => {
+    const ctx1 = document.getElementById('pointsChart')?.getContext('2d');
+    const ctx2 = document.getElementById('effortChart')?.getContext('2d');
+    const ctx3 = document.getElementById('attendanceChart')?.getContext('2d');
+    const ctx4 = document.getElementById('durationChart')?.getContext('2d');
+    const lastSessions = [...sessions].sort((a,b)=>a.date.localeCompare(b.date)).slice(-15);
+    if (ctx1) { if (window.pointsChart) window.pointsChart.destroy(); window.pointsChart = new Chart(ctx1, { type: 'line', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Puntos', data: lastSessions.map(s=>sessionScore(s)), borderColor: '#2563eb', tension: 0.3 }, { label: 'Media', data: lastSessions.map(()=>getAverageScore()), borderColor: '#d97706', borderDash: [5] }] } }); }
+    if (ctx2 && lastSessions.some(s=>s.effort)) { if (window.effortChart) window.effortChart.destroy(); window.effortChart = new Chart(ctx2, { type: 'bar', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Esfuerzo (1-10)', data: lastSessions.map(s=>s.effort || 5), backgroundColor: '#d4af37' }] } }); }
+    if (ctx3) { if (window.attendanceChart) window.attendanceChart.destroy(); window.attendanceChart = new Chart(ctx3, { type: 'bar', data: { labels: weeklyAttendance.map(w=>w.week), datasets: [{ label: 'Sesiones por semana', data: weeklyAttendance.map(w=>w.count), backgroundColor: '#16a34a' }] } }); }
+    if (ctx4) { if (window.durationChart) window.durationChart.destroy(); window.durationChart = new Chart(ctx4, { type: 'line', data: { labels: lastSessions.map(s=>s.date.slice(5)), datasets: [{ label: 'Duración (min)', data: lastSessions.map(s=>s.duration || 45), borderColor: '#dc2626', tension: 0.3 }] } }); }
+  }, 50);
+  
   const muscleHtml = Object.entries(groups).map(([group, score]) => `<div class="muscle-group-card"><div class="muscle-header"><span>${group}</span><span>${Math.round(score)} pts (${muscleTotal > 0 ? Math.round((score / muscleTotal) * 100) : 0}%)</span></div><div class="muscle-bar"><div class="muscle-fill" style="width: ${muscleTotal > 0 ? (score / maxMuscle) * 100 : 0}%; background: ${group === "Cardio" ? "#16a34a" : "#2563eb"}"></div></div></div>`).join("");
   const recordsHtml = Object.entries(records).filter(([_, val]) => val > 0).map(([m, val]) => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9"><span style="font-weight:700">${m}</span><span style="font-family:monospace;color:#2563eb;font-weight:700">${val} pts</span></div>`).join("");
+  const effortHistoryHtml = effortHistory.length > 0 ? `<div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">📈 Progreso de esfuerzo (últimas 10 sesiones)</div>${effortHistory.map(e => { const effortColors = getEffortColor(e.effort); return `<div class="effort-history-item"><span class="effort-history-date">${e.date.slice(5)}</span><span class="effort-history-value" style="background:${effortColors.bg}; color:${effortColors.color}; padding:2px 8px; border-radius:20px">${e.effort}/10</span><span>${e.score} pts</span></div>`; }).join("")}</div>` : "";
   
-  const effortHistory = getEffortHistory();
-  const effortHistoryHtml = effortHistory.length > 0 ? `<div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">📈 Progreso de esfuerzo (últimas 10 sesiones)</div>${effortHistory.map(e => {
-    const effortColors = getEffortColor(e.effort);
-    return `<div class="effort-history-item"><span class="effort-history-date">${e.date.slice(5)}</span><span class="effort-history-value" style="background:${effortColors.bg}; color:${effortColors.color}; padding:2px 8px; border-radius:20px">${e.effort}/10</span><span>${e.score} pts</span></div>`;
-  }).join("")}</div>` : "";
-  
-  return `<div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 14px;">
-    <div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-val">${totalSessions}</div><div class="stat-lbl">Sesiones totales</div></div>
-    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val">${monthStats.sessionCount}</div><div class="stat-lbl">Sesiones este mes</div><div class="stat-sub">💰 ${monthStats.costPerSession}€/sesión</div></div>
-    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${Math.round(totalPoints)}</div><div class="stat-lbl">Puntos totales</div></div>
-    <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-val">${avgGlobal}</div><div class="stat-lbl">Media global</div></div>
-    <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">${Math.round(monthStats.avgPoints)}</div><div class="stat-lbl">Media este mes</div></div>
-    <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">${monthStats.totalMinutes}</div><div class="stat-lbl">Tiempo este mes (min)</div></div>
-  </div>
+  return `<div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 14px;"><div class="stat-card"><div class="stat-icon">🏋️</div><div class="stat-val">${totalSessions}</div><div class="stat-lbl">Sesiones totales</div></div><div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val">${monthStats.sessionCount}</div><div class="stat-lbl">Sesiones este mes</div><div class="stat-sub">💰 ${monthStats.costPerSession}€/sesión</div></div><div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val">${Math.round(totalPoints)}</div><div class="stat-lbl">Puntos totales</div></div><div class="stat-card"><div class="stat-icon">📊</div><div class="stat-val">${avgGlobal}</div><div class="stat-lbl">Media global</div></div><div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val">${Math.round(monthStats.avgPoints)}</div><div class="stat-lbl">Media este mes</div></div><div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">${monthStats.totalMinutes}</div><div class="stat-lbl">Tiempo este mes (min)</div></div></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">📈 Puntos por sesión vs Media</div><canvas id="pointsChart"></canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">💪 Evolución del Esfuerzo</div><canvas id="effortChart"></canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">📅 Asistencia por Semanas</div><canvas id="attendanceChart"></canvas></div>
+  <div class="card" style="padding:16px;margin-bottom:12px"><div class="section-title">⏱ Duración de Sesiones</div><canvas id="durationChart"></canvas></div>
   ${effortHistoryHtml}
   <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">🏆 Mejores marcas</div>${recordsHtml || "<div style='color:#64748b'>Aún no hay registros</div>"}</div>
   <div class="card" style="padding:16px;margin-bottom:11px"><div style="font-weight:800;margin-bottom:10px">💪 Distribución muscular</div>${muscleHtml}</div>
+  <div class="card" style="padding:16px;margin-bottom:11px"><div class="section-title">🏃 ESTADÍSTICAS DE CARDIO</div><div class="stats-grid"><div class="stat-card"><div class="stat-val">${cardioStats.totalKm.toFixed(1)}</div><div class="stat-lbl">Km totales</div></div><div class="stat-card"><div class="stat-val">${Math.round(cardioStats.totalMin)}</div><div class="stat-lbl">Min totales</div></div><div class="stat-card"><div class="stat-val">${cardioStats.avgKmh.toFixed(1)}</div><div class="stat-lbl">Velocidad media (km/h)</div></div></div></div>
   <button class="btn-import-export" onclick="exportData()">💾 Exportar copia</button>
   <button class="btn-import-export" onclick="triggerImport()">📂 Importar copia</button>`;
 }
@@ -617,13 +707,29 @@ function renderBody() {
   const lastWeight = sortedWeights.length ? sortedWeights[sortedWeights.length - 1].weight : null;
   const firstWeight = sortedWeights.length ? sortedWeights[0].weight : null;
   const variation = (lastWeight && firstWeight) ? (lastWeight - firstWeight).toFixed(1) : null;
-  const weightHistoryHtml = sortedWeights.slice(-12).map(w => {
-    return `<div class="weight-entry"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">${w.date.slice(5)}</span><span style="font-family:monospace;font-weight:700">${w.weight} kg</span></div><div class="weight-bar"><div class="weight-fill" style="width: ${Math.min(100, Math.max(5, ((w.weight - 40) / 60) * 100))}%">${((w.weight - 40) / 60) * 100 > 15 ? w.weight + " kg" : ""}</div></div></div>`;
-  }).join("");
-  return `<div class="weight-chart-container"><div class="section-title">⚖️ Registrar peso semanal</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><input type="number" step="0.1" id="new-weight" placeholder="Peso en kg" value="${lastWeight || ""}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><input type="date" id="weight-date" value="${todayStr}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><button onclick="addWeight(document.getElementById('new-weight').value, document.getElementById('weight-date').value)" style="background:#0f172a;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-weight:700">Guardar</button></div>${sortedWeights.length ? `<div style="margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800">${lastWeight}</div><div style="font-size:10px">kg actuales</div></div><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800;color:${variation > 0 ? '#dc2626' : variation < 0 ? '#16a34a' : '#64748b'}">${variation > 0 ? '+' : ''}${variation}</div><div style="font-size:10px">variación total</div></div></div><div class="section-title">📊 Historial de peso</div>${weightHistoryHtml}</div>` : '<div class="empty-state"><div class="big">⚖️</div><b>Aún no hay registros de peso</b></div>'}<div class="card" style="padding:16px;margin-top:12px"><div class="section-title">📌 Consejo</div><div style="font-size:12px;color:#64748b">Registra tu peso el mismo día cada semana (ej. lunes en ayunas) para ver tendencias reales.</div></div></div>`;
+  const weightHistoryHtml = sortedWeights.slice(-12).map(w => `<div class="weight-entry"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="font-weight:600">${w.date.slice(5)}</span><span style="font-family:monospace;font-weight:700">${w.weight} kg</span></div><div class="weight-bar"><div class="weight-fill" style="width: ${Math.min(100, Math.max(5, ((w.weight - 40) / 60) * 100))}%">${((w.weight - 40) / 60) * 100 > 15 ? w.weight + " kg" : ""}</div></div></div>`).join("");
+  
+  setTimeout(() => {
+    const ctx = document.getElementById('weightChart')?.getContext('2d');
+    if (ctx) { if (window.weightChart) window.weightChart.destroy(); if (weightEntries.length) window.weightChart = new Chart(ctx, { type: 'line', data: { labels: weightEntries.map(w=>w.date.slice(5)), datasets: [{ label: 'Peso (kg)', data: weightEntries.map(w=>w.weight), borderColor: '#16a34a', tension: 0.3, fill: true }] } }); }
+  }, 50);
+  
+  return `<div class="weight-chart-container"><div class="section-title">⚖️ Registrar peso semanal</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><input type="number" step="0.1" id="new-weight" placeholder="Peso en kg" value="${lastWeight || ""}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><input type="date" id="weight-date" value="${todayStr}" style="flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;font-size:16px"><button onclick="addWeight(document.getElementById('new-weight').value, document.getElementById('weight-date').value)" style="background:#0f172a;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-weight:700">Guardar</button></div>${sortedWeights.length ? `<div style="margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800">${lastWeight}</div><div style="font-size:10px">kg actuales</div></div><div class="stat-card" style="text-align:center"><div style="font-size:22px;font-weight:800;color:${variation > 0 ? '#dc2626' : variation < 0 ? '#16a34a' : '#64748b'}">${variation > 0 ? '+' : ''}${variation}</div><div style="font-size:10px">variación total</div></div></div><div class="section-title">📊 Historial de peso</div>${weightHistoryHtml}</div><canvas id="weightChart"></canvas>` : '<div class="empty-state"><div class="big">⚖️</div><b>Aún no hay registros de peso</b></div>'}<div class="card" style="padding:16px;margin-top:12px"><div class="section-title">📌 Consejo</div><div style="font-size:12px;color:#64748b">Registra tu peso el mismo día cada semana (ej. lunes en ayunas) para ver tendencias reales.</div></div></div>`;
 }
 
-// FORMULARIO
+function renderAchievements() {
+  const categories = { asistencia: [], racha: [], fuerza: [], volumen: [], niveles: [], maquinas: [], ocultos: [], epicos: [] };
+  for (const [id, ach] of Object.entries(ACHIEVEMENTS_DB)) { if (categories[ach.category]) categories[ach.category].push({ id, ...ach }); }
+  let html = `<div class="level-card"><div style="font-size:12px">NIVEL ${userLevel}</div><div class="level-number">${userLevel}</div><div class="prog-bar" style="background:rgba(0,0,0,0.2)"><div class="prog-fill" style="width:${(userExp/(userLevel*1000))*100}%;background:#0f172a"></div></div><div style="font-size:11px;margin-top:5px">${userExp}/${userLevel*1000} EXP</div></div>`;
+  for (const [catName, catAchs] of Object.entries(categories)) {
+    const unlockedCount = catAchs.filter(a => achievements[a.id]).length;
+    const isOpen = openCategories[catName];
+    html += `<div style="margin-bottom:10px"><div class="category-header" onclick="toggleCategory('${catName}')"><span>🏆 ${catName.toUpperCase()} (${unlockedCount}/${catAchs.length})</span><span class="chevron${isOpen ? " open" : ""}">›</span></div>${isOpen ? `<div class="category-content">${catAchs.map(a => `<div class="achievement-card ${achievements[a.id] ? 'achievement-unlocked' : 'achievement-locked'}"><div><strong>${a.name}</strong></div><div style="font-size:11px">${a.desc}</div>${achievements[a.id] ? `<div style="font-size:10px;color:#d4af37;margin-top:4px">✅ Desbloqueado</div>` : `<div style="font-size:10px;color:#64748b">🔒 Pendiente</div>`}</div>`).join("")}</div>` : ""}</div>`;
+  }
+  return html;
+}
+
+// Funciones de formulario (originales)
 let formSession = null;
 function renderForm() {
   formSession = editingSession;
@@ -631,161 +737,54 @@ function renderForm() {
   const avgScore = roundPt(getAverageScore());
   const maxScore = roundPt(getMaxScore());
   const effort = formSession.effort || 5;
-  const effortOptions = [1,2,3,4,5,6,7,8,9,10].map(v => {
-    let bgClass = "";
-    if (v <= 4) bgClass = "effort-low";
-    else if (v <= 7) bgClass = "effort-mid";
-    else bgClass = "effort-high";
-    const selectedStyle = v === effort ? `border-color: ${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'}; border-width: 2px;` : '';
-    return `<div class="effort-option ${bgClass}" data-value="${v}" onclick="setEffort(${v})" style="${selectedStyle}">${v}</div>`;
-  }).join("");
+  const effortOptions = [1,2,3,4,5,6,7,8,9,10].map(v => { let bgClass = v <= 4 ? "effort-low" : v <= 7 ? "effort-mid" : "effort-high"; const selectedStyle = v === effort ? `border-color: ${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'}; border-width: 2px;` : ''; return `<div class="effort-option ${bgClass}" data-value="${v}" onclick="setEffort(${v})" style="${selectedStyle}">${v}</div>`; }).join("");
   return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input date-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div><div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" placeholder="📝 Notas (opcional)...">${formSession.notes || ""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button><button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina nueva</button>`;
 }
-function setEffort(value) {
-  formSession.effort = value;
-  document.querySelectorAll('.effort-option').forEach(opt => {
-    const val = parseInt(opt.dataset.value);
-    if (val === value) {
-      opt.style.borderWidth = '2px';
-      if (val <= 4) opt.style.borderColor = '#dc2626';
-      else if (val <= 7) opt.style.borderColor = '#d97706';
-      else opt.style.borderColor = '#16a34a';
-    } else {
-      opt.style.borderWidth = '1.5px';
-      opt.style.borderColor = '#e2e8f0';
-    }
-  });
-  renderProgress();
-}
+function setEffort(value) { formSession.effort = value; document.querySelectorAll('.effort-option').forEach(opt => { const val = parseInt(opt.dataset.value); if (val === value) { if (val <= 4) opt.style.borderColor = '#dc2626'; else if (val <= 7) opt.style.borderColor = '#d97706'; else opt.style.borderColor = '#16a34a'; opt.style.borderWidth = '2px'; } else { opt.style.borderWidth = '1.5px'; opt.style.borderColor = '#e2e8f0'; } }); renderProgress(); }
 function bindForm() { renderExercises(); renderProgress(); const g = document.getElementById("f-goal"); if (g) g.addEventListener("input", () => renderProgress()); }
-function renderProgress() {
-  const goal = parseFloat(document.getElementById("f-goal")?.value) || 0;
-  const totalSessionScore = roundPt(sessionScore(formSession));
-  const pct = goal > 0 ? Math.min(100, (totalSessionScore / goal) * 100) : 0;
-  const remaining = Math.max(0, goal - totalSessionScore);
-  const c = scoreColor(totalSessionScore, goal);
-  const area = document.getElementById("prog-area");
-  if (area) {
-    area.innerHTML = `<div class="prog-wrap">
-      <div class="prog-labels">
-        <span>🏆 PUNTOS ACTUALES: ${totalSessionScore}</span>
-        <span>🎯 OBJETIVO: ${goal}</span>
-      </div>
-      <div class="prog-labels" style="margin-top: 4px;">
-        <span>Progreso: ${Math.round(pct)}%</span>
-        <span>${remaining > 0 ? `faltan ${roundPt(remaining)} pts` : "🎉 META ALCANZADA!"}</span>
-      </div>
-      <div class="prog-bar"><div class="prog-fill" style="width: ${pct}%; background: ${c}"></div></div>
-    </div>`;
-  }
-}
-function renderExercises() {
-  const area = document.getElementById("exercises-area");
-  if (!area) return;
-  area.innerHTML = formSession.exercises.map((ex, i) => renderExCard(ex, i)).join("");
-}
-function renderExCard(ex, i) {
-  const sc = roundPt(calcScore(ex.sets));
-  const lastRecord = getLastExerciseData(ex.machine);
-  const personalRecord = getPersonalRecords()[ex.machine];
-  let lastCardioDetails = "";
-  if (ex.machine === "Cardio") {
-    const cardioDetails = getLastCardioDetails();
-    const parts = [];
-    if (cardioDetails.min !== null) parts.push(`🏃 ${cardioDetails.min} min`);
-    if (cardioDetails.km !== null) parts.push(`🔄 ${cardioDetails.km} km`);
-    if (cardioDetails.kmh !== null) parts.push(`⚡ ${cardioDetails.kmh} km/h`);
-    if (parts.length) lastCardioDetails = `<div style="font-size:10px; margin-top:4px; color:#64748b">📊 Último cardio: ${parts.join(" · ")}</div>`;
-  }
-  const rows = ex.sets.map((s, j) => {
-    if (s.isCardio) {
-      return `<div class="set-row">
-        <span class="set-num">S${j + 1}</span>
-        <div class="set-input">
-          <input type="text" inputmode="decimal" placeholder="Ej: 5,5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;">
-        </div>
-        <div class="set-input-small">
-          <select onchange="updateSetCardio(${i},${j},'unit',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 8px; font-size:14px; background:#f1f5f9;">
-            ${["min", "km", "kmh"].map(u => `<option${s.unit === u ? " selected" : ""}>${u}</option>`).join("")}
-          </select>
-        </div>
-        <button class="btn-icon" onclick="removeSet(${i},${j})">✕</button>
-      </div>`;
-    }
-    return `<div class="set-row">
-      <span class="set-num">S${j + 1}</span>
-      <div class="set-input">
-        <input type="text" inputmode="decimal" placeholder="Peso kg (ej: 7,5)" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},'weight',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;">
-      </div>
-      <div class="set-input-small">
-        <input type="text" inputmode="numeric" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},'reps',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;">
-      </div>
-      <button class="btn-icon" onclick="removeSet(${i},${j})">✕</button>
-    </div>`;
+function renderProgress() { const goal = parseFloat(document.getElementById("f-goal")?.value) || 0; const totalSessionScore = roundPt(sessionScore(formSession)); const pct = goal > 0 ? Math.min(100, (totalSessionScore / goal) * 100) : 0; const remaining = Math.max(0, goal - totalSessionScore); const c = scoreColor(totalSessionScore, goal); const area = document.getElementById("prog-area"); if (area) { area.innerHTML = `<div class="prog-wrap"><div class="prog-labels"><span>🏆 PUNTOS ACTUALES: ${totalSessionScore}</span><span>🎯 OBJETIVO: ${goal}</span></div><div class="prog-labels" style="margin-top: 4px;"><span>Progreso: ${Math.round(pct)}%</span><span>${remaining > 0 ? `faltan ${roundPt(remaining)} pts` : "🎉 META ALCANZADA!"}</span></div><div class="prog-bar"><div class="prog-fill" style="width: ${pct}%; background: ${c}"></div></div></div>`; } }
+function renderExercises() { const area = document.getElementById("exercises-area"); if (!area) return; area.innerHTML = formSession.exercises.map((ex, i) => renderExCard(ex, i)).join(""); }
+function renderExCard(ex, i) { const sc = roundPt(calcScore(ex.sets)); const lastRecord = getLastExerciseData(ex.machine); const personalRecord = getPersonalRecords()[ex.machine]; let lastCardioDetails = ""; if (ex.machine === "Cardio") { const cardioDetails = getLastCardioDetails(); const parts = []; if (cardioDetails.min !== null) parts.push(`🏃 ${cardioDetails.min} min`); if (cardioDetails.km !== null) parts.push(`🔄 ${cardioDetails.km} km`); if (cardioDetails.kmh !== null) parts.push(`⚡ ${cardioDetails.kmh} km/h`); if (parts.length) lastCardioDetails = `<div style="font-size:10px; margin-top:4px; color:#64748b">📊 Último cardio: ${parts.join(" · ")}</div>`; }
+  const rows = ex.sets.map((s, j) => { if (s.isCardio) { return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Ej: 5,5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 8px; font-size:14px; background:#f1f5f9;">${["min", "km", "kmh"].map(u => `<option${s.unit === u ? " selected" : ""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`; }
+    return `<div class="set-row"><span class="set-num">S${j + 1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Peso kg (ej: 7,5)" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},'weight',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;"></div><div class="set-input-small"><input type="text" inputmode="numeric" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},'reps',this.value)" style="width:100%; border:1.5px solid #e2e8f0; border-radius:10px; padding:12px 10px; font-size:15px; background:#f1f5f9; font-family:'Space Mono',monospace;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
   }).join("");
-  return `<div class="ex-card">
-    <div class="ex-title">
-      <span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span>
-      <span style="font-size:12px;color:#64748b" class="ex-pts-${i}">${sc} pts</span>
-    </div>
-    ${rows}
-    <button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button>
-    <div class="machine-history">
-      <span>📊 Último registro: ${lastRecord}</span>
-      <span>🏆 Récord: ${personalRecord > 0 ? personalRecord + " pts" : "—"}</span>
-    </div>
-    ${lastCardioDetails}
-  </div>`;
+  return `<div class="ex-card"><div class="ex-title"><span>${ex.machine === "Cardio" ? "🏃" : "🏋️"} ${ex.machine}</span><span style="font-size:12px;color:#64748b" class="ex-pts-${i}">${sc} pts</span></div>${rows}<button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button><div class="machine-history"><span>📊 Último registro: ${lastRecord}</span><span>🏆 Récord: ${personalRecord > 0 ? personalRecord + " pts" : "—"}</span></div>${lastCardioDetails}</div>`;
 }
-function updateExerciseUI(exI) {
-  const ex = formSession.exercises[exI];
-  const exSc = roundPt(calcScore(ex.sets));
-  const ptsSpan = document.querySelector(`.ex-pts-${exI}`);
-  if (ptsSpan) ptsSpan.textContent = exSc + " pts";
-}
-function updateSetWeight(exI, setI, field, val) {
-  let cleanVal = val.replace(',', '.');
-  formSession.exercises[exI].sets[setI][field] = cleanVal;
-  updateExerciseUI(exI);
-  renderProgress();
-}
-function updateSetReps(exI, setI, field, val) {
-  formSession.exercises[exI].sets[setI][field] = val;
-  updateExerciseUI(exI);
-  renderProgress();
-}
-function updateSetCardio(exI, setI, field, val) {
-  if (field === 'value') {
-    let cleanVal = val.replace(',', '.');
-    formSession.exercises[exI].sets[setI][field] = cleanVal;
-  } else {
-    formSession.exercises[exI].sets[setI][field] = val;
-  }
-  updateExerciseUI(exI);
-  renderProgress();
-}
-function addSet(exI) {
-  const isCardio = formSession.exercises[exI].machine === "Cardio";
-  formSession.exercises[exI].sets.push(isCardio ? { isCardio: true, value: "", unit: "min" } : { isCardio: false, weight: "", reps: "" });
-  renderExercises(); renderProgress();
-}
+function updateExerciseUI(exI) { const ex = formSession.exercises[exI]; const exSc = roundPt(calcScore(ex.sets)); const ptsSpan = document.querySelector(`.ex-pts-${exI}`); if (ptsSpan) ptsSpan.textContent = exSc + " pts"; }
+function updateSetWeight(exI, setI, field, val) { let cleanVal = val.replace(',', '.'); formSession.exercises[exI].sets[setI][field] = cleanVal; updateExerciseUI(exI); renderProgress(); }
+function updateSetReps(exI, setI, field, val) { formSession.exercises[exI].sets[setI][field] = val; updateExerciseUI(exI); renderProgress(); }
+function updateSetCardio(exI, setI, field, val) { if (field === 'value') { let cleanVal = val.replace(',', '.'); formSession.exercises[exI].sets[setI][field] = cleanVal; } else { formSession.exercises[exI].sets[setI][field] = val; } updateExerciseUI(exI); renderProgress(); }
+function addSet(exI) { const isCardio = formSession.exercises[exI].machine === "Cardio"; formSession.exercises[exI].sets.push(isCardio ? { isCardio: true, value: "", unit: "min" } : { isCardio: false, weight: "", reps: "" }); renderExercises(); renderProgress(); }
 function removeSet(exI, setI) { if (formSession.exercises[exI].sets.length === 1) return; formSession.exercises[exI].sets.splice(setI, 1); renderExercises(); renderProgress(); }
-function saveForm() {
-  formSession.date = document.getElementById("f-date").value;
-  formSession.duration = document.getElementById("f-dur").value;
-  formSession.goal = parseFloat(document.getElementById("f-goal").value) || 300;
-  formSession.notes = document.getElementById("f-notes").value;
-  const idx = sessions.findIndex(s => s.id === formSession.id);
-  if (idx >= 0) sessions[idx] = formSession;
-  else sessions.unshift(formSession);
-  sessions.sort((a, b) => b.date.localeCompare(a.date));
-  save();
-  editingSession = null; formSession = null;
-  showView("history");
-}
-function cancelForm() { editingSession = null; formSession = null; showView("home"); }
-function installApp() { if (deferredInstall) { deferredInstall.prompt(); deferredInstall.userChoice.then(() => { deferredInstall = null; render(); }); } }
+function saveForm() { formSession.date = document.getElementById("f-date").value; formSession.duration = document.getElementById("f-dur").value; formSession.goal = parseFloat(document.getElementById("f-goal").value) || 300; formSession.notes = document.getElementById("f-notes").value; const idx = sessions.findIndex(s => s.id === formSession.id); if (idx >= 0) sessions[idx] = formSession; else sessions.unshift(formSession); sessions.sort((a, b) => b.date.localeCompare(a.date)); saveAll(); addExp(sessionScore(formSession)); checkAchievements(); editingSession = null; formSession = null; showView("history"); }
 
+// Funciones adicionales (export/import, peso, máquinas)
+function addWeight(weight, date) { let weightNum = parseFloat(fixDecimal(weight)); if (isNaN(weightNum) || weightNum < 20 || weightNum > 300) { showToast("Peso válido: 20-300 kg", true); return; } if (!date) { showToast("Selecciona fecha", true); return; } const existingIndex = weightEntries.findIndex(w => w.date === date); if (existingIndex >= 0) { if (confirm(`¿Sobrescribir ${date} (${weightEntries[existingIndex].weight} kg → ${weightNum} kg)?`)) weightEntries[existingIndex].weight = weightNum; else return; } else weightEntries.push({ date, weight: weightNum }); weightEntries.sort((a, b) => a.date.localeCompare(b.date)); saveAll(); render(); showToast(`Peso registrado: ${weightNum} kg ✅`); }
+function addNewMachine() { const machineName = prompt("Nombre de la nueva máquina:"); if (machineName && machineName.trim()) { const newMachine = machineName.trim(); if (!MACHINES_BASE.includes(newMachine) && newMachine !== "Cardio") { MACHINES_BASE.push(newMachine); updateMachinesWithCardioLast(); saveMachines(); if (editingSession && !editingSession.exercises.find(e => e.machine === newMachine)) { editingSession.exercises.push({ machine: newMachine, sets: [{ isCardio: false, weight: "", reps: "" }] }); } render(); showToast(`Máquina "${newMachine}" añadida ✅`); } else { showToast("Esa máquina ya existe", true); } } }
+function exportData() { if (!sessions.length && !weightEntries.length) { showToast("No hay datos", true); return; } const backup = { sessions, weightEntries, plannedDays, achievements, MACHINES: MACHINES_BASE, level: userLevel, exp: userExp, exportDate: new Date().toISOString() }; const a = document.createElement("a"); a.download = `gym_backup_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.json`; a.href = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" })); a.click(); URL.revokeObjectURL(a.href); showToast(`Exportadas ${sessions.length} sesiones ✅`); }
+function triggerImport() { document.getElementById("import-file").click(); }
+function handleImport(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const imported = JSON.parse(e.target.result); let importedSessions = imported.sessions || (Array.isArray(imported) ? imported : []); let importedWeight = imported.weightEntries || []; let importedPlanned = imported.plannedDays || []; let importedAchievements = imported.achievements || {}; let importedMachines = imported.MACHINES || MACHINES_BASE; let importedLevel = imported.level || 1; let importedExp = imported.exp || 0; if (confirm(`¿Importar ${importedSessions.length} sesiones?`)) { sessions = importedSessions; weightEntries = importedWeight; plannedDays = importedPlanned; achievements = importedAchievements; MACHINES_BASE = importedMachines; userLevel = importedLevel; userExp = importedExp; updateMachinesWithCardioLast(); saveAll(); checkAchievements(); render(); showToast(`Importadas ${importedSessions.length} sesiones ✅`); } } catch (err) { showToast("Archivo inválido", true); } }; reader.readAsText(file); event.target.value = ""; }
+function installApp() { if (deferredInstall) { deferredInstall.prompt(); deferredInstall.userChoice.then(() => { deferredInstall = null; render(); }); } }
+function checkFridayReminder() { const today = new Date(); const isFriday = today.getDay() === 5; const lastReminder = localStorage.getItem("last_export_reminder"); const todayStr = today.toISOString().slice(0, 10); if (isFriday && lastReminder !== todayStr && sessions.length > 0) { setTimeout(() => { if (confirm("📅 ¡Viernes de respaldo! ¿Exportar copia?")) exportData(); localStorage.setItem("last_export_reminder", todayStr); }, 500); } }
+function initCharts() { renderStats(); renderBody(); }
+function render() { updateHeader(); const c = document.getElementById("content"); if (currentView === "home") c.innerHTML = renderHome(); else if (currentView === "history") c.innerHTML = renderHistory(); else if (currentView === "weekly") c.innerHTML = renderWeekly(); else if (currentView === "stats") c.innerHTML = renderStats(); else if (currentView === "body") c.innerHTML = renderBody(); else if (currentView === "achievements") c.innerHTML = renderAchievements(); else if (currentView === "form") c.innerHTML = renderForm(); }
+
+// Inicialización
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredInstall = e; });
+MACHINES = loadMachines();
+sessions = loadSessions();
+weightEntries = loadWeight();
+plannedDays = loadPlannedDays();
+achievements = loadAchievements();
+const expData = loadExp();
+userLevel = expData.level;
+userExp = expData.exp;
+const now = new Date();
+calYear = now.getFullYear();
+calMonth = now.getMonth();
+document.body.className = loadTheme();
+saveAll();
+checkAchievements();
 render();
 checkFridayReminder();
 </script>
