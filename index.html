@@ -1226,6 +1226,62 @@ function renderRecoveryCard() {
   </div>`;
 }
 
+// ==================== MEDIA GLOBAL POR MÁQUINA ====================
+function getMachineAverageStats(machineName) {
+  let totalSets = 0;
+  let totalReps = 0;
+  let totalWeight = 0;
+  let sessionCount = 0;
+  
+  sessions.forEach(sess => {
+    const ex = sess.exercises.find(e => e.machine === machineName);
+    if(!ex) return;
+    
+    const validSets = ex.sets.filter(s => !s.isCardio && (parseFloat(s.weight)||0) > 0 && (parseFloat(s.reps)||0) > 0);
+    if(validSets.length === 0) return;
+    
+    sessionCount++;
+    totalSets += validSets.length;
+    
+    validSets.forEach(set => {
+      const reps = parseFloat(set.reps) || 0;
+      const weight = parseFloat(set.weight) || 0;
+      totalReps += reps;
+      totalWeight += weight;
+    });
+  });
+  
+  if(sessionCount === 0) return null;
+  
+  const avgSets = Math.round((totalSets / sessionCount) * 10) / 10;
+  const avgReps = Math.round(totalReps / totalSets);
+  const avgWeight = Math.round((totalWeight / totalSets) * 10) / 10;
+  
+  return { avgSets, avgReps, avgWeight, sessionCount };
+}
+
+// ==================== TOTALES DE SESIÓN ====================
+function getSessionTotals(session) {
+  let totalSets = 0;
+  let totalReps = 0;
+  let totalVolumeKg = 0;
+  
+  session.exercises.forEach(ex => {
+    ex.sets.forEach(set => {
+      if(set.isCardio) return;
+      const weight = parseFloat(set.weight) || 0;
+      const reps = parseFloat(set.reps) || 0;
+      if(weight > 0 && reps > 0) {
+        totalSets++;
+        totalReps += reps;
+        totalVolumeKg += weight * reps;
+      }
+    });
+  });
+  
+  return { totalSets, totalReps, totalVolumeKg: Math.round(totalVolumeKg) };
+}
+
 // ==================== VOLUMEN SEMANAL ====================
 function getWeeklyVolumeByMuscle() {
   const currentWeek = weekStart(new Date().toISOString().slice(0,10));
@@ -1533,14 +1589,16 @@ function getCardioStats(){
   return{totalKm:tk,totalMin:tm,totalKmh:tkmh,avgKmh:countKmh?tkmh/countKmh:0};
 }
 
+// Rentabilidad del gimnasio - comenzando desde FEBRERO 2026
 const GYM_PRICE = 26.99;
-const GYM_START_MONTH = 0;
+const GYM_START_MONTH = 1; // Enero=0, Febrero=1
 const GYM_START_YEAR = 2026;
 
 function getGymCostStats(){
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
+  // Calcular meses completos desde febrero 2026 hasta hoy (incluido el mes actual)
   const monthsElapsed = (currentYear - GYM_START_YEAR) * 12 + (currentMonth - GYM_START_MONTH) + 1;
   const totalPaid = roundPt(monthsElapsed * GYM_PRICE);
   const totalSessions = sessions.length;
@@ -1552,7 +1610,7 @@ function renderGymCostCard(){
   const { monthsElapsed, totalPaid, totalSessions, costPerSession } = getGymCostStats();
   if(totalSessions === 0){
     return `<div class="gym-cost-card">
-      <div class="gym-cost-title">💰 Rentabilidad del gimnasio</div>
+      <div class="gym-cost-title">💰 Rentabilidad del gimnasio (desde Feb 2026)</div>
       <div style="text-align:center;padding:12px;font-size:13px;font-weight:600;opacity:0.7">Añade sesiones para ver el coste por visita</div>
     </div>`;
   }
@@ -1566,7 +1624,7 @@ function renderGymCostCard(){
     else motivatorMsg = "⚠️ ¡El gimnasio te sale caro! Cada sesión extra lo abarata mucho.";
   }
   return `<div class="gym-cost-card">
-    <div class="gym-cost-title">💰 Rentabilidad del gimnasio</div>
+    <div class="gym-cost-title">💰 Rentabilidad del gimnasio <span style="font-size:9px">(desde Feb 2026)</span></div>
     <div class="gym-cost-grid">
       <div class="gym-cost-stat">
         <div class="gym-cost-val">${totalPaid.toFixed(2)}€</div>
@@ -2019,6 +2077,8 @@ async function shareSessionAsImage(sessionId){
   if(!session) return;
 
   showToast("Generando imagen...");
+  
+  const totals = getSessionTotals(session);
 
   const d = new Date(session.date + "T12:00:00");
   const dateLabel = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
@@ -2104,6 +2164,11 @@ async function shareSessionAsImage(sessionId){
       </div>
       ${effortHtml}
     </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;background:rgba(255,255,255,0.05);border-radius:12px;padding:10px;">
+      <div style="text-align:center"><div style="font-size:18px;font-weight:900">${totals.totalSets}</div><div style="font-size:9px;opacity:0.7">Series</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:900">${totals.totalReps}</div><div style="font-size:9px;opacity:0.7">Repeticiones</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:900">${totals.totalVolumeKg}</div><div style="font-size:9px;opacity:0.7">kg totales</div></div>
+    </div>
     ${goal > 0 ? `
     <div class="svc-goal-bar-wrap">
       <div class="svc-goal-bar-labels">
@@ -2166,12 +2231,20 @@ function renderSessionCard(s){
   const d=new Date(s.date+"T12:00:00"); const dateLabel=`${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}`;
   const effort=s.effort||null; let effortHtml="";
   if(effort){ const ec=getEffortColor(effort); effortHtml=`<div class="effort-badge" style="background:${ec.bg};color:${ec.color}">💪 Esfuerzo: ${effort}/10</div>`; }
+  
+  const totals = getSessionTotals(s);
+  
   const exercisesHtml=s.exercises.map(ex=>{ const exSc=roundPt(calcScore(ex.sets)); const chips=ex.sets.map(st=>st.isCardio?`<span class="set-chip">${fixDecimal(st.value)||0} ${st.unit}</span>`:`<span class="set-chip">${fixDecimal(st.weight)||0}kg × ${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:800;font-size:12px;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("");
   const notesHtml=s.notes?`<div style="margin-top:9px;padding:9px;border-radius:11px;font-size:12px;background:#fffbeb;color:#92400e">📝 ${s.notes}</div>`:"";
   
   return `<div class="card" style="padding:12px;margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div><div style="font-weight:800;font-size:15px">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px;font-weight:600">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc,s.goal)}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;background:#f8fafc;border-radius:10px;padding:8px;">
+      <div style="text-align:center"><div style="font-weight:900;font-size:14px">${totals.totalSets}</div><div style="font-size:9px;color:#64748b">Series</div></div>
+      <div style="text-align:center"><div style="font-weight:900;font-size:14px">${totals.totalReps}</div><div style="font-size:9px;color:#64748b">Repeticiones</div></div>
+      <div style="text-align:center"><div style="font-weight:900;font-size:14px">${totals.totalVolumeKg}</div><div style="font-size:9px;color:#64748b">kg totales</div></div>
     </div>
     <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>
     ${exercisesHtml}
@@ -2489,13 +2562,14 @@ function renderSettings(){
 
   const machinesHtml=allMachines.map((m)=>{
     const pr=getPRForMachine(m.name);
-    const lastData=getLastExerciseData(m.name);
+    const avgStats = getMachineAverageStats(m.name);
+    const avgText = avgStats ? `📊 Media: ${avgStats.avgSets} series de ${avgStats.avgReps} reps con ${avgStats.avgWeight} kg` : "📊 Sin datos suficientes";
     const tags=[m.muscleMain,m.muscleSecondary].filter(Boolean).map(t=>`<span class="tag">${t}</span>`).join("");
     return `<div class="machine-item" onclick="openMachineModal('${m.name.replace(/'/g,"\\'")}')">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div><span style="font-weight:800">${m.favorite?'⭐ ':''} ${m.name}</span> ${tags} ${pr?`<span class="pr-badge">🏆 ${pr.weight}kg×${pr.reps}</span>`:""}</div>
       </div>
-      <div style="font-size:12px;font-weight:600;margin-top:3px;opacity:0.7">Último: ${lastData}${m.usualReps?` · Hab: ${m.usualReps} reps`:""}</div>
+      <div style="font-size:12px;font-weight:600;margin-top:3px;opacity:0.7">${avgText}</div>
       ${m.notes?`<div style="font-size:11px;margin-top:3px;color:#2563eb;font-weight:600">📝 ${m.notes}</div>`:""}
     </div>`;
   }).join("");
@@ -2564,8 +2638,12 @@ function openMachineModal(name){
     }
   }
 
+  const avgStats = name ? getMachineAverageStats(name) : null;
+  const avgInfo = avgStats ? `<div class="modal-row" style="background:#f1f5f9;border-radius:12px;padding:10px;margin-bottom:12px"><span style="font-weight:800">📊 Media histórica:</span> ${avgStats.avgSets} series · ${avgStats.avgReps} reps · ${avgStats.avgWeight} kg (${avgStats.sessionCount} sesiones)</div>` : "";
+
   const html=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet">
     <div class="modal-title">${name?"Editar: "+name:"Nueva máquina"}<button class="modal-close" onclick="closeModal()">×</button></div>
+    ${avgInfo}
     ${historyHtml}
     <div class="modal-row"><label class="modal-label">Nombre</label><input id="m-name" class="modal-input" value="${existing.name}" placeholder="Ej: Chest Press"></div>
     <div class="modal-row"><label class="modal-label">Grupo muscular principal</label><div class="muscle-chips" id="chips-primary">${chipsHtml(existing.muscleMain,'primary')}</div></div>
@@ -2817,7 +2895,9 @@ function renderExercises(){ const area=document.getElementById("exercises-area")
 
 function renderExCard(ex,i){
   const sc=roundPt(calcScore(ex.sets));
-  const lastRecord=getLastExerciseData(ex.machine);
+  const avgStats = getMachineAverageStats(ex.machine);
+  const avgText = avgStats ? `📊 Media: ${avgStats.avgSets} series de ${avgStats.avgReps} reps con ${avgStats.avgWeight} kg` : "📊 Sin datos suficientes";
+  
   let prText="—";
   if(ex.machine === "Cardio"){
     prText = getPRCardioKm();
@@ -2858,13 +2938,13 @@ function renderExCard(ex,i){
       <div class="ex-title">${ex.machine==="Cardio"?"🏃":"🏋️"} ${ex.machine}</div>
       <div class="ex-pts" id="ex-pts-${i}">${sc} pts</div>
     </div>
+    <div class="machine-history" style="margin-bottom:8px;background:#f1f5f9;border-radius:10px;padding:8px;font-size:11px">${avgText}</div>
     ${progressionHtml}
     ${routineHintHtml}
     ${rows}
     <button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button>
     ${noteText?`<div class="machine-history" style="font-size:11px">${noteText}</div>`:""}
     <div class="machine-history">
-      <span>📊 Último: ${lastRecord}</span>
       <span>🏆 PR: ${prText}</span>
     </div>
   </div>`;
