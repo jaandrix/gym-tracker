@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mis Entrenos">
+<meta name="apple-mobile-web-app-title" content="Train-tracker">
 <meta name="theme-color" content="#0f172a">
-<title>Mis Entrenos 💪</title>
+<title>Train-tracker 💪</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style id="theme-style">
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { background: #f0f2f7; font-family: 'Nunito', system-ui, sans-serif; color: #0f172a; overflow: hidden; height: 100dvh; transition: background 0.2s, color 0.2s; }
@@ -226,6 +227,46 @@
   }
   body.dark .btn-use-suggestion { background: #e2e8f0; color: #0f172a; }
 
+  /* ===== BOTÓN COMPARTIR ===== */
+  .btn-share-card {
+    background: #dcfce7; border: none; border-radius: 10px;
+    padding: 10px; font-weight: 700; cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    color: #15803d;
+  }
+  body.dark .btn-share-card { background: #14532d; color: #86efac; }
+
+  /* ===== CRONÓMETRO ===== */
+  .chrono-box {
+    background: #f1f5f9; border-radius: 16px; padding: 12px;
+    margin-bottom: 14px; display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  body.dark .chrono-box { background: #252540; }
+  .chrono-display {
+    font-size: 28px; font-weight: 900; font-family: monospace;
+    letter-spacing: 2px; background: #0f172a; color: #fff;
+    padding: 6px 16px; border-radius: 40px; display: inline-block;
+  }
+  body.dark .chrono-display { background: #0a0a0f; color: #e2e8f0; }
+  .chrono-buttons { display: flex; gap: 10px; }
+  .chrono-btn {
+    background: #0f172a; color: #fff; border: none;
+    border-radius: 40px; padding: 8px 18px; font-weight: 700;
+    cursor: pointer; font-family: 'Nunito', sans-serif;
+  }
+  body.dark .chrono-btn { background: #e2e8f0; color: #0f172a; }
+  .chrono-btn.reset { background: #dc2626; color: #fff; }
+  body.dark .chrono-btn.reset { background: #dc2626; color: #fff; }
+
+  /* FECHA INPUT ARREGLADO */
+  .form-input[type="date"] {
+    min-height: 44px;
+    padding: 11px;
+    font-size: 15px;
+    background: inherit;
+  }
+
   /* TEMAS */
   body.dark { background: #0a0a0f; color: #e2e8f0; }
   body.dark #app { background: #0a0a0f; }
@@ -391,7 +432,7 @@
 </head>
 <body>
 <div id="app">
-  <div id="header"><div><h1>💪 Mis Entrenos</h1><p id="header-sub">Cargando...</p></div><button id="btn-new" onclick="showNew()">+ Nuevo</button></div>
+  <div id="header"><div><h1>💪 Train-tracker</h1><p id="header-sub">Cargando...</p></div><button id="btn-new" onclick="showNew()">+ Nuevo</button></div>
   <div id="content"></div>
   <nav id="nav">
     <button class="active" onclick="showView('home')" id="nav-home"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
@@ -416,9 +457,14 @@ let calYear, calMonth, openWeeks = {};
 let activeRoutineId = null;
 let chartModes = { points:'total', effort:'total', attendance:'total', duration:'total' };
 
+// Estado del cronómetro (persistente)
+let chronoSeconds = 0;
+let chronoActive = false;
+let chronoInterval = null;
+
 // AI Suggester state
-let aiMusclePriorities = {}; // { "Pecho": "high"|"med"|"low"|"none" }
-let aiGoalMode = "beat"; // "maintain" | "beat" | "max"
+let aiMusclePriorities = {};
+let aiGoalMode = "beat";
 let aiSuggestion = null;
  
 const MUSCLE_CATS = ["Pecho","Espalda","Hombro","Brazos","Piernas","Cardio","Core","Otro"];
@@ -456,6 +502,24 @@ function scoreColor(score,goal){ const p=goal>0?score/goal:0; return p>=1?"#16a3
 function badgeHtml(score,goal){ const c=scoreColor(score,goal); return `<span class="badge" style="background:${c}18;color:${c}">${roundPt(score)} pts</span>`; }
 function getEffortColor(level){ if(level<=4) return{bg:"#fee2e2",color:"#dc2626"}; if(level<=7) return{bg:"#fef3c7",color:"#d97706"}; return{bg:"#dcfce7",color:"#16a34a"}; }
 function weekStart(dateStr){ const d=new Date(dateStr+"T12:00:00"); const day=d.getDay(); const diff=(day===0)?-6:1-day; d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10); }
+ 
+// PR de CARDIO = récord de distancia (km)
+function getPRCardioKm(){
+  let maxKm = 0;
+  sessions.forEach(s=>{
+    s.exercises.forEach(ex=>{
+      if(ex.machine==="Cardio"){
+        ex.sets.forEach(set=>{
+          if(set.isCardio && set.unit==="km"){
+            const km = parseFloat(fixDecimal(set.value)) || 0;
+            if(km > maxKm) maxKm = km;
+          }
+        });
+      }
+    });
+  });
+  return maxKm > 0 ? `${maxKm} km` : "—";
+}
  
 // ==================== RACHA DE SEMANAS ====================
 function getWeekStreak(){
@@ -520,6 +584,11 @@ function getMachineHistory(machineName){
  
 // ==================== PR DESDE HISTORIAL ====================
 function getPRForMachine(machine){
+  if(machine === "Cardio"){
+    const km = getPRCardioKm();
+    if(km !== "—") return { weight: parseFloat(km), reps: 1, score: parseFloat(km)*5 };
+    return null;
+  }
   let bestWeight=0, bestReps=0, bestScore=0;
   sessions.forEach(sess=>{
     const ex=sess.exercises.find(e=>e.machine===machine);
@@ -544,7 +613,7 @@ function getMuscleGroupScores(){ const groups={Espalda:0,Brazos:0,Hombro:0,Pecho
 function getLastExerciseData(machine){ const sorted=[...sessions].sort((a,b)=>b.date.localeCompare(a.date)); for(const sess of sorted){ const ex=sess.exercises.find(e=>e.machine===machine); if(ex&&ex.sets.length){ const ls=ex.sets[ex.sets.length-1]; if(ls.isCardio) return `${fixDecimal(ls.value)||0} ${ls.unit}`; return `${fixDecimal(ls.weight)||0}kg × ${fixDecimal(ls.reps)||0}`; } } return "—"; }
 function getCurrentWeekStats(){ const cm=weekStart(new Date().toISOString().slice(0,10)); const ws=sessions.filter(s=>weekStart(s.date)===cm); return{daysTrained:new Set(ws.map(s=>s.date)).size,totalMinutes:ws.reduce((a,s)=>a+(parseFloat(s.duration)||0),0)}; }
 
-// ==================== CARDIO (BUG FIX) ====================
+// ==================== CARDIO STATS ====================
 function getCardioStats(){
   let tk=0, tm=0, tkmh=0, countKmh=0;
   sessions.forEach(s=>{
@@ -619,80 +688,35 @@ function renderMonthCompare(){
   const prevMax = prevCount ? roundPt(Math.max(...prevSess.map(sessionScore))) : 0;
   const globalMax = roundPt(getMaxScore());
 
-  // Peso: último de este mes vs último del mes pasado
   const thisMonthWeights = weightEntries.filter(w=>{ const d=new Date(w.date); return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth(); }).sort((a,b)=>a.date.localeCompare(b.date));
   const prevMonthWeights = weightEntries.filter(w=>{ const d=new Date(w.date); let y=now.getFullYear(),m=now.getMonth()-1; if(m<0){m=11;y--;} return d.getFullYear()===y&&d.getMonth()===m; }).sort((a,b)=>a.date.localeCompare(b.date));
   const thisWeight = thisMonthWeights.length ? thisMonthWeights[thisMonthWeights.length-1].weight : null;
   const prevWeight = prevMonthWeights.length ? prevMonthWeights[prevMonthWeights.length-1].weight : null;
 
-  // Esfuerzo medio
   const thisEffortSess = thisSess.filter(s=>s.effort);
   const prevEffortSess = prevSess.filter(s=>s.effort);
   const thisEffort = thisEffortSess.length ? roundPt(thisEffortSess.reduce((a,s)=>a+s.effort,0)/thisEffortSess.length) : null;
   const prevEffort = prevEffortSess.length ? roundPt(prevEffortSess.reduce((a,s)=>a+s.effort,0)/prevEffortSess.length) : null;
 
-  // Duración media
   const thisDurSess = thisSess.filter(s=>s.duration);
   const prevDurSess = prevSess.filter(s=>s.duration);
   const thisDur = thisDurSess.length ? Math.round(thisDurSess.reduce((a,s)=>a+(parseFloat(s.duration)||0),0)/thisDurSess.length) : 0;
   const prevDur = prevDurSess.length ? Math.round(prevDurSess.reduce((a,s)=>a+(parseFloat(s.duration)||0),0)/prevDurSess.length) : 0;
 
-  // Cardio
   const thisCardio = getMonthCardioStats(thisSess);
   const prevCardio = getMonthCardioStats(prevSess);
 
   const fmt = (v, unit="", fallback="—") => v===null||v===undefined||v===0 ? fallback : v+unit;
 
   const rows = [
-    {
-      icon:"📊", label:"Puntos totales",
-      thisVal: fmt(thisTotal," pts","0 pts"), prevVal: prevTotal ? prevTotal+" pts" : "—",
-      delta: getDeltaHtml(thisTotal, prevTotal, " pts")
-    },
-    {
-      icon:"📈", label:"Media puntos/sesión",
-      thisVal: fmt(thisAvg," pts","0 pts"),
-      prevVal: prevAvg ? prevAvg+" pts" : "—",
-      delta: getDeltaHtml(thisAvg, prevAvg, " pts"),
-      extra: `<div style="font-size:10px;color:#64748b;margin-top:1px">Media global: ${globalAvg} pts</div>`
-    },
-    {
-      icon:"🏆", label:"Récord del mes",
-      thisVal: fmt(thisMax," pts","—"),
-      prevVal: prevMax ? prevMax+" pts" : "—",
-      delta: getDeltaHtml(thisMax, prevMax, " pts"),
-      extra: `<div style="font-size:10px;color:#64748b;margin-top:1px">Récord global: ${globalMax} pts</div>`
-    },
-    {
-      icon:"⚖️", label:"Peso (último registro)",
-      thisVal: thisWeight ? thisWeight+" kg" : "—",
-      prevVal: prevWeight ? prevWeight+" kg" : "—",
-      delta: thisWeight&&prevWeight ? getDeltaHtml(thisWeight, prevWeight, " kg", true) : `<span class="mc-delta neutral">—</span>`
-    },
-    {
-      icon:"💪", label:"Esfuerzo medio",
-      thisVal: thisEffort ? thisEffort+"/10" : "—",
-      prevVal: prevEffort ? prevEffort+"/10" : "—",
-      delta: thisEffort&&prevEffort ? getDeltaHtml(thisEffort, prevEffort) : `<span class="mc-delta neutral">—</span>`
-    },
-    {
-      icon:"⏱", label:"Duración media",
-      thisVal: thisDur ? thisDur+" min" : "—",
-      prevVal: prevDur ? prevDur+" min" : "—",
-      delta: thisDur&&prevDur ? getDeltaHtml(thisDur, prevDur, " min") : `<span class="mc-delta neutral">—</span>`
-    },
-    {
-      icon:"🏃", label:"Cardio — km totales",
-      thisVal: thisCardio.totalKm ? thisCardio.totalKm+" km" : "—",
-      prevVal: prevCardio.totalKm ? prevCardio.totalKm+" km" : "—",
-      delta: thisCardio.totalKm&&prevCardio.totalKm ? getDeltaHtml(thisCardio.totalKm, prevCardio.totalKm, " km") : `<span class="mc-delta neutral">—</span>`
-    },
-    {
-      icon:"⚡", label:"Cardio — vel. media",
-      thisVal: thisCardio.avgKmh ? thisCardio.avgKmh+" km/h" : "—",
-      prevVal: prevCardio.avgKmh ? prevCardio.avgKmh+" km/h" : "—",
-      delta: thisCardio.avgKmh&&prevCardio.avgKmh ? getDeltaHtml(thisCardio.avgKmh, prevCardio.avgKmh, " km/h") : `<span class="mc-delta neutral">—</span>`
-    }
+    { icon:"📊", label:"Puntos totales", thisVal: fmt(thisTotal," pts","0 pts"), prevVal: prevTotal ? prevTotal+" pts" : "—", delta: getDeltaHtml(thisTotal, prevTotal, " pts") },
+    { icon:"📈", label:"Media puntos/sesión", thisVal: fmt(thisAvg," pts","0 pts"), prevVal: prevAvg ? prevAvg+" pts" : "—", delta: getDeltaHtml(thisAvg, prevAvg, " pts"), extra: `<div style="font-size:10px;color:#64748b;margin-top:1px">Media global: ${globalAvg} pts</div>` },
+    { icon:"🏆", label:"Récord del mes", thisVal: fmt(thisMax," pts","—"), prevVal: prevMax ? prevMax+" pts" : "—", delta: getDeltaHtml(thisMax, prevMax, " pts"), extra: `<div style="font-size:10px;color:#64748b;margin-top:1px">Récord global: ${globalMax} pts</div>` },
+    { icon:"⚖️", label:"Peso (último registro)", thisVal: thisWeight ? thisWeight+" kg" : "—", prevVal: prevWeight ? prevWeight+" kg" : "—", delta: thisWeight&&prevWeight ? getDeltaHtml(thisWeight, prevWeight, " kg", true) : `<span class="mc-delta neutral">—</span>` },
+    { icon:"💪", label:"Esfuerzo medio", thisVal: thisEffort ? thisEffort+"/10" : "—", prevVal: prevEffort ? prevEffort+"/10" : "—", delta: thisEffort&&prevEffort ? getDeltaHtml(thisEffort, prevEffort) : `<span class="mc-delta neutral">—</span>` },
+    { icon:"⏱", label:"Duración media", thisVal: thisDur ? thisDur+" min" : "—", prevVal: prevDur ? prevDur+" min" : "—", delta: thisDur&&prevDur ? getDeltaHtml(thisDur, prevDur, " min") : `<span class="mc-delta neutral">—</span>` },
+    { icon:"🏃", label:"Cardio — km totales", thisVal: thisCardio.totalKm ? thisCardio.totalKm+" km" : "—", prevVal: prevCardio.totalKm ? prevCardio.totalKm+" km" : "—", delta: thisCardio.totalKm&&prevCardio.totalKm ? getDeltaHtml(thisCardio.totalKm, prevCardio.totalKm, " km") : `<span class="mc-delta neutral">—</span>` },
+    { icon:"⚡", label:"Cardio — vel. media", thisVal: thisCardio.avgKmh ? thisCardio.avgKmh+" km/h" : "—", prevVal: prevCardio.avgKmh ? prevCardio.avgKmh+" km/h" : "—", delta: thisCardio.avgKmh&&prevCardio.avgKmh ? getDeltaHtml(thisCardio.avgKmh, prevCardio.avgKmh, " km/h") : `<span class="mc-delta neutral">—</span>` }
   ];
 
   const rowsHtml = rows.map(r => `
@@ -729,14 +753,13 @@ function renderMonthCompare(){
   </div>`;
 }
 
-// ==================== AI ROUTINE SUGGESTER ====================
+// ==================== AI ROUTINE SUGGESTER (LOCAL - CORREGIDO) ====================
 function toggleMusclePriority(muscle){
   const current = aiMusclePriorities[muscle] || "none";
   const cycle = ["none","high","med","low"];
   const next = cycle[(cycle.indexOf(current)+1) % cycle.length];
   aiMusclePriorities[muscle] = next;
   aiSuggestion = null;
-  // Re-render just the suggester area
   const area = document.getElementById("ai-suggest-area");
   if(area) area.innerHTML = renderAISuggesterInner();
 }
@@ -767,8 +790,8 @@ function renderAISuggesterInner(){
 
   const goalHtml = [
     {mode:"maintain", label:"Mantener media", icon:"📊"},
-    {mode:"beat", label:"Superar media", icon:"⬆️"},
-    {mode:"max", label:"Ir al máximo", icon:"🔥"}
+    {mode:"beat", label:"Superar media (+15%)", icon:"⬆️"},
+    {mode:"max", label:"Mejorar récord (+5%)", icon:"🔥"}
   ].map(g=>`<div class="goal-option ${aiGoalMode===g.mode?'selected':''}" onclick="setAIGoal('${g.mode}')">${g.icon} ${g.label}</div>`).join("");
 
   let resultHtml = "";
@@ -819,136 +842,162 @@ function renderAISuggester(){
 }
 
 async function generateAISuggestion(){
-  // Mostrar loading
   aiSuggestion = { loading: true };
   const area = document.getElementById("ai-suggest-area");
   if(area) area.innerHTML = renderAISuggesterInner();
-
-  // Construir contexto del historial
+  
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
   const avgScore = roundPt(getAverageScore());
   const maxScore = roundPt(getMaxScore());
-  const lastSessions = [...sessions].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-
-  // PRs por máquina
-  const machineStats = MACHINES.map(m=>{
+  
+  const machinePRs = {};
+  MACHINES.forEach(m => {
     const pr = getPRForMachine(m);
-    const last = getLastExerciseData(m);
-    const cm = customMachines.find(c=>c.name===m);
-    const muscleGroup = cm?.muscleMain||MUSCLE_GROUPS[m]||"Otro";
-    return { name:m, muscleGroup, pr: pr?`${pr.weight}kg×${pr.reps}`:null, last };
-  }).filter(m=>m.name!=="Cardio");
-
-  // Prioridades seleccionadas
-  const priorities = Object.entries(aiMusclePriorities)
-    .filter(([,p])=>p!=="none")
-    .map(([muscle,prio])=>`${muscle}: ${prio}`)
-    .join(", ");
-
-  const goalDesc = {
-    maintain: `Mantener puntuación cercana a la media (${avgScore} pts)`,
-    beat: `Superar la media global (${avgScore} pts)`,
-    max: `Acercarse al récord global (${maxScore} pts)`
-  }[aiGoalMode];
-
-  // Historial reciente resumido
-  const recentHistory = lastSessions.map(s=>{
-    const exSummary = s.exercises
-      .filter(ex=>ex.sets.some(st=>!st.isCardio?(parseFloat(fixDecimal(st.weight))||0)>0:(parseFloat(fixDecimal(st.value))||0)>0))
-      .map(ex=>{
-        const validSets = ex.sets.filter(st=>!st.isCardio);
-        if(!validSets.length) return null;
-        const maxW = Math.max(...validSets.map(st=>parseFloat(fixDecimal(st.weight))||0));
-        return `${ex.machine}: ${maxW}kg`;
-      }).filter(Boolean).join(", ");
-    return `${s.date}: ${roundPt(sessionScore(s))} pts — ${exSummary}`;
-  }).join("\n");
-
-  const cardioInfo = aiMusclePriorities["Cardio"] && aiMusclePriorities["Cardio"]!=="none"
-    ? `Incluir cardio con prioridad: ${aiMusclePriorities["Cardio"]}`
-    : "No incluir cardio, o mínimo si el usuario no lo ha pedido";
-
-  const prompt = `Eres un entrenador personal experto. El usuario entrena en un gimnasio con estas máquinas disponibles: ${MACHINES.join(", ")}.
-
-DATOS DEL USUARIO:
-- Media puntos por sesión: ${avgScore} pts
-- Récord global: ${maxScore} pts
-- Historial reciente (últimas ${lastSessions.length} sesiones):
-${recentHistory}
-
-MÁQUINAS Y PRs:
-${machineStats.map(m=>`- ${m.name} (${m.muscleGroup}): PR=${m.pr||"sin datos"}, último=${m.last}`).join("\n")}
-
-SOLICITUD:
-- Prioridades musculares: ${priorities||"Sin prioridades definidas (sesión equilibrada)"}
-- ${cardioInfo}
-- Objetivo: ${goalDesc}
-
-INSTRUCCIONES:
-Genera UNA sesión de entrenamiento completa y realista. Para cada ejercicio sugiere series × reps y peso basándote en los PRs del usuario (si no hay PR, sugiere un peso conservador). El peso debe ser desafiante pero alcanzable.
-
-Responde ÚNICAMENTE con este JSON (sin markdown, sin texto antes ni después):
-{
-  "title": "Nombre descriptivo de la sesión",
-  "summary": "Frase corta explicando el enfoque (máx 15 palabras)",
-  "exercises": [
-    {
-      "machine": "nombre exacto de la máquina",
-      "sets": 4,
-      "reps": 10,
-      "weight": 40,
-      "pts": 1600,
-      "note": "consejo técnico o de progresión corto",
-      "isCardio": false
-    },
-    {
-      "machine": "Cardio",
-      "isCardio": true,
-      "cardioDetail": "20 min a ritmo moderado",
-      "pts": 100,
-      "note": "cardio al final para no afectar fuerza",
-      "sets": 0, "reps": 0, "weight": 0
-    }
-  ],
-  "totalPts": 2400
-}
-
-REGLAS:
-- Usa únicamente las máquinas disponibles listadas arriba
-- Los nombres de máquinas deben coincidir EXACTAMENTE con los dados
-- Los pts de cada ejercicio = sets × reps × weight (para no cardio)
-- Para cardio pts = minutos × 5
-- totalPts = suma de todos los pts
-- Incluye 4-7 ejercicios según las prioridades
-- Si una prioridad es "high", asigna más series (4-5) y/o más peso
-- Si es "med", 3-4 series normales
-- Si es "low", 2-3 series de mantenimiento
-- El objetivo "${aiGoalMode}" debe reflejarse en el totalPts resultante`;
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
+    if(pr) machinePRs[m] = pr;
+  });
+  
+  const priorities = aiMusclePriorities;
+  const highPriorityMuscles = Object.entries(priorities).filter(([,p])=>p==='high').map(([m])=>m);
+  const medPriorityMuscles = Object.entries(priorities).filter(([,p])=>p==='med').map(([m])=>m);
+  const lowPriorityMuscles = Object.entries(priorities).filter(([,p])=>p==='low').map(([m])=>m);
+  
+  const machinesByMuscle = {};
+  MACHINES.forEach(m => {
+    if(m === "Cardio") return;
+    const custom = customMachines.find(c => c.name === m);
+    const muscle = custom?.muscleMain || MUSCLE_GROUPS[m] || "Otro";
+    if(!machinesByMuscle[muscle]) machinesByMuscle[muscle] = [];
+    machinesByMuscle[muscle].push(m);
+  });
+  
+  const suggestedExercises = [];
+  let totalPts = 0;
+  
+  for (const muscle of highPriorityMuscles.slice(0, 3)) {
+    const available = machinesByMuscle[muscle] || [];
+    if(available.length === 0) continue;
+    const machine = available[0];
+    const pr = machinePRs[machine];
+    const baseWeight = pr ? pr.weight : 30;
+    let targetWeight = baseWeight;
+    if(aiGoalMode === 'beat') targetWeight = Math.round(baseWeight * 1.08);
+    if(aiGoalMode === 'max') targetWeight = Math.round(baseWeight * 1.12);
+    const reps = 8 + Math.floor(Math.random() * 4);
+    const sets = 4 + (aiGoalMode === 'max' ? 1 : 0);
+    const pts = sets * reps * targetWeight;
+    totalPts += pts;
+    suggestedExercises.push({
+      machine, isCardio: false, sets, reps, weight: targetWeight, pts,
+      note: `Prioridad alta: ${muscle}.`
     });
-    const data = await response.json();
-    const text = data.content?.map(i=>i.text||"").join("").trim();
-    const clean = text.replace(/```json|```/g,"").trim();
-    aiSuggestion = JSON.parse(clean);
-  } catch(err) {
-    aiSuggestion = null;
-    showToast("Error generando sugerencia. Inténtalo de nuevo.",true);
   }
-
+  
+  for (const muscle of medPriorityMuscles.slice(0, 2)) {
+    const available = machinesByMuscle[muscle] || [];
+    if(available.length === 0) continue;
+    const machine = available[0];
+    const pr = machinePRs[machine];
+    const baseWeight = pr ? pr.weight : 25;
+    let targetWeight = baseWeight;
+    if(aiGoalMode === 'beat') targetWeight = Math.round(baseWeight * 1.05);
+    const reps = 10 + Math.floor(Math.random() * 3);
+    const sets = 3;
+    const pts = sets * reps * targetWeight;
+    totalPts += pts;
+    suggestedExercises.push({
+      machine, isCardio: false, sets, reps, weight: targetWeight, pts,
+      note: `Prioridad media: ${muscle}.`
+    });
+  }
+  
+  for (const muscle of lowPriorityMuscles.slice(0, 2)) {
+    const available = machinesByMuscle[muscle] || [];
+    if(available.length === 0) continue;
+    const machine = available[0];
+    const pr = machinePRs[machine];
+    const baseWeight = pr ? Math.round(pr.weight * 0.85) : 20;
+    const reps = 12;
+    const sets = 3;
+    const pts = sets * reps * baseWeight;
+    totalPts += pts;
+    suggestedExercises.push({
+      machine, isCardio: false, sets, reps, weight: baseWeight, pts,
+      note: `Mantenimiento: ${muscle}.`
+    });
+  }
+  
+  if(suggestedExercises.length < 3){
+    const defaultMachines = MACHINES.filter(m => m !== "Cardio").slice(0, 4);
+    for(const machine of defaultMachines){
+      if(suggestedExercises.some(e => e.machine === machine)) continue;
+      const pr = machinePRs[machine];
+      const baseWeight = pr ? pr.weight : 25;
+      const reps = 10;
+      const sets = 3;
+      const pts = sets * reps * baseWeight;
+      totalPts += pts;
+      suggestedExercises.push({
+        machine, isCardio: false, sets, reps, weight: baseWeight, pts,
+        note: `Ejercicio equilibrado.`
+      });
+      if(suggestedExercises.length >= 5) break;
+    }
+  }
+  
+  if(priorities["Cardio"] && priorities["Cardio"] !== "none"){
+    let cardioMin = 15;
+    if(priorities["Cardio"] === "high") cardioMin = 25;
+    if(priorities["Cardio"] === "med") cardioMin = 20;
+    const cardioPts = cardioMin * 5;
+    totalPts += cardioPts;
+    suggestedExercises.push({
+      machine: "Cardio", isCardio: true,
+      cardioDetail: `${cardioMin} min a ritmo moderado`,
+      pts: cardioPts,
+      note: priorities["Cardio"] === "high" ? "Cardio intenso" : "Cardio de recuperación"
+    });
+  }
+  
+  let targetTotal = totalPts;
+  let title = "", summary = "";
+  
+  if(aiGoalMode === 'maintain'){
+    targetTotal = avgScore;
+    title = "Sesión de mantenimiento";
+    summary = `Objetivo: mantener tu media (${avgScore} pts)`;
+  } else if(aiGoalMode === 'beat'){
+    targetTotal = Math.round(avgScore * 1.15);
+    title = "Sesión de superación 💪";
+    summary = `Objetivo: superar tu media en un 15% (${avgScore} → ${targetTotal} pts)`;
+  } else {
+    targetTotal = Math.min(Math.round(maxScore * 1.05), maxScore + 1000);
+    title = "Sesión de máximo rendimiento 🔥";
+    summary = `Objetivo: mejorar tu récord (${maxScore} → ${targetTotal} pts)`;
+  }
+  
+  if(totalPts > 0 && targetTotal !== totalPts){
+    const scale = targetTotal / totalPts;
+    suggestedExercises.forEach(ex => {
+      if(!ex.isCardio){
+        ex.weight = Math.max(10, Math.round(ex.weight * scale));
+        ex.pts = ex.sets * ex.reps * ex.weight;
+      } else {
+        const newMin = Math.round((ex.pts * scale) / 5);
+        ex.cardioDetail = `${newMin} min a ritmo moderado`;
+        ex.pts = newMin * 5;
+      }
+    });
+    totalPts = suggestedExercises.reduce((sum, ex) => sum + ex.pts, 0);
+  }
+  
+  aiSuggestion = { title, summary, exercises: suggestedExercises, totalPts: Math.round(totalPts) };
   if(area) area.innerHTML = renderAISuggesterInner();
+  showToast(`✨ Sesión generada: ${aiSuggestion.title}`);
 }
 
 function useSuggestionAsSession(){
   if(!aiSuggestion || !aiSuggestion.exercises) return;
-  // Construir sesión desde la sugerencia
   const today = new Date().toISOString().slice(0,10);
   const newSession = {
     id: Date.now(),
@@ -960,11 +1009,9 @@ function useSuggestionAsSession(){
     exercises: []
   };
 
-  // Para cada ejercicio de la sugerencia, crear estructura compatible
   aiSuggestion.exercises.forEach(ex => {
     const sets = [];
     if(ex.isCardio){
-      // Parsear minutos del cardioDetail
       const minMatch = ex.cardioDetail?.match(/(\d+)\s*min/);
       const mins = minMatch ? minMatch[1] : "20";
       sets.push({isCardio:true, value:mins, unit:"min"});
@@ -976,7 +1023,6 @@ function useSuggestionAsSession(){
     newSession.exercises.push({ machine: ex.machine, sets });
   });
 
-  // Añadir máquinas que no estén en la sugerencia
   MACHINES.forEach(m=>{
     if(!newSession.exercises.find(e=>e.machine===m)){
       newSession.exercises.push({machine:m, sets:[m==="Cardio"?{isCardio:true,value:"",unit:"min"}:{isCardio:false,weight:"",reps:""}]});
@@ -1019,6 +1065,34 @@ function renderCalendar(){
   return `<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()">‹</button><span>${MONTHS[calMonth]} ${calYear}</span><button onclick="calNext()">›</button></div><div class="cal-grid">${cells}</div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:10px;font-weight:700"><span>🟡 Supera media</span><span>⚪ Iguala</span><span>🔴 Debajo</span><span>📅 Planeado</span></div></div>`;
 }
  
+// ==================== COMPARTIR IMAGEN ====================
+async function shareSessionAsImage(sessionId){
+  const session = sessions.find(s => s.id === sessionId);
+  if(!session) return;
+  
+  const cardElement = document.getElementById(`share-card-${sessionId}`);
+  if(!cardElement) return;
+  
+  showToast("Generando imagen...");
+  try {
+    const canvas = await html2canvas(cardElement, {
+      scale: 2,
+      backgroundColor: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff',
+      logging: false,
+      useCORS: false
+    });
+    const imageUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `entreno_${session.date}_train-tracker.png`;
+    link.href = imageUrl;
+    link.click();
+    showToast("✅ Imagen guardada");
+  } catch(err){
+    console.error(err);
+    showToast("Error al generar la imagen", true);
+  }
+}
+
 // ==================== SESSION CARDS ====================
 function renderSessionCard(s){
   const sc=roundPt(sessionScore(s)); const pct=s.goal>0?Math.min(100,(sc/s.goal)*100):0; const barC=scoreColor(sc,s.goal);
@@ -1027,7 +1101,22 @@ function renderSessionCard(s){
   if(effort){ const ec=getEffortColor(effort); effortHtml=`<div class="effort-badge" style="background:${ec.bg};color:${ec.color}">💪 Esfuerzo: ${effort}/10</div>`; }
   const exercisesHtml=s.exercises.map(ex=>{ const exSc=roundPt(calcScore(ex.sets)); const chips=ex.sets.map(st=>st.isCardio?`<span class="set-chip">${fixDecimal(st.value)||0} ${st.unit}</span>`:`<span class="set-chip">${fixDecimal(st.weight)||0}kg × ${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:800;font-size:12px;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("");
   const notesHtml=s.notes?`<div style="margin-top:9px;padding:9px;border-radius:11px;font-size:12px;background:#fffbeb;color:#92400e">📝 ${s.notes}</div>`:"";
-  return `<div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-weight:800;font-size:15px">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px;font-weight:600">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc,s.goal)}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${exercisesHtml}${notesHtml}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer">🗑</button></div></div>`;
+  
+  const shareId = `share-card-${s.id}`;
+  
+  return `<div id="${shareId}" class="card" style="padding:12px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+      <div><div style="font-weight:800;font-size:15px">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px;font-weight:600">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc,s.goal)}
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>
+    ${exercisesHtml}
+    ${notesHtml}
+    <div style="display:flex;gap:8px;margin-top:13px">
+      <button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer">✏️ Editar</button>
+      <button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer">🗑</button>
+      <button onclick="shareSessionAsImage(${s.id})" class="btn-share-card" style="background:#dcfce7;border:none;border-radius:10px;padding:10px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;color:#15803d">📸 Compartir</button>
+    </div>
+  </div>`;
 }
 function deleteSession(id){ if(confirm("¿Eliminar?")){ sessions=sessions.filter(s=>s.id!==id); saveAll(); render(); } }
 function showEdit(id){ editingSession=JSON.parse(JSON.stringify(sessions.find(s=>s.id===id))); activeRoutineId=null; currentView="form"; render(); }
@@ -1081,8 +1170,58 @@ function useTemplate(sessionId){
   showToast("Plantilla cargada ✅");
 }
  
-function cancelForm(){ editingSession=null; activeRoutineId=null; showView("home"); }
- 
+function cancelForm(){ 
+  if(chronoInterval) clearInterval(chronoInterval);
+  chronoActive = false;
+  chronoSeconds = 0;
+  editingSession=null; activeRoutineId=null; showView("home"); 
+}
+
+// ==================== CRONÓMETRO ====================
+function startChrono(){
+  if(chronoActive) return;
+  chronoActive = true;
+  if(chronoInterval) clearInterval(chronoInterval);
+  chronoInterval = setInterval(() => {
+    if(!chronoActive) return;
+    chronoSeconds++;
+    const mins = Math.floor(chronoSeconds / 60);
+    const secs = chronoSeconds % 60;
+    const chronoDisplay = document.getElementById('chrono-display');
+    const durationInput = document.getElementById('f-dur');
+    if(chronoDisplay){
+      chronoDisplay.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
+    if(durationInput){
+      durationInput.value = mins;
+      // Disparar evento para actualizar progreso
+      const event = new Event('input');
+      durationInput.dispatchEvent(event);
+    }
+  }, 1000);
+}
+
+function stopChrono(){
+  chronoActive = false;
+  if(chronoInterval) clearInterval(chronoInterval);
+  chronoInterval = null;
+}
+
+function resetChrono(){
+  chronoSeconds = 0;
+  const chronoDisplay = document.getElementById('chrono-display');
+  const durationInput = document.getElementById('f-dur');
+  if(chronoDisplay) chronoDisplay.textContent = '00:00';
+  if(durationInput){
+    durationInput.value = 0;
+    const event = new Event('input');
+    durationInput.dispatchEvent(event);
+  }
+  if(chronoActive){
+    startChrono();
+  }
+}
+
 // ==================== VIEWS ====================
 function renderHome(){
   const avgScore=roundPt(getAverageScore()); const lastScore=roundPt(getLastSessionScore()); const monthStats=getCurrentMonthStats();
@@ -1294,7 +1433,7 @@ function renderSettings(){
   </div>`;
 }
  
-// ==================== MODAL MÁQUINA (con historial) ====================
+// ==================== MODAL MÁQUINA ====================
 let editingMachineName=null;
  
 function openMachineModal(name){
@@ -1499,7 +1638,7 @@ function deleteRoutine(idx){
   showToast("Rutina eliminada");
 }
  
-// ==================== FORMULARIO ENTRENO ====================
+// ==================== FORMULARIO ENTRENO (con cronómetro y teclado numérico) ====================
 let formSession=null;
  
 function renderForm(){
@@ -1508,11 +1647,23 @@ function renderForm(){
   const avgScore=roundPt(getAverageScore()); const maxScore=roundPt(getMaxScore()); const effort=formSession.effort||5;
   const effortOptions=[1,2,3,4,5,6,7,8,9,10].map(v=>{ const cls=v<=4?"effort-low":v<=7?"effort-mid":"effort-high"; const sel=v===effort?`border-width:2.5px;border-color:${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'};font-weight:900;`:''; return `<div class="effort-option ${cls}" onclick="setEffort(${v})" style="${sel}">${v}</div>`; }).join("");
   const routinesHtml=routines.length?`<div class="form-row"><div class="form-label">📋 CARGAR RUTINA</div><select id="routine-select" class="form-input" onchange="if(this.value) applyRoutine(parseInt(this.value))"><option value="">-- Seleccionar rutina --</option>${routines.map(r=>`<option value="${r.id}">${r.name} (${r.mainMuscleGroup})</option>`).join("")}</select></div>`:"";
+  
+  // Cronómetro HTML
+  const chronoHtml = `<div class="chrono-box">
+    <div class="chrono-display" id="chrono-display">00:00</div>
+    <div class="chrono-buttons">
+      <button class="chrono-btn" onclick="startChrono()">▶ Iniciar</button>
+      <button class="chrono-btn" onclick="stopChrono()">⏸ Pausa</button>
+      <button class="chrono-btn reset" onclick="resetChrono()">🔄 Reset</button>
+    </div>
+  </div>`;
+  
   return `<div class="form-card">
     <div class="form-stats-row">
       <div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div>
       <div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div>
     </div>
+    ${chronoHtml}
     <div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input" value="${formSession.date}"></div>
     <div class="row-2cols">
       <div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div>
@@ -1571,8 +1722,13 @@ function renderExercises(){ const area=document.getElementById("exercises-area")
 function renderExCard(ex,i){
   const sc=roundPt(calcScore(ex.sets));
   const lastRecord=getLastExerciseData(ex.machine);
-  const pr=getPRForMachine(ex.machine);
-  const prText=pr?`${pr.weight}kg×${pr.reps}`:"—";
+  let prText="—";
+  if(ex.machine === "Cardio"){
+    prText = getPRCardioKm();
+  } else {
+    const pr=getPRForMachine(ex.machine);
+    if(pr) prText=`${pr.weight}kg×${pr.reps}`;
+  }
   let routineHintHtml="";
   if(activeRoutineId){
     const routine=routines.find(r=>r.id==activeRoutineId);
@@ -1582,8 +1738,8 @@ function renderExCard(ex,i){
     }
   }
   const rows=ex.sets.map((s,j)=>{
-    if(s.isCardio) return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" placeholder="Ej: 5.5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" class="form-input" style="padding:12px 8px;">${["min","km","kmh"].map(u=>`<option${s.unit===u?" selected":""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
-    return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+    if(s.isCardio) return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Ej: 5.5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" class="form-input" style="padding:12px 8px;">${["min","km","kmh"].map(u=>`<option${s.unit===u?" selected":""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+    return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" inputmode="numeric" pattern="\d*" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" inputmode="numeric" pattern="\d*" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
   }).join("");
   const custom=customMachines.find(m=>m.name===ex.machine);
   const noteText=custom?.notes?`📌 ${custom.notes}`:"";
@@ -1625,7 +1781,12 @@ function saveForm(){
   const idx=sessions.findIndex(s=>s.id===formSession.id);
   if(idx>=0) sessions[idx]=formSession; else sessions.unshift(formSession);
   sessions.sort((a,b)=>b.date.localeCompare(a.date));
-  saveAll(); editingSession=null; formSession=null; activeRoutineId=null;
+  saveAll();
+  // Detener cronómetro al guardar
+  if(chronoInterval) clearInterval(chronoInterval);
+  chronoActive = false;
+  chronoSeconds = 0;
+  editingSession=null; formSession=null; activeRoutineId=null;
   showView("history");
 }
  
@@ -1650,7 +1811,7 @@ async function shareData(){
     try{
       const file=new File([json], fileName, {type:"application/json"});
       if(navigator.canShare({files:[file]})){
-        await navigator.share({ files:[file], title:"Mis Entrenos - Copia de seguridad", text:`Backup del ${new Date().toLocaleDateString('es-ES')}` });
+        await navigator.share({ files:[file], title:"Train-tracker - Copia de seguridad", text:`Backup del ${new Date().toLocaleDateString('es-ES')}` });
         showToast("Compartido ✅");
         return;
       }
