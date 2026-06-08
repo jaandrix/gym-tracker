@@ -7,31 +7,71 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mis Entrenos">
 <meta name="theme-color" content="#0f172a">
-<title>Mis Entrenos 💪 v4 - Máquinas + Rutinas</title>
+<title>Mis Entrenos 💪</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style id="theme-style">
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { background: #f0f2f7; font-family: 'DM Sans', system-ui, sans-serif; color: #0f172a; overflow: hidden; height: 100dvh; transition: background 0.2s, color 0.2s; }
-  #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; transition: background 0.2s; }
+  body { background: #f0f2f7; font-family: 'Nunito', system-ui, sans-serif; color: #0f172a; overflow: hidden; height: 100dvh; transition: background 0.2s, color 0.2s; }
+  #app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
 
-  /* ========== TEMA OSCURO (LEGIBLE) ========== */
+  .prog-bar { height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin: 10px 0; }
+  .prog-fill { height: 100%; border-radius: 99px; transition: width 0.3s ease; }
+  .prog-wrap { margin-bottom: 12px; }
+  .prog-labels { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: flex-end; justify-content: center; }
+  .modal-sheet { background: #fff; border-radius: 20px 20px 0 0; padding: 20px; width: 100%; max-width: 480px; max-height: 88dvh; overflow-y: auto; }
+  .modal-title { font-size: 17px; font-weight: 900; margin-bottom: 16px; }
+  .modal-close { float: right; background: none; border: none; font-size: 22px; cursor: pointer; line-height: 1; }
+  body.dark .modal-sheet { background: #1a1a2e; color: #e2e8f0; }
+  body.dark .modal-input { background: #252540; border-color: #3a3a5c; color: #fff; }
+  .modal-input { width: 100%; border-radius: 12px; padding: 11px 13px; font-size: 14px; border: 1.5px solid #e2e8f0; font-family: 'Nunito', sans-serif; font-weight: 600; outline: none; margin-bottom: 10px; }
+  .modal-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
+  .modal-row { margin-bottom: 12px; }
+  .modal-2col { display: flex; gap: 10px; }
+  .modal-2col > * { flex: 1; }
+  .muscle-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .muscle-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1.5px solid #e2e8f0; cursor: pointer; transition: all 0.15s; }
+  .muscle-chip.selected-primary { background: #0f172a; color: #fff; border-color: #0f172a; }
+  .muscle-chip.selected-secondary { background: #2563eb22; color: #2563eb; border-color: #2563eb; }
+  body.dark .muscle-chip { border-color: #3a3a5c; color: #cbd5e1; }
+  body.dark .muscle-chip.selected-primary { background: #e2e8f0; color: #0f172a; }
+  .routine-ex-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+  .routine-ex-row input, .routine-ex-row select { border-radius: 9px; border: 1.5px solid #e2e8f0; padding: 8px 10px; font-size: 13px; font-family: 'Nunito', sans-serif; font-weight: 600; background: #f8fafc; outline: none; }
+  body.dark .routine-ex-row input, body.dark .routine-ex-row select { background: #252540; border-color: #3a3a5c; color: #fff; }
+  .btn-modal-add { background: none; border: 1.5px dashed #2563eb; border-radius: 10px; color: #2563eb; font-size: 13px; padding: 9px; cursor: pointer; width: 100%; margin-top: 6px; font-weight: 700; font-family: 'Nunito', sans-serif; }
+  .btn-modal-primary { width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 13px; padding: 14px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 12px; font-family: 'Nunito', sans-serif; }
+  .btn-modal-del { background: none; border: none; color: #dc2626; font-size: 18px; cursor: pointer; padding: 4px 8px; }
+
+  /* CHART TOGGLE */
+  .chart-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
+  .chart-toggle-btn { flex: 1; padding: 6px; border-radius: 8px; font-size: 12px; font-weight: 700; border: 1.5px solid #e2e8f0; cursor: pointer; background: transparent; font-family: 'Nunito', sans-serif; transition: all 0.15s; }
+  .chart-toggle-btn.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+  body.dark .chart-toggle-btn { border-color: #3a3a5c; color: #cbd5e1; }
+  body.dark .chart-toggle-btn.active { background: #e2e8f0; color: #0f172a; }
+
+  /* RUTINA HINT en ex-card */
+  .routine-hint { font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; border-radius: 8px; padding: 5px 9px; margin-bottom: 8px; }
+  body.dark .routine-hint { background: #1e3a5f; color: #93c5fd; }
+
+  /* TEMAS */
   body.dark { background: #0a0a0f; color: #e2e8f0; }
   body.dark #app { background: #0a0a0f; }
   body.dark .card, body.dark .form-card, body.dark .ex-card, body.dark .stat-card,
   body.dark .cal-wrap, body.dark .weekly-progress, body.dark .weight-chart-container,
   body.dark .muscle-group-card, body.dark .week-block, body.dark .goal-meter,
-  body.dark .install-banner, body.dark .chart-card, body.dark .settings-card {
-    background: #1a1a2e; border-color: #2e2e4a; color: #e2e8f0;
-  }
+  body.dark .chart-card, body.dark .settings-card { background: #1a1a2e; border-color: #2e2e4a; color: #e2e8f0; }
   body.dark .form-input, body.dark .set-input input, body.dark .set-input-small input,
-  body.dark .set-input-small select, body.dark textarea, body.dark .form-stat {
-    background: #252540; border-color: #3a3a5c; color: #ffffff !important;
-  }
+  body.dark .set-input-small select, body.dark textarea, body.dark .form-stat { background: #252540; border-color: #3a3a5c; color: #ffffff !important; }
   body.dark .form-input::placeholder, body.dark textarea::placeholder { color: #7a8099; }
   body.dark .prog-bar, body.dark .goal-meter-bar, body.dark .muscle-bar, body.dark .weight-bar { background: #252540; }
   body.dark #nav { background: #12121f; border-top-color: #2e2e4a; }
   body.dark #nav button { color: #6b7280; }
-  body.dark #nav button.active { background: #e2e8f0; color: #0f172a; border-top-color: #e2e8f0; border-radius: 12px 12px 0 0; }
+  body.dark #nav button.active { background: #e2e8f0; color: #0f172a; border-radius: 12px 12px 0 0; }
   body.dark .btn-secondary, body.dark .btn-import-export, body.dark .btn-add-machine { background: #252540; color: #e2e8f0; border-color: #3a3a5c; }
   body.dark .set-chip { background: #2a2a48; color: #d4d8f0; }
   body.dark .btn-card-edit { background: #252540; color: #e2e8f0; }
@@ -41,59 +81,53 @@
   body.dark .machine-history { color: #7a8099; }
   body.dark .cal-day.planned { background: #2e2e4a; color: #94a3b8; }
   body.dark .cal-nav button { background: transparent; border: none; color: #e2e8f0; font-size: 18px; cursor: pointer; }
+  body.dark .week-stat { background: #252540; }
+  body.dark .btn-add-set { border-color: #3a3a5c; color: #94a3b8; }
+  body.dark .tag { background: #2e2e4a; color: #cbd5e1; }
+  body.dark .machine-item, body.dark .routine-item { border-bottom-color: #2e2e4a; }
+  body.dark .pr-badge { background: #2a2a48; color: #c4b5fd; }
+  body.dark .ex-pts { background: #252540; color: #e2e8f0; }
 
-  /* ========== TEMA CLARO ========== */
   body.light { background: #f0f2f7; }
   body.light .card, body.light .form-card, body.light .ex-card, body.light .stat-card,
   body.light .cal-wrap, body.light .weekly-progress, body.light .weight-chart-container,
   body.light .muscle-group-card, body.light .week-block, body.light .goal-meter,
-  body.light .install-banner, body.light .chart-card, body.light .settings-card {
-    background: #fff; border-color: #e2e8f0; color: #0f172a;
-  }
+  body.light .chart-card, body.light .settings-card { background: #fff; border-color: #e2e8f0; color: #0f172a; }
   body.light .form-input, body.light .set-input input, body.light .set-input-small input,
-  body.light .set-input-small select, body.light textarea, body.light .form-stat {
-    background: #f1f5f9; border-color: #e2e8f0; color: #0f172a;
-  }
+  body.light .set-input-small select, body.light textarea, body.light .form-stat { background: #f1f5f9; border-color: #e2e8f0; color: #0f172a; }
   body.light #nav { background: #fff; border-top-color: #e2e8f0; }
   body.light #nav button { color: #94a3b8; }
-  body.light #nav button.active { background: #0f172a; color: #fff; border-top-color: #0f172a; border-radius: 12px 12px 0 0; }
-  body.light .cal-day.planned { background: #cbd5e1; color: #0f172a; }
+  body.light #nav button.active { background: #0f172a; color: #fff; border-radius: 12px 12px 0 0; }
+  body.light .cal-day.planned { background: #cbd5e1; }
 
-  /* ========== TEMA VERDE MENTA ========== */
   body.mint { background: #e8f5e9; }
   body.mint .card, body.mint .form-card, body.mint .ex-card, body.mint .stat-card,
   body.mint .cal-wrap, body.mint .weekly-progress, body.mint .weight-chart-container,
   body.mint .muscle-group-card, body.mint .week-block, body.mint .goal-meter,
-  body.mint .install-banner, body.mint .chart-card, body.mint .settings-card {
-    background: #fff; border-color: #c8e6c9; color: #1b5e20;
-  }
+  body.mint .chart-card, body.mint .settings-card { background: #fff; border-color: #c8e6c9; color: #1b5e20; }
   body.mint #nav { background: #fff; border-top-color: #c8e6c9; }
   body.mint #nav button { color: #6b8c42; }
-  body.mint #nav button.active { background: #2e7d32; color: #fff; border-top-color: #2e7d32; border-radius: 12px 12px 0 0; }
+  body.mint #nav button.active { background: #2e7d32; color: #fff; border-radius: 12px 12px 0 0; }
   body.mint .cal-day.planned { background: #a5d6a7; }
 
-  /* ========== TEMA MORADO ========== */
   body.purple { background: #f3e5f5; }
   body.purple .card, body.purple .form-card, body.purple .ex-card, body.purple .stat-card,
   body.purple .cal-wrap, body.purple .weekly-progress, body.purple .weight-chart-container,
   body.purple .muscle-group-card, body.purple .week-block, body.purple .goal-meter,
-  body.purple .install-banner, body.purple .chart-card, body.purple .settings-card {
-    background: #fff; border-color: #ce93d8; color: #4a148c;
-  }
+  body.purple .chart-card, body.purple .settings-card { background: #fff; border-color: #ce93d8; color: #4a148c; }
   body.purple #nav { background: #fff; border-top-color: #ce93d8; }
   body.purple #nav button { color: #9c27b0; }
-  body.purple #nav button.active { background: #6a1b9a; color: #fff; border-top-color: #6a1b9a; border-radius: 12px 12px 0 0; }
+  body.purple #nav button.active { background: #6a1b9a; color: #fff; border-radius: 12px 12px 0 0; }
   body.purple .cal-day.planned { background: #ce93d8; }
 
-  /* ========== ESTILOS COMUNES ========== */
+  /* COMUNES */
   #header { background: #0f172a; color: #fff; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  #header h1 { font-size: 20px; font-weight: 800; }
-  #header p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-family: 'Space Mono', monospace; }
-  #btn-new { background: #fff; color: #0f172a; border: none; border-radius: 10px; padding: 9px 15px; font-weight: 700; font-size: 14px; cursor: pointer; }
+  #header h1 { font-size: 20px; font-weight: 900; letter-spacing: -0.3px; }
+  #header p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 600; }
+  #btn-new { background: #fff; color: #0f172a; border: none; border-radius: 10px; padding: 9px 15px; font-weight: 800; font-size: 14px; cursor: pointer; font-family: 'Nunito', sans-serif; }
   #content { flex: 1; overflow-y: auto; padding: 14px; -webkit-overflow-scrolling: touch; }
   #nav { display: flex; flex-shrink: 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
-  #nav button { flex: 1; background: none; border: none; padding: 11px 0 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; }
-  #nav button.active { font-weight: 800; }
+  #nav button { flex: 1; background: none; border: none; padding: 11px 0 6px; cursor: pointer; font-weight: 700; transition: all 0.2s; font-family: 'Nunito', sans-serif; }
   #nav button .nav-icon { font-size: 21px; display: block; }
   #nav button .nav-label { font-size: 10px; font-weight: 700; margin-top: 2px; }
 
@@ -101,82 +135,88 @@
   .form-card, .ex-card { padding: 16px; }
   .form-stats-row { display: flex; gap: 12px; margin-bottom: 16px; }
   .form-stat { flex: 1; background: #f1f5f9; border-radius: 12px; padding: 12px; text-align: center; }
-  .form-stat-value { font-size: 24px; font-weight: 800; font-family: 'Space Mono', monospace; }
-  .form-stat-label { font-size: 10px; color: #64748b; margin-top: 4px; }
+  .form-stat-value { font-size: 24px; font-weight: 900; }
+  .form-stat-label { font-size: 10px; color: #64748b; margin-top: 4px; font-weight: 600; }
   .form-row { margin-bottom: 14px; }
-  .form-label { font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px; display: block; }
-  .form-input { width: 100%; border-radius: 12px; padding: 12px; font-size: 14px; outline: none; }
+  .form-label { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; letter-spacing: 0.3px; }
+  .form-input { width: 100%; border-radius: 12px; padding: 12px; font-size: 14px; outline: none; border: 1.5px solid #e2e8f0; font-family: 'Nunito', sans-serif; font-weight: 600; }
   .row-2cols { display: flex; gap: 12px; }
   .set-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
-  .set-num { font-size: 12px; min-width: 32px; font-family: 'Space Mono', monospace; font-weight: 700; }
+  .set-num { font-size: 12px; min-width: 32px; font-weight: 800; color: #64748b; }
   .set-input { flex: 2; min-width: 80px; }
   .set-input-small { flex: 1; min-width: 60px; }
   .btn-icon { background: none; border: none; cursor: pointer; font-size: 18px; padding: 8px 10px; border-radius: 10px; color: #dc2626; }
-  .btn-add-set { background: none; border: 1.5px dashed #e2e8f0; border-radius: 10px; color: #64748b; font-size: 13px; padding: 10px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: 600; }
+  .btn-add-set { background: none; border: 1.5px dashed #e2e8f0; border-radius: 10px; color: #64748b; font-size: 13px; padding: 10px; cursor: pointer; width: 100%; margin-top: 8px; font-weight: 700; font-family: 'Nunito', sans-serif; }
   .machine-history { font-size: 11px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-  .set-chip { background: #f1f5f9; padding: 3px 8px; border-radius: 6px; margin: 2px; display: inline-block; font-size: 11px; font-family: 'Space Mono', monospace; font-weight: 600; }
-  .badge { display: inline-block; border-radius: 7px; padding: 3px 9px; font-size: 12px; font-weight: 700; font-family: 'Space Mono', monospace; }
-  .btn-primary { width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 10px; }
-  .btn-secondary { width: 100%; background: #f1f5f9; border: none; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 600; }
-  .btn-add-machine, .btn-add-routine { width: 100%; border: 1.5px dashed #2563eb; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 700; color: #2563eb; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; }
-  .btn-import-export { width: 100%; background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 13px; padding: 12px; font-size: 14px; cursor: pointer; font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  textarea { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 14px; width: 100%; resize: vertical; min-height: 60px; }
-  .section-title { font-weight: 700; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; color: #64748b; }
+  .set-chip { background: #f1f5f9; padding: 3px 8px; border-radius: 6px; margin: 2px; display: inline-block; font-size: 11px; font-weight: 700; }
+  .badge { display: inline-block; border-radius: 7px; padding: 3px 9px; font-size: 12px; font-weight: 800; }
+  .btn-primary { width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 14px; padding: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-bottom: 10px; font-family: 'Nunito', sans-serif; }
+  .btn-secondary { width: 100%; background: #f1f5f9; border: none; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 700; font-family: 'Nunito', sans-serif; }
+  .btn-add-machine, .btn-add-routine { width: 100%; border: 1.5px dashed #2563eb; border-radius: 14px; padding: 14px; font-size: 14px; cursor: pointer; font-weight: 800; color: #2563eb; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; font-family: 'Nunito', sans-serif; }
+  .btn-import-export { width: 100%; background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 13px; padding: 12px; font-size: 14px; cursor: pointer; font-weight: 700; margin-bottom: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Nunito', sans-serif; }
+  textarea { border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 14px; width: 100%; resize: vertical; min-height: 60px; font-family: 'Nunito', sans-serif; }
+  .section-title { font-weight: 800; font-size: 11px; margin-bottom: 10px; text-transform: uppercase; color: #64748b; letter-spacing: 0.8px; }
   .empty-state { text-align: center; padding: 55px 20px; }
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
   .stat-card { border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 12px 8px; text-align: center; }
-  .stat-val { font-weight: 800; font-size: 18px; font-family: 'Space Mono', monospace; }
+  .stat-val { font-weight: 900; font-size: 18px; }
   .cal-wrap { border-radius: 18px; padding: 16px; margin-bottom: 14px; }
-  .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; font-weight: 700; }
+  .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 13px; font-weight: 800; }
+  .cal-nav button { background: transparent; border: none; color: inherit; font-size: 18px; cursor: pointer; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-  .cal-day-hdr { text-align: center; font-size: 9px; font-weight: 700; padding: 2px 0 6px; }
+  .cal-day-hdr { text-align: center; font-size: 9px; font-weight: 800; padding: 2px 0 6px; }
   .cal-day { border-radius: 9px; padding: 5px 2px; text-align: center; cursor: default; border: 1.5px solid transparent; }
   .cal-day.has-session { cursor: pointer; }
   .cal-day.today { background: #0f172a; color: #fff; }
-  .cal-day .day-num { font-size: 12px; font-weight: 600; }
+  .cal-day .day-num { font-size: 12px; font-weight: 700; }
   .cal-dot { width: 5px; height: 5px; border-radius: 50%; margin: 3px auto 0; }
-  .cal-dot.gold { background: #d4af37; }
-  .cal-dot.silver { background: #a8a9ad; }
-  .cal-dot.red { background: #dc2626; }
-  .goal-meter { padding: 12px; border-radius: 12px; margin-bottom: 14px; }
-  .goal-meter-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; font-weight: 700; }
-  .goal-meter-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .cal-dot.gold { background: #d4af37; } .cal-dot.silver { background: #a8a9ad; } .cal-dot.red { background: #dc2626; }
+  .goal-meter { padding: 14px; border-radius: 14px; margin-bottom: 14px; }
+  .goal-meter-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; font-weight: 800; }
+  .goal-meter-bar { height: 9px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-bottom: 10px; }
+  .goal-meter-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
   .weekly-progress { padding: 14px; border-radius: 16px; margin-bottom: 14px; }
   .week-chart { display: flex; align-items: flex-end; gap: 6px; margin-top: 10px; }
   .week-chart-bar { flex: 1; text-align: center; }
-  .week-chart-bar .bar { height: 40px; background: #2563eb; border-radius: 4px 4px 0 0; min-height: 4px; }
+  .week-chart-bar .bar { border-radius: 4px 4px 0 0; min-height: 4px; }
   .weight-chart-container { padding: 16px; border-radius: 16px; margin-bottom: 14px; }
   .weight-bar { background: #f1f5f9; border-radius: 10px; height: 32px; overflow: hidden; }
-  .weight-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #16a34a); border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 11px; font-weight: 600; }
+  .weight-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #16a34a); border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 11px; font-weight: 700; }
   .muscle-group-card { padding: 12px; border-radius: 12px; margin-bottom: 10px; }
+  .muscle-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .muscle-bar { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .muscle-fill { height: 100%; border-radius: 99px; }
   .week-block { border-radius: 16px; margin-bottom: 13px; overflow: hidden; }
   .week-head { padding: 13px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
   .week-stat { background: #f1f5f9; border-radius: 11px; padding: 10px 8px; text-align: center; flex: 1; }
   .chevron { font-size: 12px; transition: transform .2s; display: inline-block; }
   .chevron.open { transform: rotate(90deg); }
-  .install-banner { border-radius: 16px; padding: 16px; margin-bottom: 14px; }
-  .trend-up { color: #16a34a; }
-  .trend-down { color: #dc2626; }
-  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 1000; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
+  .trend-up { color: #16a34a; } .trend-down { color: #dc2626; }
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; z-index: 300; opacity: 0; transition: opacity 0.3s; pointer-events: none; max-width: 90%; text-align: center; }
   #toast.show { opacity: 1; }
   .import-input { display: none; }
-  .effort-badge { display: inline-flex; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .effort-badge { display: inline-flex; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 800; }
   .effort-low { background: #fee2e2; color: #dc2626; }
   .effort-mid { background: #fef3c7; color: #d97706; }
   .effort-high { background: #dcfce7; color: #16a34a; }
   .effort-select { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-  .effort-option { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; cursor: pointer; font-weight: 600; }
+  .effort-option { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; cursor: pointer; font-weight: 700; font-size: 14px; transition: all 0.15s; }
   .theme-selector { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
-  .theme-btn { flex: 1; padding: 8px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; border: 2px solid transparent; }
+  .theme-btn { flex: 1; padding: 8px; border-radius: 10px; text-align: center; font-size: 12px; font-weight: 700; cursor: pointer; border: 2px solid transparent; }
   .theme-btn.active { border-color: #2563eb; }
   .chart-card { padding: 16px; border-radius: 16px; margin-bottom: 12px; }
-  .chart-title { font-weight: 800; font-size: 13px; margin-bottom: 12px; }
+  .chart-title { font-weight: 800; font-size: 13px; margin-bottom: 8px; }
   canvas { max-width: 100%; height: 200px !important; }
   .settings-card { border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-  .machine-item, .routine-item { padding: 12px; border-bottom: 1px solid #e2e8f022; cursor: pointer; }
+  .machine-item, .routine-item { padding: 12px; border-bottom: 1px solid #e2e8f022; cursor: pointer; transition: background 0.15s; }
+  .machine-item:hover, .routine-item:hover { background: rgba(0,0,0,0.03); }
   .machine-item:last-child, .routine-item:last-child { border-bottom: none; }
-  .tag { background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-right: 6px; display: inline-block; }
-  body.dark .tag { background: #2e2e4a; color: #cbd5e1; }
+  .tag { background: #e2e8f0; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-right: 4px; display: inline-block; font-weight: 700; }
+  .pr-badge { background: #f5f3ff; color: #7c3aed; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; }
+  .ex-card { border: 1.5px solid #e2e8f0; border-radius: 16px; margin-bottom: 12px; padding: 14px; }
+  .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .ex-title { font-weight: 800; font-size: 14px; }
+  .ex-pts { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 8px; background: #f1f5f9; color: #0f172a; transition: all 0.2s; }
 </style>
 </head>
 <body>
@@ -189,508 +229,640 @@
     <button onclick="showView('weekly')" id="nav-weekly"><span class="nav-icon">📆</span><span class="nav-label">Semanas</span></button>
     <button onclick="showView('stats')" id="nav-stats"><span class="nav-icon">📊</span><span class="nav-label">Stats</span></button>
     <button onclick="showView('body')" id="nav-body"><span class="nav-icon">⚖️</span><span class="nav-label">Peso</span></button>
-    <button onclick="showView('settings')" id="nav-settings"><span class="nav-icon">📋</span><span class="nav-label">Mis Cosas</span></button>
+    <button onclick="showView('settings')" id="nav-settings"><span class="nav-icon">🏋️</span><span class="nav-label">Mi Gym</span></button>
   </nav>
 </div>
+<div id="modal-container"></div>
 <div id="toast"></div>
 <input type="file" id="import-file" class="import-input" accept=".json" onchange="handleImport(event)">
 
 <script>
-// ==================== CONFIGURACIÓN ====================
-let MACHINES_BASE = ["Low Row", "Dual Pully", "Pull Down", "Shoulder Press", "Chest Press", "Pectoral"];
+// ==================== CONFIG ====================
+let MACHINES_BASE = ["Low Row","Dual Pully","Pull Down","Shoulder Press","Chest Press","Pectoral"];
 let MACHINES = [];
-let sessions = [];
-let weightEntries = [];
-let plannedDays = [];
-let customMachines = [];     // { name, category, usualReps, lastPRweight, lastPRreps, notes }
-let routines = [];           // { id, name, description, exercises: [{machineName, targetSets, targetReps, targetWeight}], estimatedDuration, assignedDays, mainMuscleGroup }
+let sessions = [], weightEntries = [], plannedDays = [], customMachines = [], routines = [];
+let currentView = "home", editingSession = null, calendarFilter = null;
+let calYear, calMonth, openWeeks = {};
+let activeRoutineId = null; // rutina activa en formulario
+let chartModes = { points:'total', effort:'total', attendance:'total', duration:'total' };
 
-let currentView = "home";
-let editingSession = null;
-let calendarFilter = null;
-let calYear, calMonth;
-let openWeeks = {};
-let deferredInstall = null;
-
-const MUSCLE_GROUPS = { "Low Row": "Espalda", "Pull Down": "Espalda", "Dual Pully": "Brazos", "Shoulder Press": "Hombro", "Chest Press": "Pecho", "Pectoral": "Pecho", "Cardio": "Cardio" };
-const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-const DAYS_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+const MUSCLE_CATS = ["Pecho","Espalda","Hombro","Brazos","Piernas","Cardio","Core","Otro"];
+const MUSCLE_GROUPS = {"Low Row":"Espalda","Pull Down":"Espalda","Dual Pully":"Brazos","Shoulder Press":"Hombro","Chest Press":"Pecho","Pectoral":"Pecho","Cardio":"Cardio"};
+const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const DAYS_ES = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 const GYM_PRICE = 26.99;
-const BIRTHDAY = "2001-10-28";
 
-// Inicialización de datos custom
-function loadCustomMachines() { try { return JSON.parse(localStorage.getItem("gym_custom_machines") || "[]"); } catch(e) { return []; } }
-function loadRoutines() { try { return JSON.parse(localStorage.getItem("gym_routines") || "[]"); } catch(e) { return []; } }
-function saveCustomData() { localStorage.setItem("gym_custom_machines", JSON.stringify(customMachines)); localStorage.setItem("gym_routines", JSON.stringify(routines)); }
+// ==================== STORAGE ====================
+function loadCustomMachines(){ try{ return JSON.parse(localStorage.getItem("gym_custom_machines")||"[]"); }catch(e){ return []; } }
+function loadRoutines(){ try{ return JSON.parse(localStorage.getItem("gym_routines")||"[]"); }catch(e){ return []; } }
+function saveCustomData(){ localStorage.setItem("gym_custom_machines",JSON.stringify(customMachines)); localStorage.setItem("gym_routines",JSON.stringify(routines)); }
+function updateMachinesWithCardioLast(){ MACHINES=[...MACHINES_BASE.filter(m=>m!=="Cardio"),"Cardio"]; }
+function loadMachines(){ try{ const s=JSON.parse(localStorage.getItem("gym_machines")); if(s&&Array.isArray(s)) MACHINES_BASE=s.filter(m=>m!=="Cardio"); }catch(e){} updateMachinesWithCardioLast(); return MACHINES; }
+function saveMachines(){ localStorage.setItem("gym_machines",JSON.stringify(MACHINES_BASE)); }
+function loadSessions(){ try{ return JSON.parse(localStorage.getItem("gym_sessions")||"[]"); }catch(e){ return []; } }
+function loadWeight(){ try{ return JSON.parse(localStorage.getItem("gym_weight")||"[]"); }catch(e){ return []; } }
+function loadPlannedDays(){ try{ return JSON.parse(localStorage.getItem("gym_planned")||"[]"); }catch(e){ return []; } }
+function loadTheme(){ try{ return localStorage.getItem("gym_theme")||"light"; }catch(e){ return "light"; } }
+function saveAll(){ localStorage.setItem("gym_sessions",JSON.stringify(sessions)); localStorage.setItem("gym_weight",JSON.stringify(weightEntries)); localStorage.setItem("gym_planned",JSON.stringify(plannedDays)); saveMachines(); saveCustomData(); }
 
-function updateMachinesWithCardioLast() { MACHINES = [...MACHINES_BASE.filter(m => m !== "Cardio"), "Cardio"]; }
-function loadMachines() { try { const saved = JSON.parse(localStorage.getItem("gym_machines")); if (saved && Array.isArray(saved)) MACHINES_BASE = saved.filter(m => m !== "Cardio"); } catch(e) {} updateMachinesWithCardioLast(); return MACHINES; }
-function saveMachines() { localStorage.setItem("gym_machines", JSON.stringify(MACHINES_BASE)); }
-function loadSessions() { try { return JSON.parse(localStorage.getItem("gym_sessions") || "[]"); } catch(e) { return []; } }
-function loadWeight() { try { return JSON.parse(localStorage.getItem("gym_weight") || "[]"); } catch(e) { return []; } }
-function loadPlannedDays() { try { return JSON.parse(localStorage.getItem("gym_planned") || "[]"); } catch(e) { return []; } }
-function loadTheme() { try { return localStorage.getItem("gym_theme") || "light"; } catch(e) { return "light"; } }
-function saveAll() { 
-  localStorage.setItem("gym_sessions", JSON.stringify(sessions));
-  localStorage.setItem("gym_weight", JSON.stringify(weightEntries));
-  localStorage.setItem("gym_planned", JSON.stringify(plannedDays));
-  saveMachines();
-  saveCustomData();
+// ==================== HELPERS ====================
+function showToast(msg,isError=false){ const t=document.getElementById("toast"); t.textContent=msg; t.style.background=isError?"#dc2626":"#0f172a"; t.style.color="white"; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3000); }
+function closeModal(){ document.getElementById("modal-container").innerHTML=""; }
+function roundPt(n){ return Math.round(n*10)/10; }
+function fixDecimal(val){ if(typeof val==='string') return val.replace(',','.'); return val; }
+function calcScore(sets){ return sets.reduce((t,s)=>{ if(s.isCardio){ const v=parseFloat(fixDecimal(s.value))||0; return t+v*5; } const w=parseFloat(fixDecimal(s.weight))||0; const r=parseFloat(fixDecimal(s.reps))||0; return t+w*r; },0); }
+function sessionScore(sess){ return sess.exercises.reduce((a,ex)=>a+calcScore(ex.sets),0); }
+function getTotalPoints(){ return sessions.reduce((a,s)=>a+sessionScore(s),0); }
+function getAverageScore(){ return sessions.length?getTotalPoints()/sessions.length:300; }
+function getMaxScore(){ return sessions.length?Math.max(...sessions.map(sessionScore)):0; }
+function getLastSessionScore(){ return sessions.length?sessionScore([...sessions].sort((a,b)=>b.date.localeCompare(a.date))[0]):0; }
+function scoreColor(score,goal){ const p=goal>0?score/goal:0; return p>=1?"#16a34a":p>=0.6?"#d97706":"#2563eb"; }
+function badgeHtml(score,goal){ const c=scoreColor(score,goal); return `<span class="badge" style="background:${c}18;color:${c}">${roundPt(score)} pts</span>`; }
+function getEffortColor(level){ if(level<=4) return{bg:"#fee2e2",color:"#dc2626"}; if(level<=7) return{bg:"#fef3c7",color:"#d97706"}; return{bg:"#dcfce7",color:"#16a34a"}; }
+function weekStart(dateStr){ const d=new Date(dateStr+"T12:00:00"); const day=d.getDay(); const diff=(day===0)?-6:1-day; d.setDate(d.getDate()+diff); return d.toISOString().slice(0,10); }
+
+// ==================== PR DESDE HISTORIAL ====================
+function getPRForMachine(machine){
+  // Devuelve { weight, reps, score } del mejor set histórico (mayor peso, y desempate por reps)
+  let bestWeight=0, bestReps=0, bestScore=0;
+  sessions.forEach(sess=>{
+    const ex=sess.exercises.find(e=>e.machine===machine);
+    if(!ex) return;
+    ex.sets.forEach(s=>{
+      if(s.isCardio) return;
+      const w=parseFloat(fixDecimal(s.weight))||0;
+      const r=parseFloat(fixDecimal(s.reps))||0;
+      const sc=w*r;
+      if(w>bestWeight||(w===bestWeight&&r>bestReps)){ bestWeight=w; bestReps=r; bestScore=sc; }
+    });
+  });
+  return bestWeight>0?{weight:bestWeight,reps:bestReps,score:roundPt(bestScore)}:null;
 }
 
-// ==================== FUNCIONES BASE ====================
-function showToast(msg, isError = false) {
-  const toast = document.getElementById("toast");
-  toast.textContent = msg;
-  toast.style.background = isError ? "#dc2626" : "#0f172a";
-  toast.style.color = "white";
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 3000);
-}
+function getPersonalRecords(){ const records={}; MACHINES.forEach(m=>records[m]=0); sessions.forEach(sess=>{ sess.exercises.forEach(ex=>{ const score=calcScore(ex.sets); if(score>records[ex.machine]) records[ex.machine]=roundPt(score); }); }); return records; }
 
-function roundPt(n) { return Math.round(n * 10) / 10; }
-function fixDecimal(val) { if (typeof val === 'string') return val.replace(',', '.'); return val; }
-function calcScore(sets) {
-  return sets.reduce((t, s) => {
-    if (s.isCardio) { const val = parseFloat(fixDecimal(s.value)) || 0; return t + val * 5; }
-    const weight = parseFloat(fixDecimal(s.weight)) || 0;
-    const reps = parseFloat(fixDecimal(s.reps)) || 0;
-    return t + weight * reps;
-  }, 0);
-}
-function sessionScore(sess) { return sess.exercises.reduce((a, ex) => a + calcScore(ex.sets), 0); }
-function getTotalPoints() { return sessions.reduce((a, s) => a + sessionScore(s), 0); }
-function getAverageScore() { return sessions.length ? getTotalPoints() / sessions.length : 300; }
-function getMaxScore() { return sessions.length ? Math.max(...sessions.map(sessionScore)) : 0; }
-function getLastSessionScore() { return sessions.length ? sessionScore([...sessions].sort((a,b)=>b.date.localeCompare(a.date))[0]) : 0; }
-function scoreColor(score, goal) { const pct = goal > 0 ? score / goal : 0; return pct >= 1 ? "#16a34a" : pct >= 0.6 ? "#d97706" : "#2563eb"; }
-function badgeHtml(score, goal) { const c = scoreColor(score, goal); return `<span class="badge" style="background:${c}18;color:${c}">${roundPt(score)} pts</span>`; }
-function getEffortColor(level) { if (level <= 4) return { bg: "#fee2e2", color: "#dc2626" }; if (level <= 7) return { bg: "#fef3c7", color: "#d97706" }; return { bg: "#dcfce7", color: "#16a34a" }; }
-function weekStart(dateStr) { const d = new Date(dateStr + "T12:00:00"); const day = d.getDay(); const diff = (day === 0) ? -6 : 1 - day; d.setDate(d.getDate() + diff); return d.toISOString().slice(0, 10); }
+function getCurrentMonthStats(){ const now=new Date(); const year=now.getFullYear(); const month=now.getMonth(); const ms=sessions.filter(s=>{ const d=new Date(s.date); return d.getFullYear()===year&&d.getMonth()===month; }); const sc=ms.length; const tp=ms.reduce((a,s)=>a+sessionScore(s),0); const ap=sc?tp/sc:0; const tm=ms.reduce((a,s)=>a+(parseFloat(s.duration)||0),0); const cp=sc?(GYM_PRICE/sc).toFixed(2):0; return{sessionCount:sc,totalPoints:tp,avgPoints:ap,totalMinutes:tm,costPerSession:cp}; }
+function getComparisonVsPrevWeek(){ const cm=weekStart(new Date().toISOString().slice(0,10)); const pm=new Date(cm+"T12:00:00"); pm.setDate(pm.getDate()-7); const pmStr=pm.toISOString().slice(0,10); const cp=sessions.filter(s=>weekStart(s.date)===cm).reduce((a,s)=>a+sessionScore(s),0); const pp=sessions.filter(s=>weekStart(s.date)===pmStr).reduce((a,s)=>a+sessionScore(s),0); if(pp===0) return{diff:0,hasPrev:false}; return{diff:roundPt(cp-pp),hasPrev:true}; }
+function getWeeklyProgress(){ const weeks=[]; const today=new Date(); for(let i=3;i>=0;i--){ const md=new Date(today); md.setDate(today.getDate()-(today.getDay()===0?6:today.getDay()-1)-(i*7)); const monday=md.toISOString().slice(0,10); weeks.push({week:monday,points:roundPt(sessions.filter(s=>weekStart(s.date)===monday).reduce((a,s)=>a+sessionScore(s),0))}); } return weeks; }
+function getMuscleGroupScores(){ const groups={Espalda:0,Brazos:0,Hombro:0,Pecho:0,Cardio:0,Piernas:0,Core:0}; sessions.forEach(sess=>{ sess.exercises.forEach(ex=>{ const cm=customMachines.find(m=>m.name===ex.machine); const group=cm?.muscleMain||MUSCLE_GROUPS[ex.machine]; if(group&&groups[group]!==undefined) groups[group]+=calcScore(ex.sets); }); }); return{groups,total:Object.values(groups).reduce((a,b)=>a+b,0)}; }
+function getLastExerciseData(machine){ const sorted=[...sessions].sort((a,b)=>b.date.localeCompare(a.date)); for(const sess of sorted){ const ex=sess.exercises.find(e=>e.machine===machine); if(ex&&ex.sets.length){ const ls=ex.sets[ex.sets.length-1]; if(ls.isCardio) return `${fixDecimal(ls.value)||0} ${ls.unit}`; return `${fixDecimal(ls.weight)||0}kg × ${fixDecimal(ls.reps)||0}`; } } return "—"; }
+function getCurrentWeekStats(){ const cm=weekStart(new Date().toISOString().slice(0,10)); const ws=sessions.filter(s=>weekStart(s.date)===cm); return{daysTrained:new Set(ws.map(s=>s.date)).size,totalMinutes:ws.reduce((a,s)=>a+(parseFloat(s.duration)||0),0)}; }
+function getCardioStats(){ let tk=0,tm=0,tkmh=0,count=0; sessions.forEach(s=>{ s.exercises.forEach(ex=>{ if(ex.machine==="Cardio") ex.sets.forEach(set=>{ if(set.isCardio){ const v=parseFloat(fixDecimal(set.value))||0; if(set.unit==="km") tk+=v; if(set.unit==="min") tm+=v; if(set.unit==="kmh") tkmh+=v; count++; } }); }); }); return{totalKm:tk,totalMin:tm,totalKmh:tkmh,avgKmh:count?tkmh/count:0}; }
 
-function getPersonalRecords() {
-  const records = {};
-  MACHINES.forEach(m => records[m] = 0);
-  sessions.forEach(sess => { sess.exercises.forEach(ex => { const score = calcScore(ex.sets); if (score > records[ex.machine]) records[ex.machine] = roundPt(score); }); });
-  return records;
-}
+// ==================== NAVIGATION ====================
+function updateHeader(){ document.getElementById("header-sub").textContent=`${sessions.length} sesiones · ${Math.round(getTotalPoints())} pts`; }
+function showView(v){ currentView=v; document.querySelectorAll("#nav button").forEach(b=>b.classList.remove("active")); const nb=document.getElementById("nav-"+v); if(nb) nb.classList.add("active"); document.getElementById("btn-new").style.display=v==="form"?"none":""; render(); if(v==="stats") setTimeout(()=>initStatsCharts(),100); if(v==="body") setTimeout(()=>initBodyChart(),100); }
+function toggleTheme(theme){ document.body.className=theme; localStorage.setItem("gym_theme",theme); render(); if(currentView==="stats") initStatsCharts(); if(currentView==="body") initBodyChart(); }
+function toggleWeek(key){ openWeeks[key]=!openWeeks[key]; render(); }
+function togglePlannedDay(date){ const idx=plannedDays.indexOf(date); if(idx>=0) plannedDays.splice(idx,1); else plannedDays.push(date); saveAll(); render(); }
+function calPrev(){ calMonth--; if(calMonth<0){ calMonth=11; calYear--; } render(); }
+function calNext(){ calMonth++; if(calMonth>11){ calMonth=0; calYear++; } render(); }
+function calClick(date){ calendarFilter=date; showView("history"); }
 
-function getCurrentMonthStats() {
-  const now = new Date(); const year = now.getFullYear(); const month = now.getMonth();
-  const monthSessions = sessions.filter(s => { const d = new Date(s.date); return d.getFullYear() === year && d.getMonth() === month; });
-  const sessionCount = monthSessions.length;
-  const totalPoints = monthSessions.reduce((a, s) => a + sessionScore(s), 0);
-  const avgPoints = sessionCount ? totalPoints / sessionCount : 0;
-  const totalMinutes = monthSessions.reduce((a, s) => a + (parseFloat(s.duration) || 0), 0);
-  const costPerSession = sessionCount ? (GYM_PRICE / sessionCount).toFixed(2) : 0;
-  return { sessionCount, totalPoints, avgPoints, totalMinutes, costPerSession };
-}
-
-function getComparisonVsPrevWeek() {
-  const currentMonday = weekStart(new Date().toISOString().slice(0,10));
-  const prevMondayDate = new Date(currentMonday + "T12:00:00"); prevMondayDate.setDate(prevMondayDate.getDate()-7);
-  const prevMonday = prevMondayDate.toISOString().slice(0,10);
-  const currentPoints = sessions.filter(s => weekStart(s.date) === currentMonday).reduce((a,s)=>a+sessionScore(s),0);
-  const prevPoints = sessions.filter(s => weekStart(s.date) === prevMonday).reduce((a,s)=>a+sessionScore(s),0);
-  if (prevPoints === 0) return { diff:0, hasPrev:false };
-  return { diff: roundPt(currentPoints - prevPoints), hasPrev:true };
-}
-
-function getWeeklyProgress() {
-  const weeks = []; const today = new Date();
-  for (let i=3; i>=0; i--) {
-    const mondayDate = new Date(today);
-    mondayDate.setDate(today.getDate() - (today.getDay()===0?6:today.getDay()-1) - (i*7));
-    const monday = mondayDate.toISOString().slice(0,10);
-    weeks.push({ week: monday, points: roundPt(sessions.filter(s=>weekStart(s.date)===monday).reduce((a,s)=>a+sessionScore(s),0)) });
-  }
-  return weeks;
-}
-
-function getMuscleGroupScores() {
-  const groups = { Espalda:0, Brazos:0, Hombro:0, Pecho:0, Cardio:0 };
-  sessions.forEach(sess => { sess.exercises.forEach(ex => { const group = MUSCLE_GROUPS[ex.machine]; if (group) groups[group] += calcScore(ex.sets); }); });
-  return { groups, total: Object.values(groups).reduce((a,b)=>a+b,0) };
-}
-
-function getLastExerciseData(machine) {
-  const sorted = [...sessions].sort((a,b)=>b.date.localeCompare(a.date));
-  for (const sess of sorted) {
-    const ex = sess.exercises.find(e => e.machine === machine);
-    if (ex && ex.sets.length) {
-      const lastSet = ex.sets[ex.sets.length-1];
-      if (lastSet.isCardio) return `${fixDecimal(lastSet.value)||0} ${lastSet.unit}`;
-      return `${fixDecimal(lastSet.weight)||0}kg × ${fixDecimal(lastSet.reps)||0}`;
-    }
-  }
-  return "—";
-}
-
-function getLastCardioDetails() {
-  const sorted = [...sessions].sort((a,b)=>b.date.localeCompare(a.date));
-  let lastMin=null, lastKm=null, lastKmh=null;
-  for (const sess of sorted) {
-    const ex = sess.exercises.find(e=>e.machine==="Cardio");
-    if (ex && ex.sets.length) {
-      for (const set of ex.sets) {
-        if (set.isCardio) {
-          const v = parseFloat(fixDecimal(set.value))||0;
-          if (set.unit==="min" && lastMin===null) lastMin=v;
-          if (set.unit==="km" && lastKm===null) lastKm=v;
-          if (set.unit==="kmh" && lastKmh===null) lastKmh=v;
-        }
-      }
-    }
-  }
-  return { min:lastMin, km:lastKm, kmh:lastKmh };
-}
-
-function getCurrentWeekStats() {
-  const currentMonday = weekStart(new Date().toISOString().slice(0,10));
-  const weekSessions = sessions.filter(s=>weekStart(s.date)===currentMonday);
-  return { daysTrained: new Set(weekSessions.map(s=>s.date)).size, totalMinutes: weekSessions.reduce((a,s)=>a+(parseFloat(s.duration)||0),0) };
-}
-
-function getCardioStats() {
-  let totalKm=0, totalMin=0, totalKmh=0, count=0;
-  sessions.forEach(s=>{ s.exercises.forEach(ex=>{ if(ex.machine==="Cardio") ex.sets.forEach(set=>{ if(set.isCardio){ const v=parseFloat(fixDecimal(set.value))||0; if(set.unit==="km") totalKm+=v; if(set.unit==="min") totalMin+=v; if(set.unit==="kmh") totalKmh+=v; count++; } }); }); });
-  return { totalKm, totalMin, totalKmh, avgKmh: count? totalKmh/count:0 };
-}
-
-// ==================== UI ====================
-function updateHeader() {
-  document.getElementById("header-sub").textContent = `${sessions.length} sesiones · ${Math.round(getTotalPoints())} pts`;
-}
-function showView(v) {
-  currentView = v;
-  document.querySelectorAll("#nav button").forEach(b=>b.classList.remove("active"));
-  const nb = document.getElementById("nav-"+v); if(nb) nb.classList.add("active");
-  document.getElementById("btn-new").style.display = v==="form" ? "none" : "";
-  render();
-  if(v==="stats") setTimeout(()=>initStatsCharts(), 100);
-  if(v==="body") setTimeout(()=>initBodyChart(), 100);
-}
-function toggleTheme(theme) { document.body.className = theme; localStorage.setItem("gym_theme", theme); render(); if(currentView==="stats") initStatsCharts(); if(currentView==="body") initBodyChart(); }
-function toggleWeek(key) { openWeeks[key] = !openWeeks[key]; render(); }
-function togglePlannedDay(date) { const idx = plannedDays.indexOf(date); if(idx>=0) plannedDays.splice(idx,1); else plannedDays.push(date); saveAll(); render(); }
-function calPrev() { calMonth--; if(calMonth<0){ calMonth=11; calYear--; } render(); }
-function calNext() { calMonth++; if(calMonth>11){ calMonth=0; calYear++; } render(); }
-function calClick(date) { calendarFilter = date; showView("history"); }
-
-function renderCalendar() {
-  const avgScore = getAverageScore(); const sessMap = {};
-  sessions.forEach(s=>{ const sc = sessionScore(s); if(!sessMap[s.date]) sessMap[s.date]={score:0}; sessMap[s.date].score+=sc; });
-  const todayStr = new Date().toISOString().slice(0,10);
-  const first = new Date(calYear,calMonth,1).getDay(); const days = new Date(calYear,calMonth+1,0).getDate(); const offset = (first+6)%7;
-  let cells = ""; ["L","M","X","J","V","S","D"].forEach(d=>cells+=`<div class="cal-day-hdr">${d}</div>`);
+// ==================== CALENDAR ====================
+function renderCalendar(){
+  const avgScore=getAverageScore(); const sessMap={};
+  sessions.forEach(s=>{ const sc=sessionScore(s); if(!sessMap[s.date]) sessMap[s.date]={score:0}; sessMap[s.date].score+=sc; });
+  const todayStr=new Date().toISOString().slice(0,10);
+  const first=new Date(calYear,calMonth,1).getDay(); const days=new Date(calYear,calMonth+1,0).getDate(); const offset=(first+6)%7;
+  let cells=""; ["L","M","X","J","V","S","D"].forEach(d=>cells+=`<div class="cal-day-hdr">${d}</div>`);
   for(let i=0;i<offset;i++) cells+=`<div></div>`;
   for(let d=1;d<=days;d++){
-    const key = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    const data = sessMap[key]; const isPlanned = plannedDays.includes(key); const isToday = key===todayStr;
+    const key=`${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const data=sessMap[key]; const isPlanned=plannedDays.includes(key); const isToday=key===todayStr;
     let dotClass=""; if(data){ if(data.score>avgScore) dotClass="gold"; else if(Math.abs(data.score-avgScore)<0.1) dotClass="silver"; else dotClass="red"; }
-    const plannedClass = isPlanned && !data ? "planned" : "";
-    cells += `<div class="cal-day ${data?"has-session":""} ${isToday?"today":""} ${plannedClass}" onclick="${data?`calClick('${key}')`:`togglePlannedDay('${key}')`}"><div class="day-num">${d}</div>${data?`<div class="cal-dot ${dotClass}"></div>`:isPlanned?`<div style="font-size:10px">📅</div>`:""}</div>`;
+    const plannedClass=isPlanned&&!data?"planned":"";
+    cells+=`<div class="cal-day ${data?"has-session":""} ${isToday?"today":""} ${plannedClass}" onclick="${data?`calClick('${key}')`:`togglePlannedDay('${key}')`}"><div class="day-num">${d}</div>${data?`<div class="cal-dot ${dotClass}"></div>`:isPlanned?`<div style="font-size:10px">📅</div>`:""}</div>`;
   }
-  return `<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()">‹</button><span>${MONTHS[calMonth]} ${calYear}</span><button onclick="calNext()">›</button></div><div class="cal-grid">${cells}</div><div style="display:flex; gap:12px; justify-content:center; margin-top:12px; font-size:10px"><span>🟡 Supera media</span><span>⚪ Iguala</span><span>🔴 Debajo</span><span>📅 Planeado</span></div></div>`;
+  return `<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()">‹</button><span>${MONTHS[calMonth]} ${calYear}</span><button onclick="calNext()">›</button></div><div class="cal-grid">${cells}</div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:10px;font-weight:700"><span>🟡 Supera media</span><span>⚪ Iguala</span><span>🔴 Debajo</span><span>📅 Planeado</span></div></div>`;
 }
 
-function renderSessionCard(s) {
-  const sc = roundPt(sessionScore(s)); const pct = s.goal>0?Math.min(100,(sc/s.goal)*100):0; const barC = scoreColor(sc,s.goal);
-  const d = new Date(s.date+"T12:00:00"); const dateLabel = `${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}`;
-  const effort = s.effort||null; let effortHtml = "";
-  if(effort){ const ec = getEffortColor(effort); effortHtml = `<div class="effort-badge" style="background:${ec.bg}; color:${ec.color}">💪 Esfuerzo: ${effort}/10</div>`; }
-  const exercisesHtml = s.exercises.map(ex=>{
-    const exSc = roundPt(calcScore(ex.sets));
-    const chips = ex.sets.map(st=>st.isCardio?`<span class="set-chip">${fixDecimal(st.value)||0} ${st.unit}</span>`:`<span class="set-chip">${fixDecimal(st.weight)||0}kg × ${fixDecimal(st.reps)||0}</span>`).join("");
-    return `<div style="margin-bottom:9px"><div style="font-weight:700;font-size:12px;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`;
-  }).join("");
-  const notesHtml = s.notes ? `<div style="margin-top:9px;padding:9px;border-radius:11px;font-size:12px;background:#fffbeb;color:#92400e">📝 ${s.notes}</div>` : "";
-  return `<div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between"><div><div style="font-weight:800">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc,s.goal)}</div><div class="prog-bar" style="margin:12px 0"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${exercisesHtml}${notesHtml}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" class="btn-card-edit" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700">✏️ Editar</button><button onclick="deleteSession(${s.id})" class="btn-card-del" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700">🗑</button></div></div>`;
+// ==================== SESSION CARDS ====================
+function renderSessionCard(s){
+  const sc=roundPt(sessionScore(s)); const pct=s.goal>0?Math.min(100,(sc/s.goal)*100):0; const barC=scoreColor(sc,s.goal);
+  const d=new Date(s.date+"T12:00:00"); const dateLabel=`${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}`;
+  const effort=s.effort||null; let effortHtml="";
+  if(effort){ const ec=getEffortColor(effort); effortHtml=`<div class="effort-badge" style="background:${ec.bg};color:${ec.color}">💪 Esfuerzo: ${effort}/10</div>`; }
+  const exercisesHtml=s.exercises.map(ex=>{ const exSc=roundPt(calcScore(ex.sets)); const chips=ex.sets.map(st=>st.isCardio?`<span class="set-chip">${fixDecimal(st.value)||0} ${st.unit}</span>`:`<span class="set-chip">${fixDecimal(st.weight)||0}kg × ${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:800;font-size:12px;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("");
+  const notesHtml=s.notes?`<div style="margin-top:9px;padding:9px;border-radius:11px;font-size:12px;background:#fffbeb;color:#92400e">📝 ${s.notes}</div>`:"";
+  return `<div class="card" style="padding:12px"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-weight:800;font-size:15px">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px;font-weight:600">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc,s.goal)}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div>${exercisesHtml}${notesHtml}<div style="display:flex;gap:8px;margin-top:13px"><button onclick="showEdit(${s.id})" style="flex:1;background:#f1f5f9;border:none;border-radius:10px;padding:10px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer">✏️ Editar</button><button onclick="deleteSession(${s.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:10px;padding:10px 14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer">🗑</button></div></div>`;
 }
-function deleteSession(id) { if(confirm("¿Eliminar?")){ sessions=sessions.filter(s=>s.id!==id); saveAll(); render(); } }
-function showEdit(id) { editingSession = JSON.parse(JSON.stringify(sessions.find(s=>s.id===id))); currentView="form"; render(); }
-function showNew() { editingSession = { id:Date.now(), date:new Date().toISOString().slice(0,10), duration:45, goal:Math.round(getAverageScore()), effort:5, exercises:MACHINES.map(m=>({ machine:m, sets:[m==="Cardio"?{isCardio:true,value:"",unit:"min"}:{isCardio:false,weight:"",reps:""}] })), notes:"" }; currentView="form"; render(); }
-function cancelForm() { editingSession = null; showView("home"); }
+function deleteSession(id){ if(confirm("¿Eliminar?")){ sessions=sessions.filter(s=>s.id!==id); saveAll(); render(); } }
+function showEdit(id){ editingSession=JSON.parse(JSON.stringify(sessions.find(s=>s.id===id))); activeRoutineId=null; currentView="form"; render(); }
+function showNew(){ editingSession={id:Date.now(),date:new Date().toISOString().slice(0,10),duration:45,goal:Math.round(getAverageScore()),effort:5,exercises:MACHINES.map(m=>({machine:m,sets:[m==="Cardio"?{isCardio:true,value:"",unit:"min"}:{isCardio:false,weight:"",reps:""}]})),notes:""}; activeRoutineId=null; currentView="form"; render(); }
+function cancelForm(){ editingSession=null; activeRoutineId=null; showView("home"); }
 
-function renderHome() {
-  const avgScore = roundPt(getAverageScore()); const lastScore = roundPt(getLastSessionScore()); const monthStats = getCurrentMonthStats();
-  const { daysTrained, totalMinutes } = getCurrentWeekStats(); const comparison = getComparisonVsPrevWeek(); const weeklyProgress = getWeeklyProgress();
-  const maxPoints = Math.max(...weeklyProgress.map(w=>w.points),1); const goalMet = daysTrained>=3; const goalPercent = Math.min(100,(daysTrained/3)*100);
-  const installBanner = deferredInstall ? `<div class="install-banner"><h3>📲 Instala la app</h3><button id="btn-install" onclick="installApp()">Instalar</button></div>` : `<div class="install-banner"><h3>📲 Añadir a pantalla de inicio</h3><ul class="install-steps"><li>📱 iPhone: compartir → "Añadir a pantalla de inicio"</li><li>🤖 Android: menú → "Añadir a pantalla de inicio"</li></ul></div>`;
-  const activeTheme = document.body.className;
+// ==================== VIEWS ====================
+function renderHome(){
+  const avgScore=roundPt(getAverageScore()); const lastScore=roundPt(getLastSessionScore()); const monthStats=getCurrentMonthStats();
+  const{daysTrained,totalMinutes}=getCurrentWeekStats(); const comparison=getComparisonVsPrevWeek(); const weeklyProgress=getWeeklyProgress();
+  const maxPoints=Math.max(...weeklyProgress.map(w=>w.points),1); const goalMet=daysTrained>=3; const goalPercent=Math.min(100,(daysTrained/3)*100);
+  const activeTheme=document.body.className;
   return `${renderCalendar()}
-  <div class="stats-grid"><div class="stat-card"><div class="stat-val">${lastScore}</div><div class="stat-lbl">Última sesión</div></div><div class="stat-card"><div class="stat-val">${avgScore}</div><div class="stat-lbl">Media global</div></div><div class="stat-card"><div class="stat-val">${roundPt(monthStats.avgPoints)}</div><div class="stat-lbl">Media mes</div></div></div>
-  <div class="theme-selector"><div class="theme-btn theme-dark ${activeTheme==='dark'?'active':''}" onclick="toggleTheme('dark')">🌙 Oscuro</div><div class="theme-btn theme-light ${activeTheme==='light'?'active':''}" onclick="toggleTheme('light')">☀️ Claro</div><div class="theme-btn theme-mint ${activeTheme==='mint'?'active':''}" onclick="toggleTheme('mint')">🌿 Menta</div><div class="theme-btn theme-purple ${activeTheme==='purple'?'active':''}" onclick="toggleTheme('purple')">🔮 Morado</div></div>
-  <div class="goal-meter"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet?'#16a34a':'#d97706'}"></div></div><div class="goal-meter-header"><span>⏱ Tiempo semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev?`<div style="margin-top:8px;text-align:center;font-size:12px">vs semana pasada ${comparison.diff>0?`<span class="trend-up">▲ +${comparison.diff} pts</span>`:comparison.diff<0?`<span class="trend-down">▼ ${comparison.diff} pts</span>`:`= Sin cambios`}</div>`:''}</div>
-  <div class="weekly-progress"><div class="section-title">Progreso últimas 4 semanas</div><div class="week-chart">${weeklyProgress.map(w=>`<div class="week-chart-bar"><div class="bar" style="height:${(w.points/maxPoints)*40}px;background:${w.points>0?'#2563eb':'#e2e8f0'}"></div><div style="font-size:9px">${w.points||'-'}</div></div>`).join("")}</div></div>
-  ${installBanner}<div class="section-title">Últimas sesiones</div>${sessions.slice(0,3).map(renderSessionCard).join("")||'<div class="empty-state"><div class="big">🏋️</div><b>¡Empieza tu primer entreno!</b></div>'}`;
+  <div class="stats-grid"><div class="stat-card"><div class="stat-val">${lastScore}</div><div style="font-size:11px;font-weight:700">Última sesión</div></div><div class="stat-card"><div class="stat-val">${avgScore}</div><div style="font-size:11px;font-weight:700">Media global</div></div><div class="stat-card"><div class="stat-val">${roundPt(monthStats.avgPoints)}</div><div style="font-size:11px;font-weight:700">Media mes</div></div></div>
+  <div class="theme-selector"><div class="theme-btn ${activeTheme==='dark'?'active':''}" onclick="toggleTheme('dark')">🌙 Oscuro</div><div class="theme-btn ${activeTheme==='light'?'active':''}" onclick="toggleTheme('light')">☀️ Claro</div><div class="theme-btn ${activeTheme==='mint'?'active':''}" onclick="toggleTheme('mint')">🌿 Menta</div><div class="theme-btn ${activeTheme==='purple'?'active':''}" onclick="toggleTheme('purple')">🔮 Morado</div></div>
+  <div class="goal-meter"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet?'#16a34a':'#d97706'}"></div></div><div class="goal-meter-header"><span>⏱ Tiempo semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev?`<div style="margin-top:8px;text-align:center;font-size:12px;font-weight:700">vs semana pasada ${comparison.diff>0?`<span class="trend-up">▲ +${comparison.diff} pts</span>`:comparison.diff<0?`<span class="trend-down">▼ ${comparison.diff} pts</span>`:"= Sin cambios"}</div>`:""}</div>
+  <div class="weekly-progress"><div class="section-title">Progreso últimas 4 semanas</div><div class="week-chart">${weeklyProgress.map(w=>`<div class="week-chart-bar"><div class="bar" style="height:${(w.points/maxPoints)*40}px;background:${w.points>0?'#2563eb':'#e2e8f0'}"></div><div style="font-size:9px;font-weight:700">${w.points||'-'}</div></div>`).join("")}</div></div>
+  <div class="section-title">Últimas sesiones</div>${sessions.slice(0,3).map(renderSessionCard).join("")||'<div class="empty-state"><div style="font-size:48px">🏋️</div><b>¡Empieza tu primer entreno!</b></div>'}`;
 }
 
-function renderHistory() {
-  const list = calendarFilter ? sessions.filter(s=>s.date===calendarFilter) : sessions;
-  const filterBar = calendarFilter ? `<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px">📅 ${calendarFilter} <button onclick="calendarFilter=null;render()" style="background:none;border:none;font-size:16px;cursor:pointer">✕</button></div>` : "";
+function renderHistory(){
+  const list=calendarFilter?sessions.filter(s=>s.date===calendarFilter):sessions;
+  const filterBar=calendarFilter?`<div style="display:flex;align-items:center;gap:9px;margin-bottom:11px;font-weight:700">📅 ${calendarFilter} <button onclick="calendarFilter=null;render()" style="background:none;border:none;font-size:16px;cursor:pointer">✕</button></div>`:"";
   return `${filterBar}<div class="section-title">${calendarFilter?"Sesiones del "+calendarFilter:"Historial completo"} (${list.length})</div>${list.length?list.map(renderSessionCard).join(""):'<div class="empty-state">No hay entrenos aquí.</div>'}`;
 }
 
-function renderWeekly() {
+function renderWeekly(){
   if(!sessions.length) return '<div class="empty-state">Aún no hay sesiones.</div>';
-  const weeks = {}; sessions.forEach(s=>{ const key=weekStart(s.date); if(!weeks[key]) weeks[key]=[]; weeks[key].push(s); });
-  const weeksSorted = Object.entries(weeks).sort((a,b)=>b[0].localeCompare(a[0]));
-  let html = `<div class="section-title">Resumen por semana</div>`;
-  weeksSorted.forEach(([monKey, weekSessions])=>{
-    const totalScore = weekSessions.reduce((a,s)=>a+sessionScore(s),0);
-    const totalTime = weekSessions.reduce((a,s)=>a+(parseFloat(s.duration)||0),0);
-    const avgScore = weekSessions.length ? Math.round(totalScore/weekSessions.length) : 0;
-    const totalGoal = weekSessions.reduce((a,s)=>a+(parseFloat(s.goal)||300),0);
-    const pct = totalGoal>0?Math.min(100,(totalScore/totalGoal)*100):0;
-    const barC = pct>=100?"#16a34a":pct>=60?"#d97706":"#2563eb";
-    const isOpen = openWeeks[monKey];
-    const mon = new Date(monKey+"T12:00:00"); const sun = new Date(monKey+"T12:00:00"); sun.setDate(sun.getDate()+6);
-    const weekLabel = `${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${sun.getDate()} ${MONTHS[sun.getMonth()].slice(0,3)}`;
-    const sessRows = weekSessions.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(s=>{ const sc=roundPt(sessionScore(s)); const d=new Date(s.date+"T12:00:00"); return `<div style="display:flex;justify-content:space-between;padding:7px 0"><span>${DAYS_ES[d.getDay()].slice(0,3)} ${d.getDate()}</span><span>${s.duration} min</span>${badgeHtml(sc,s.goal)}</div>`; }).join("");
-    html += `<div class="week-block"><div class="week-head" onclick="toggleWeek('${monKey}')"><div><div style="font-weight:800">${weekLabel}</div><div>${weekSessions.length} sesión · ${Math.round(totalScore)} pts</div></div><div>${badgeHtml(totalScore,totalGoal)}<span class="chevron${isOpen?" open":""}">›</span></div></div>${isOpen?`<div style="padding:13px 15px"><div class="week-stats-row" style="display:flex;gap:8px"><div class="week-stat"><div class="week-stat-val">${weekSessions.length}</div><div>Sesiones</div></div><div class="week-stat"><div class="week-stat-val">${Math.round(totalScore)}</div><div>Pts total</div></div><div class="week-stat"><div class="week-stat-val">${avgScore}</div><div>Pts/sesión</div></div></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div><div style="margin-top:13px">${sessRows}</div></div>`:""}</div>`;
+  const weeks={}; sessions.forEach(s=>{ const key=weekStart(s.date); if(!weeks[key]) weeks[key]=[]; weeks[key].push(s); });
+  const weeksSorted=Object.entries(weeks).sort((a,b)=>b[0].localeCompare(a[0]));
+  let html=`<div class="section-title">Resumen por semana</div>`;
+  weeksSorted.forEach(([monKey,weekSessions])=>{
+    const totalScore=weekSessions.reduce((a,s)=>a+sessionScore(s),0);
+    const avgScore=weekSessions.length?Math.round(totalScore/weekSessions.length):0;
+    const totalGoal=weekSessions.reduce((a,s)=>a+(parseFloat(s.goal)||300),0);
+    const pct=totalGoal>0?Math.min(100,(totalScore/totalGoal)*100):0;
+    const barC=pct>=100?"#16a34a":pct>=60?"#d97706":"#2563eb";
+    const isOpen=openWeeks[monKey];
+    const mon=new Date(monKey+"T12:00:00"); const sun=new Date(monKey+"T12:00:00"); sun.setDate(sun.getDate()+6);
+    const weekLabel=`${mon.getDate()} ${MONTHS[mon.getMonth()].slice(0,3)} – ${sun.getDate()} ${MONTHS[sun.getMonth()].slice(0,3)}`;
+    const sessRows=weekSessions.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(s=>{ const sc=roundPt(sessionScore(s)); const d=new Date(s.date+"T12:00:00"); return `<div style="display:flex;justify-content:space-between;padding:7px 0;font-weight:600"><span>${DAYS_ES[d.getDay()].slice(0,3)} ${d.getDate()}</span><span>${s.duration} min</span>${badgeHtml(sc,s.goal)}</div>`; }).join("");
+    html+=`<div class="week-block"><div class="week-head" onclick="toggleWeek('${monKey}')"><div><div style="font-weight:800">${weekLabel}</div><div style="font-size:12px;font-weight:600">${weekSessions.length} sesión · ${Math.round(totalScore)} pts</div></div><div style="display:flex;align-items:center;gap:6px">${badgeHtml(totalScore,totalGoal)}<span class="chevron${isOpen?" open":""}">›</span></div></div>${isOpen?`<div style="padding:13px 15px"><div style="display:flex;gap:8px;margin-bottom:10px"><div class="week-stat"><div style="font-weight:900;font-size:16px">${weekSessions.length}</div><div style="font-size:11px">Sesiones</div></div><div class="week-stat"><div style="font-weight:900;font-size:16px">${Math.round(totalScore)}</div><div style="font-size:11px">Pts total</div></div><div class="week-stat"><div style="font-weight:900;font-size:16px">${avgScore}</div><div style="font-size:11px">Pts/sesión</div></div></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div><div style="margin-top:13px">${sessRows}</div></div>`:""}</div>`;
   });
   return html;
 }
 
-// ==================== GRÁFICAS (CORREGIDAS) ====================
-let chartInstances = {};
-function destroyChart(name) { if(chartInstances[name]){ try{chartInstances[name].destroy();}catch(e){} delete chartInstances[name]; } }
-function getChartColors() { const isDark=document.body.classList.contains('dark'); return { textColor: isDark?'#c8d0e8':'#374151', gridColor: isDark?'#2e2e4a':'#e5e7eb' }; }
-function initStatsCharts() {
-  if(!sessions.length) return;
-  const { textColor, gridColor } = getChartColors();
-  const defaults = { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ color:textColor, font:{size:11} } } }, scales:{ x:{ ticks:{ color:textColor, font:{size:10} }, grid:{ color:gridColor } }, y:{ ticks:{ color:textColor, font:{size:10} }, grid:{ color:gridColor } } } };
-  const lastSessions = [...sessions].sort((a,b)=>a.date.localeCompare(b.date)).slice(-15);
-  destroyChart('pointsChart');
-  const ctx1 = document.getElementById('pointsChart')?.getContext('2d');
-  if(ctx1) chartInstances['pointsChart'] = new Chart(ctx1, { type:'line', data:{ labels:lastSessions.map(s=>s.date.slice(5)), datasets:[{ label:'Puntos', data:lastSessions.map(s=>sessionScore(s)), borderColor:'#2563eb', tension:0.3, fill:true },{ label:'Media', data:lastSessions.map(()=>getAverageScore()), borderColor:'#d97706', borderDash:[5], fill:false, pointRadius:0 }] }, options:defaults });
-  const sessionsWithEffort = lastSessions.filter(s=>s.effort);
-  if(sessionsWithEffort.length){
+// ==================== STATS (con toggle total/mes) ====================
+let chartInstances={};
+function destroyChart(name){ if(chartInstances[name]){ try{chartInstances[name].destroy();}catch(e){} delete chartInstances[name]; } }
+function getChartColors(){ const isDark=document.body.classList.contains('dark'); return{textColor:isDark?'#c8d0e8':'#374151',gridColor:isDark?'#2e2e4a':'#e5e7eb'}; }
+
+function toggleChartMode(chartName, mode){
+  chartModes[chartName]=mode;
+  // re-render solo esa gráfica
+  initSingleChart(chartName);
+  // actualizar botones
+  document.querySelectorAll(`[data-chart="${chartName}"]`).forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.mode===mode);
+  });
+}
+
+function getSessionsForMode(mode){
+  if(mode==='month'){
+    const now=new Date(); const y=now.getFullYear(); const m=now.getMonth();
+    return sessions.filter(s=>{ const d=new Date(s.date); return d.getFullYear()===y&&d.getMonth()===m; });
+  }
+  return sessions;
+}
+
+function initSingleChart(name){
+  const{textColor,gridColor}=getChartColors();
+  const defaults={responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:textColor,font:{size:11,family:'Nunito'}}}},scales:{x:{ticks:{color:textColor,font:{size:10,family:'Nunito'}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10,family:'Nunito'}},grid:{color:gridColor}}}};
+  const mode=chartModes[name]||'total';
+  const src=getSessionsForMode(mode);
+
+  if(name==='points'){
+    const data=[...src].sort((a,b)=>a.date.localeCompare(b.date)).slice(-15);
+    const avg=src.length?src.reduce((a,s)=>a+sessionScore(s),0)/src.length:getAverageScore();
+    destroyChart('pointsChart');
+    const ctx=document.getElementById('pointsChart')?.getContext('2d');
+    if(ctx) chartInstances['pointsChart']=new Chart(ctx,{type:'line',data:{labels:data.map(s=>s.date.slice(5)),datasets:[{label:'Puntos',data:data.map(s=>sessionScore(s)),borderColor:'#2563eb',tension:0.3,fill:true},{label:'Media',data:data.map(()=>avg),borderColor:'#d97706',borderDash:[5],fill:false,pointRadius:0}]},options:defaults});
+  }
+  if(name==='effort'){
+    const data=[...src].sort((a,b)=>a.date.localeCompare(b.date)).filter(s=>s.effort).slice(-15);
     destroyChart('effortChart');
-    const ctx2 = document.getElementById('effortChart')?.getContext('2d');
-    if(ctx2) chartInstances['effortChart'] = new Chart(ctx2, { type:'bar', data:{ labels:sessionsWithEffort.map(s=>s.date.slice(5)), datasets:[{ label:'Esfuerzo (1-10)', data:sessionsWithEffort.map(s=>s.effort||5), backgroundColor:'#d4af37' }] }, options:{ ...defaults, scales:{ ...defaults.scales, y:{ ...defaults.scales.y, min:0, max:10 } } } });
+    const ctx=document.getElementById('effortChart')?.getContext('2d');
+    if(ctx&&data.length) chartInstances['effortChart']=new Chart(ctx,{type:'bar',data:{labels:data.map(s=>s.date.slice(5)),datasets:[{label:'Esfuerzo (1-10)',data:data.map(s=>s.effort||5),backgroundColor:'#d4af37'}]},options:{...defaults,scales:{...defaults.scales,y:{...defaults.scales.y,min:0,max:10}}}});
   }
-  const weeksMap = {}; sessions.forEach(s=>{ const w=weekStart(s.date); weeksMap[w]=(weeksMap[w]||0)+1; });
-  const weeklyAttendance = Object.entries(weeksMap).sort().slice(-12);
-  if(weeklyAttendance.length){
+  if(name==='attendance'){
+    const weeksMap={}; src.forEach(s=>{ const w=weekStart(s.date); weeksMap[w]=(weeksMap[w]||0)+1; });
+    const wa=Object.entries(weeksMap).sort().slice(-12);
     destroyChart('attendanceChart');
-    const ctx3 = document.getElementById('attendanceChart')?.getContext('2d');
-    if(ctx3) chartInstances['attendanceChart'] = new Chart(ctx3, { type:'bar', data:{ labels:weeklyAttendance.map(([w])=>w.slice(5)), datasets:[{ label:'Sesiones por semana', data:weeklyAttendance.map(([,c])=>c), backgroundColor:'#16a34a' }] }, options:defaults });
+    const ctx=document.getElementById('attendanceChart')?.getContext('2d');
+    if(ctx&&wa.length) chartInstances['attendanceChart']=new Chart(ctx,{type:'bar',data:{labels:wa.map(([w])=>w.slice(5)),datasets:[{label:'Sesiones por semana',data:wa.map(([,c])=>c),backgroundColor:'#16a34a'}]},options:defaults});
   }
-  destroyChart('durationChart');
-  const ctx4 = document.getElementById('durationChart')?.getContext('2d');
-  if(ctx4) chartInstances['durationChart'] = new Chart(ctx4, { type:'line', data:{ labels:lastSessions.map(s=>s.date.slice(5)), datasets:[{ label:'Duración (min)', data:lastSessions.map(s=>s.duration||45), borderColor:'#dc2626', tension:0.3, fill:true }] }, options:defaults });
+  if(name==='duration'){
+    const data=[...src].sort((a,b)=>a.date.localeCompare(b.date)).slice(-15);
+    destroyChart('durationChart');
+    const ctx=document.getElementById('durationChart')?.getContext('2d');
+    if(ctx) chartInstances['durationChart']=new Chart(ctx,{type:'line',data:{labels:data.map(s=>s.date.slice(5)),datasets:[{label:'Duración (min)',data:data.map(s=>s.duration||45),borderColor:'#dc2626',tension:0.3,fill:true}]},options:defaults});
+  }
 }
-function initBodyChart() {
+
+function initStatsCharts(){ ['points','effort','attendance','duration'].forEach(n=>initSingleChart(n)); }
+
+function initBodyChart(){
   if(!weightEntries.length) return;
-  const { textColor, gridColor } = getChartColors();
-  const defaults = { responsive:true, maintainAspectRatio:true, plugins:{ legend:{ labels:{ color:textColor } } }, scales:{ x:{ ticks:{ color:textColor }, grid:{ color:gridColor } }, y:{ ticks:{ color:textColor }, grid:{ color:gridColor } } } };
-  const sorted = [...weightEntries].sort((a,b)=>a.date.localeCompare(b.date));
+  const{textColor,gridColor}=getChartColors();
+  const defaults={responsive:true,maintainAspectRatio:true,plugins:{legend:{labels:{color:textColor,font:{family:'Nunito'}}}},scales:{x:{ticks:{color:textColor,font:{family:'Nunito'}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{family:'Nunito'}},grid:{color:gridColor}}}};
+  const sorted=[...weightEntries].sort((a,b)=>a.date.localeCompare(b.date));
   destroyChart('weightChart');
-  const ctx = document.getElementById('weightChart')?.getContext('2d');
-  if(ctx) chartInstances['weightChart'] = new Chart(ctx, { type:'line', data:{ labels:sorted.map(w=>w.date.slice(5)), datasets:[{ label:'Peso (kg)', data:sorted.map(w=>w.weight), borderColor:'#16a34a', tension:0.3, fill:true }] }, options:defaults });
+  const ctx=document.getElementById('weightChart')?.getContext('2d');
+  if(ctx) chartInstances['weightChart']=new Chart(ctx,{type:'line',data:{labels:sorted.map(w=>w.date.slice(5)),datasets:[{label:'Peso (kg)',data:sorted.map(w=>w.weight),borderColor:'#16a34a',tension:0.3,fill:true}]},options:defaults});
 }
-function renderStats() {
+
+function chartToggleHtml(name){
+  const mode=chartModes[name]||'total';
+  return `<div class="chart-toggle"><button class="chart-toggle-btn ${mode==='total'?'active':''}" data-chart="${name}" data-mode="total" onclick="toggleChartMode('${name}','total')">Total</button><button class="chart-toggle-btn ${mode==='month'?'active':''}" data-chart="${name}" data-mode="month" onclick="toggleChartMode('${name}','month')">Este mes</button></div>`;
+}
+
+function renderStats(){
   if(!sessions.length) return '<div class="empty-state">Aún no hay datos para gráficas.</div>';
-  const totalSessions = sessions.length; const totalPoints = getTotalPoints(); const avgGlobal = totalSessions?roundPt(totalPoints/totalSessions):0;
-  const monthStats = getCurrentMonthStats(); const records = getPersonalRecords(); const { groups, total:muscleTotal } = getMuscleGroupScores(); const maxMuscle = Math.max(...Object.values(groups),1);
-  const cardioStats = getCardioStats();
-  const muscleHtml = Object.entries(groups).map(([g,score])=>`<div class="muscle-group-card"><div class="muscle-header"><span>${g}</span><span>${Math.round(score)} pts (${muscleTotal?Math.round((score/muscleTotal)*100):0}%)</span></div><div class="muscle-bar"><div class="muscle-fill" style="width:${muscleTotal?(score/maxMuscle)*100:0}%;background:${g==="Cardio"?"#16a34a":"#2563eb"}"></div></div></div>`).join("");
-  const recordsHtml = Object.entries(records).filter(([,v])=>v>0).map(([m,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f022"><span style="font-weight:700">${m}</span><span>${v} pts</span></div>`).join("");
-  return `<div class="stats-grid" style="grid-template-columns:repeat(2,1fr)"><div class="stat-card"><div class="stat-val">${totalSessions}</div><div>Sesiones</div></div><div class="stat-card"><div class="stat-val">${monthStats.sessionCount}</div><div>Este mes<br><span style="font-size:10px">💰 ${monthStats.costPerSession}€/sesión</span></div></div><div class="stat-card"><div class="stat-val">${Math.round(totalPoints)}</div><div>Puntos totales</div></div><div class="stat-card"><div class="stat-val">${avgGlobal}</div><div>Media global</div></div></div>
-  <div class="chart-card"><div class="chart-title">📈 Puntos por sesión vs Media</div><canvas id="pointsChart" height="200"></canvas></div>
-  <div class="chart-card"><div class="chart-title">💪 Evolución del Esfuerzo</div><canvas id="effortChart" height="200"></canvas></div>
-  <div class="chart-card"><div class="chart-title">📅 Asistencia semanal</div><canvas id="attendanceChart" height="200"></canvas></div>
-  <div class="chart-card"><div class="chart-title">⏱ Duración de sesiones</div><canvas id="durationChart" height="200"></canvas></div>
+  const totalSessions=sessions.length; const totalPoints=getTotalPoints(); const avgGlobal=totalSessions?roundPt(totalPoints/totalSessions):0;
+  const monthStats=getCurrentMonthStats(); const records=getPersonalRecords(); const{groups,total:muscleTotal}=getMuscleGroupScores(); const maxMuscle=Math.max(...Object.values(groups),1);
+  const cardioStats=getCardioStats();
+  const muscleHtml=Object.entries(groups).filter(([,s])=>s>0).map(([g,score])=>`<div class="muscle-group-card"><div class="muscle-header"><span>${g}</span><span>${Math.round(score)} pts (${muscleTotal?Math.round((score/muscleTotal)*100):0}%)</span></div><div class="muscle-bar"><div class="muscle-fill" style="width:${muscleTotal?(score/maxMuscle)*100:0}%;background:${g==="Cardio"?"#16a34a":"#2563eb"}"></div></div></div>`).join("");
+  const recordsHtml=Object.entries(records).filter(([,v])=>v>0).map(([m,v])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e2e8f022;font-weight:700"><span>${m}</span><span>${v} pts</span></div>`).join("");
+  return `<div class="stats-grid" style="grid-template-columns:repeat(2,1fr)"><div class="stat-card"><div class="stat-val">${totalSessions}</div><div style="font-size:11px;font-weight:700">Sesiones</div></div><div class="stat-card"><div class="stat-val">${monthStats.sessionCount}</div><div style="font-size:11px;font-weight:700">Este mes<br><span style="font-size:10px">💰 ${monthStats.costPerSession}€/sesión</span></div></div><div class="stat-card"><div class="stat-val">${Math.round(totalPoints)}</div><div style="font-size:11px;font-weight:700">Puntos totales</div></div><div class="stat-card"><div class="stat-val">${avgGlobal}</div><div style="font-size:11px;font-weight:700">Media global</div></div></div>
+  <div class="chart-card"><div class="chart-title">📈 Puntos por sesión</div>${chartToggleHtml('points')}<canvas id="pointsChart" height="200"></canvas></div>
+  <div class="chart-card"><div class="chart-title">💪 Evolución del Esfuerzo</div>${chartToggleHtml('effort')}<canvas id="effortChart" height="200"></canvas></div>
+  <div class="chart-card"><div class="chart-title">📅 Asistencia semanal</div>${chartToggleHtml('attendance')}<canvas id="attendanceChart" height="200"></canvas></div>
+  <div class="chart-card"><div class="chart-title">⏱ Duración de sesiones</div>${chartToggleHtml('duration')}<canvas id="durationChart" height="200"></canvas></div>
   <div class="chart-card"><div class="chart-title">🏆 Mejores marcas</div>${recordsHtml||"Sin registros"}</div>
-  <div class="chart-card"><div class="chart-title">💪 Distribución muscular</div>${muscleHtml}</div>
-  <div class="chart-card"><div class="chart-title">🏃 Cardio</div><div class="stats-grid"><div class="stat-card"><div class="stat-val">${cardioStats.totalKm.toFixed(1)}</div><div>Km totales</div></div><div class="stat-card"><div class="stat-val">${Math.round(cardioStats.totalMin)}</div><div>Min totales</div></div><div class="stat-card"><div class="stat-val">${cardioStats.avgKmh.toFixed(1)}</div><div>Vel. media</div></div></div></div>
+  <div class="chart-card"><div class="chart-title">💪 Distribución muscular</div>${muscleHtml||"Sin datos"}</div>
+  <div class="chart-card"><div class="chart-title">🏃 Cardio</div><div class="stats-grid"><div class="stat-card"><div class="stat-val">${cardioStats.totalKm.toFixed(1)}</div><div style="font-size:11px;font-weight:700">Km totales</div></div><div class="stat-card"><div class="stat-val">${Math.round(cardioStats.totalMin)}</div><div style="font-size:11px;font-weight:700">Min totales</div></div><div class="stat-card"><div class="stat-val">${cardioStats.avgKmh.toFixed(1)}</div><div style="font-size:11px;font-weight:700">Vel. media</div></div></div></div>
   <button class="btn-import-export" onclick="exportData()">💾 Exportar copia</button>
   <button class="btn-import-export" onclick="triggerImport()">📂 Importar copia</button>`;
 }
 
-function renderBody() {
-  const todayStr = new Date().toISOString().slice(0,10);
-  const sorted = [...weightEntries].sort((a,b)=>a.date.localeCompare(b.date));
-  const lastWeight = sorted.length?sorted[sorted.length-1].weight:null;
-  const firstWeight = sorted.length?sorted[0].weight:null;
-  const variation = (lastWeight && firstWeight) ? (lastWeight-firstWeight).toFixed(1) : null;
-  const weightHistoryHtml = sorted.slice(-12).map(w=>`<div class="weight-entry"><div style="display:flex;justify-content:space-between"><span>${w.date.slice(5)}</span><span style="font-weight:700">${w.weight} kg</span></div><div class="weight-bar"><div class="weight-fill" style="width:${Math.min(100,Math.max(5,((w.weight-40)/60)*100))}%">${((w.weight-40)/60)*100>15?w.weight+" kg":""}</div></div></div>`).join("");
-  return `<div class="weight-chart-container"><div class="section-title">⚖️ Registrar peso</div><div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap"><input type="number" step="0.1" id="new-weight" placeholder="Peso kg" value="${lastWeight||""}" class="form-input" style="flex:1"><input type="date" id="weight-date" value="${todayStr}" class="form-input" style="flex:1"><button onclick="addWeight(document.getElementById('new-weight').value, document.getElementById('weight-date').value)" class="btn-primary" style="margin:0;padding:12px">Guardar</button></div>${sorted.length?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="stat-card"><div class="stat-val">${lastWeight}</div><div>kg actuales</div></div><div class="stat-card"><div class="stat-val" style="color:${variation>0?'#dc2626':variation<0?'#16a34a':'#64748b'}">${variation>0?'+':''}${variation}</div><div>variación total</div></div></div><div class="section-title">Historial</div>${weightHistoryHtml}<canvas id="weightChart" height="200"></canvas>`:'<div class="empty-state">Aún no hay registros de peso</div>'}<div class="card" style="margin-top:12px;padding:16px"><div class="section-title">📌 Consejo</div><div>Registra el peso el mismo día cada semana (ej. lunes en ayunas).</div></div></div>`;
+function renderBody(){
+  const todayStr=new Date().toISOString().slice(0,10);
+  const sorted=[...weightEntries].sort((a,b)=>a.date.localeCompare(b.date));
+  const lastWeight=sorted.length?sorted[sorted.length-1].weight:null;
+  const firstWeight=sorted.length?sorted[0].weight:null;
+  const variation=(lastWeight&&firstWeight)?(lastWeight-firstWeight).toFixed(1):null;
+  const wh=sorted.slice(-12).map(w=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px;font-weight:700"><span>${w.date.slice(5)}</span><span>${w.weight} kg</span></div><div class="weight-bar"><div class="weight-fill" style="width:${Math.min(100,Math.max(5,((w.weight-40)/60)*100))}%">${((w.weight-40)/60)*100>15?w.weight+" kg":""}</div></div></div>`).join("");
+  return `<div class="weight-chart-container"><div class="section-title">⚖️ Registrar peso</div><div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap"><input type="number" step="0.1" id="new-weight" placeholder="Peso kg" value="${lastWeight||""}" class="form-input" style="flex:1"><input type="date" id="weight-date" value="${todayStr}" class="form-input" style="flex:1"><button onclick="addWeight(document.getElementById('new-weight').value,document.getElementById('weight-date').value)" class="btn-primary" style="margin:0;padding:12px">Guardar</button></div>${sorted.length?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px"><div class="stat-card"><div class="stat-val">${lastWeight}</div><div style="font-size:11px;font-weight:700">kg actuales</div></div><div class="stat-card"><div class="stat-val" style="color:${variation>0?'#dc2626':variation<0?'#16a34a':'#64748b'}">${variation>0?'+':''}${variation}</div><div style="font-size:11px;font-weight:700">variación total</div></div></div><div class="section-title">Historial</div>${wh}<canvas id="weightChart" height="200"></canvas>`:'<div class="empty-state">Aún no hay registros de peso</div>'}<div class="card" style="margin-top:12px;padding:16px"><div class="section-title">📌 Consejo</div><div style="font-size:13px;font-weight:600">Registra el peso el mismo día cada semana (ej. lunes en ayunas).</div></div></div>`;
 }
 
-// ==================== MÁQUINAS Y RUTINAS (NUEVA PESTAÑA) ====================
-function renderSettings() {
-  const machinesList = customMachines.length ? customMachines : MACHINES_BASE.map(m => ({ name:m, category:MUSCLE_GROUPS[m]||"Otro", usualReps:"", lastPRweight:"", lastPRreps:"", notes:"" }));
-  return `<div class="settings-card"><div class="section-title">📌 GESTIÓN DE MÁQUINAS</div><div id="machines-list">${machinesList.map((m,idx)=>`<div class="machine-item" onclick="editMachine(${idx})"><div><strong>${m.name}</strong> <span class="tag">${m.category||"Sin categoría"}</span></div><div style="font-size:12px;opacity:0.7">${m.usualReps ? `Hab: ${m.usualReps} reps · ` : ''}${m.lastPRweight ? `Récord: ${m.lastPRweight}kg x ${m.lastPRreps}` : 'Sin récord'}</div></div>`).join("")}</div><button class="btn-add-machine" onclick="addNewMachineSettings()">➕ Añadir máquina</button></div>
-  <div class="settings-card"><div class="section-title">📋 MIS RUTINAS</div><div id="routines-list">${routines.map((r,idx)=>`<div class="routine-item" onclick="editRoutine(${idx})"><div><strong>${r.name}</strong> <span class="tag">${r.mainMuscleGroup||"General"}</span></div><div style="font-size:12px">${r.exercises.length} ejercicios · ${r.estimatedDuration||'?'} min · Días: ${r.assignedDays?.join(", ")||"Ninguno"}</div><div style="font-size:11px;opacity:0.7">${r.description||""}</div></div>`).join("")}</div><button class="btn-add-routine" onclick="addNewRoutine()">➕ Crear rutina</button></div>`;
+// ==================== MI GYM ====================
+function renderSettings(){
+  const allMachines=MACHINES_BASE.map(name=>{ const c=customMachines.find(m=>m.name===name); return c||{name,muscleMain:MUSCLE_GROUPS[name]||"Otro",muscleSecondary:"",usualReps:"",notes:"",favorite:false}; });
+  const records=getPersonalRecords();
+  const machinesHtml=allMachines.map((m,idx)=>{
+    const pr=getPRForMachine(m.name);
+    const lastData=getLastExerciseData(m.name);
+    const tags=[m.muscleMain,m.muscleSecondary].filter(Boolean).map(t=>`<span class="tag">${t}</span>`).join("");
+    return `<div class="machine-item" onclick="openMachineModal('${m.name.replace(/'/g,"\\'")}')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><span style="font-weight:800">${m.favorite?'⭐ ':''} ${m.name}</span> ${tags} ${pr?`<span class="pr-badge">🏆 ${pr.weight}kg×${pr.reps}</span>`:""}</div>
+      </div>
+      <div style="font-size:12px;font-weight:600;margin-top:3px;opacity:0.7">Último: ${lastData}${m.usualReps?` · Hab: ${m.usualReps} reps`:""}</div>
+      ${m.notes?`<div style="font-size:11px;margin-top:3px;color:#2563eb;font-weight:600">📝 ${m.notes}</div>`:""}
+    </div>`;
+  }).join("");
+
+  const routinesHtml=routines.map((r,idx)=>`<div class="routine-item" onclick="openRoutineModal(${idx})">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><span style="font-weight:800">${r.name}</span> <span class="tag">${r.mainMuscleGroup||"General"}</span></div>
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-size:11px;font-weight:700;color:#64748b">${r.estimatedDuration||'?'} min</span><button onclick="event.stopPropagation();deleteRoutine(${idx})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:16px">🗑</button></div>
+    </div>
+    <div style="font-size:12px;font-weight:600;margin-top:4px">${r.exercises.map(e=>`${e.machineName} (${e.targetSets}×${e.targetReps})`).join(' · ')}</div>
+    ${r.assignedDays?.length?`<div style="font-size:11px;margin-top:3px;opacity:0.6">📅 ${r.assignedDays.join(", ")}</div>`:""}
+  </div>`).join("");
+
+  return `<div class="settings-card"><div class="section-title">🏋️ Mis máquinas</div>${machinesHtml}<button class="btn-add-machine" onclick="openMachineModal(null)">➕ Añadir máquina</button></div>
+  <div class="settings-card"><div class="section-title">📋 Mis rutinas</div>${routinesHtml||'<div style="padding:12px;text-align:center;font-size:13px;font-weight:600;opacity:0.6">Aún no tienes rutinas</div>'}<button class="btn-add-routine" onclick="openRoutineModal(null)">➕ Crear rutina</button></div>
+  <div class="settings-card"><div class="section-title">💾 Copia de seguridad</div><button class="btn-import-export" onclick="exportData()">💾 Exportar datos</button><button class="btn-import-export" onclick="triggerImport()">📂 Importar datos</button></div>`;
 }
 
-function editMachine(idx) {
-  const m = customMachines[idx] || { name:MACHINES_BASE[idx], category:MUSCLE_GROUPS[MACHINES_BASE[idx]]||"Otro", usualReps:"", lastPRweight:"", lastPRreps:"", notes:"" };
-  const newName = prompt("Nombre máquina:", m.name);
-  if(!newName) return;
-  const newCategory = prompt("Categoría (Pecho/Espalda/Brazos/Hombro/Cardio/Otro):", m.category);
-  const newUsualReps = prompt("Repeticiones habituales (ej: 10):", m.usualReps);
-  const newPRweight = prompt("Último récord PESO (kg):", m.lastPRweight);
-  const newPRreps = prompt("Último récord REPETICIONES:", m.lastPRreps);
-  const updated = { name:newName, category:newCategory||"Otro", usualReps:newUsualReps||"", lastPRweight:newPRweight||"", lastPRreps:newPRreps||"", notes:"" };
-  if(idx < customMachines.length) customMachines[idx] = updated;
-  else { customMachines.push(updated); if(!MACHINES_BASE.includes(newName)) MACHINES_BASE.push(newName); updateMachinesWithCardioLast(); saveMachines(); }
-  saveCustomData(); render();
+// ==================== MODAL MÁQUINA ====================
+let editingMachineName=null;
+function openMachineModal(name){
+  editingMachineName=name;
+  const existing=name?customMachines.find(m=>m.name===name)||{name,muscleMain:MUSCLE_GROUPS[name]||"Otro",muscleSecondary:"",usualReps:"",notes:"",favorite:false}:{name:"",muscleMain:"",muscleSecondary:"",usualReps:"",notes:"",favorite:false};
+  const chipsHtml=(selected,role)=>MUSCLE_CATS.map(cat=>{
+    const isSelected=selected===cat;
+    return `<div class="muscle-chip ${isSelected?`selected-${role}`:""}" onclick="selectMuscle('${cat}','${role}')" id="mchip-${role}-${cat}">${cat}</div>`;
+  }).join("");
+  const html=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet">
+    <div class="modal-title">${name?"Editar máquina":"Nueva máquina"}<button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-row"><label class="modal-label">Nombre</label><input id="m-name" class="modal-input" value="${existing.name}" placeholder="Ej: Chest Press"></div>
+    <div class="modal-row"><label class="modal-label">Grupo muscular principal</label><div class="muscle-chips" id="chips-primary">${chipsHtml(existing.muscleMain,'primary')}</div></div>
+    <div class="modal-row"><label class="modal-label">Grupo muscular secundario (opcional)</label><div class="muscle-chips" id="chips-secondary">${chipsHtml(existing.muscleSecondary,'secondary')}</div></div>
+    <div class="modal-2col">
+      <div class="modal-row"><label class="modal-label">Reps habituales</label><input id="m-reps" class="modal-input" value="${existing.usualReps}" placeholder="Ej: 10" type="number"></div>
+      <div class="modal-row"><label class="modal-label">¿Favorita?</label><select id="m-fav" class="modal-input"><option value="0" ${!existing.favorite?'selected':''}>No</option><option value="1" ${existing.favorite?'selected':''}>Sí ⭐</option></select></div>
+    </div>
+    <div class="modal-row"><label class="modal-label">Notas / técnica</label><textarea id="m-notes" class="modal-input" rows="2" placeholder="Técnica, consejos...">${existing.notes||""}</textarea></div>
+    ${name?`<button onclick="deleteMachine('${name.replace(/'/g,"\\'")}');" style="width:100%;background:#fef2f2;color:#dc2626;border:none;border-radius:12px;padding:11px;font-weight:700;margin-bottom:8px;font-family:'Nunito',sans-serif;cursor:pointer">🗑 Eliminar máquina</button>`:""}
+    <button class="btn-modal-primary" onclick="saveMachineModal()">💾 Guardar</button>
+  </div></div>`;
+  document.getElementById("modal-container").innerHTML=html;
+  // Store selected muscles in temp vars
+  window._muscleMain=existing.muscleMain||"";
+  window._muscleSecondary=existing.muscleSecondary||"";
 }
-function addNewMachineSettings() {
-  const name = prompt("Nombre nueva máquina:");
-  if(!name) return;
-  const category = prompt("Categoría (Pecho/Espalda/Brazos/Hombro/Cardio/Otro):", "Otro");
-  customMachines.push({ name, category:category||"Otro", usualReps:"", lastPRweight:"", lastPRreps:"", notes:"" });
-  if(!MACHINES_BASE.includes(name)) MACHINES_BASE.push(name);
-  updateMachinesWithCardioLast(); saveMachines(); saveCustomData(); render();
-}
-function addNewRoutine() {
-  const name = prompt("Nombre rutina (ej: Día de pecho):");
-  if(!name) return;
-  const desc = prompt("Descripción corta:", "");
-  const estimatedDuration = prompt("Duración estimada (minutos):", "45");
-  const days = prompt("Días asignados (separados por comas: Lunes,Miércoles):", "");
-  const assignedDays = days ? days.split(",").map(d=>d.trim()) : [];
-  const mainMuscleGroup = prompt("Grupo muscular principal:", "General");
-  const exercises = [];
-  let addMore = true;
-  while(addMore){
-    const machine = prompt("Nombre máquina (de las que tienes):");
-    if(!machine) break;
-    const targetSets = prompt("Series objetivo:", "3");
-    const targetReps = prompt("Repeticiones objetivo:", "10");
-    const targetWeight = prompt("Peso objetivo (kg):", "0");
-    exercises.push({ machineName: machine, targetSets: parseInt(targetSets)||3, targetReps: parseInt(targetReps)||10, targetWeight: parseFloat(targetWeight)||0 });
-    addMore = confirm("¿Añadir otro ejercicio?");
+
+function selectMuscle(cat,role){
+  if(role==='primary'){
+    window._muscleMain=window._muscleMain===cat?"":cat;
+  } else {
+    window._muscleSecondary=window._muscleSecondary===cat?"":cat;
   }
-  if(exercises.length){
-    routines.push({ id:Date.now(), name, description:desc, exercises, estimatedDuration: parseInt(estimatedDuration)||45, assignedDays, mainMuscleGroup });
-    saveCustomData();
+  // Update chip styles
+  document.querySelectorAll(`[id^="mchip-${role}-"]`).forEach(el=>{
+    const val=el.id.replace(`mchip-${role}-`,"");
+    const selected=(role==='primary'?window._muscleMain:window._muscleSecondary)===val;
+    el.className=`muscle-chip ${selected?`selected-${role}`:""}`;
+  });
+}
+
+function saveMachineModal(){
+  const newName=document.getElementById("m-name").value.trim();
+  if(!newName){ showToast("Escribe un nombre",true); return; }
+  const data={ name:newName, muscleMain:window._muscleMain||"Otro", muscleSecondary:window._muscleSecondary||"", usualReps:document.getElementById("m-reps").value, notes:document.getElementById("m-notes").value, favorite:document.getElementById("m-fav").value==="1" };
+  // Update or insert in customMachines
+  const idx=customMachines.findIndex(m=>m.name===(editingMachineName||newName));
+  if(idx>=0) customMachines[idx]=data; else customMachines.push(data);
+  // Handle name change
+  if(editingMachineName&&editingMachineName!==newName){
+    const bi=MACHINES_BASE.indexOf(editingMachineName);
+    if(bi>=0) MACHINES_BASE[bi]=newName; else MACHINES_BASE.push(newName);
+  } else if(!MACHINES_BASE.includes(newName)){
+    MACHINES_BASE.push(newName);
   }
-  render();
+  updateMachinesWithCardioLast(); saveMachines(); saveCustomData();
+  closeModal(); render();
+  showToast(`"${newName}" guardada ✅`);
 }
-function editRoutine(idx) {
-  const r = routines[idx];
-  if(!r) return;
-  const newName = prompt("Nombre:", r.name);
-  if(!newName) return;
-  r.name = newName;
-  r.description = prompt("Descripción:", r.description)||"";
-  r.estimatedDuration = parseInt(prompt("Duración (min):", r.estimatedDuration))||45;
-  const daysStr = prompt("Días (separados por comas):", r.assignedDays?.join(",")||"");
-  r.assignedDays = daysStr ? daysStr.split(",").map(d=>d.trim()) : [];
-  r.mainMuscleGroup = prompt("Grupo muscular principal:", r.mainMuscleGroup)||"General";
-  saveCustomData(); render();
+
+function deleteMachine(name){
+  if(!confirm(`¿Eliminar "${name}"? Se perderá de las listas (no del historial).`)) return;
+  MACHINES_BASE=MACHINES_BASE.filter(m=>m!==name);
+  customMachines=customMachines.filter(m=>m.name!==name);
+  updateMachinesWithCardioLast(); saveMachines(); saveCustomData();
+  closeModal(); render();
+  showToast(`"${name}" eliminada`);
 }
-function applyRoutineToCurrentSession(routineId) {
-  const routine = routines.find(r=>r.id==routineId);
-  if(!routine || !editingSession) return;
-  routine.exercises.forEach(ex => {
-    const existing = editingSession.exercises.find(e=>e.machine === ex.machineName);
-    if(existing){
-      // añadir nota informativa sin modificar los sets reales
-      if(!existing.note) existing.note = `🎯 Plantilla: ${ex.targetSets} series x ${ex.targetReps} reps (${ex.targetWeight}kg)`;
-    } else {
-      editingSession.exercises.push({ machine: ex.machineName, sets: [{isCardio:false, weight: ex.targetWeight, reps: ex.targetReps}], note: `🎯 Plantilla: ${ex.targetSets} series x ${ex.targetReps} reps (${ex.targetWeight}kg)` });
+
+// ==================== MODAL RUTINA ====================
+let routineModalExercises=[];
+let editingRoutineIdx=null;
+
+function openRoutineModal(idx){
+  editingRoutineIdx=idx;
+  const r=idx!==null?routines[idx]:{name:"",description:"",estimatedDuration:45,assignedDays:[],mainMuscleGroup:"",exercises:[]};
+  routineModalExercises=r.exercises?JSON.parse(JSON.stringify(r.exercises)):[];
+  renderRoutineModal(r);
+}
+
+function renderRoutineModal(r){
+  const exRows=routineModalExercises.map((ex,i)=>`<div class="routine-ex-row" id="rex-${i}">
+    <select id="rex-machine-${i}" style="flex:2;min-width:100px">
+      ${MACHINES.map(m=>`<option ${m===ex.machineName?'selected':''}>${m}</option>`).join("")}
+    </select>
+    <input id="rex-sets-${i}" type="number" value="${ex.targetSets||3}" placeholder="Series" style="width:52px">
+    <span style="font-size:12px;font-weight:700">×</span>
+    <input id="rex-reps-${i}" type="number" value="${ex.targetReps||10}" placeholder="Reps" style="width:52px">
+    <span style="font-size:11px;color:#64748b">@</span>
+    <input id="rex-weight-${i}" type="number" step="0.5" value="${ex.targetWeight||0}" placeholder="kg" style="width:58px">
+    <button class="btn-modal-del" onclick="removeRoutineEx(${i})">✕</button>
+  </div>`).join("");
+
+  const html=`<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet">
+    <div class="modal-title">${editingRoutineIdx!==null?"Editar rutina":"Nueva rutina"}<button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-2col">
+      <div class="modal-row"><label class="modal-label">Nombre</label><input id="r-name" class="modal-input" value="${r.name||""}" placeholder="Ej: Día de pecho"></div>
+      <div class="modal-row"><label class="modal-label">Duración (min)</label><input id="r-dur" class="modal-input" type="number" value="${r.estimatedDuration||45}"></div>
+    </div>
+    <div class="modal-2col">
+      <div class="modal-row"><label class="modal-label">Grupo principal</label>
+        <select id="r-muscle" class="modal-input">
+          ${MUSCLE_CATS.map(c=>`<option ${c===(r.mainMuscleGroup||"")?'selected':''}>${c}</option>`).join("")}
+        </select>
+      </div>
+      <div class="modal-row"><label class="modal-label">Días</label><input id="r-days" class="modal-input" value="${(r.assignedDays||[]).join(', ')}" placeholder="Lun, Mié..."></div>
+    </div>
+    <div class="modal-row"><label class="modal-label">Descripción (opcional)</label><input id="r-desc" class="modal-input" value="${r.description||""}" placeholder="Ej: Enfoque en fuerza"></div>
+    <div class="modal-row">
+      <label class="modal-label">Ejercicios (máquina · series × reps @ peso)</label>
+      <div id="routine-ex-list">${exRows}</div>
+      <button class="btn-modal-add" onclick="addRoutineEx()">➕ Añadir ejercicio</button>
+    </div>
+    <button class="btn-modal-primary" onclick="saveRoutineModal()">💾 Guardar rutina</button>
+  </div></div>`;
+  document.getElementById("modal-container").innerHTML=html;
+}
+
+function addRoutineEx(){
+  // save current state before re-render
+  _saveRoutineExState();
+  routineModalExercises.push({machineName:MACHINES[0]||"",targetSets:3,targetReps:10,targetWeight:0});
+  const r={name:document.getElementById("r-name")?.value||"",description:document.getElementById("r-desc")?.value||"",estimatedDuration:document.getElementById("r-dur")?.value||45,assignedDays:[],mainMuscleGroup:document.getElementById("r-muscle")?.value||""};
+  renderRoutineModal(r);
+}
+
+function removeRoutineEx(i){
+  _saveRoutineExState();
+  routineModalExercises.splice(i,1);
+  const r={name:document.getElementById("r-name")?.value||"",description:document.getElementById("r-desc")?.value||"",estimatedDuration:document.getElementById("r-dur")?.value||45,assignedDays:[],mainMuscleGroup:document.getElementById("r-muscle")?.value||""};
+  renderRoutineModal(r);
+}
+
+function _saveRoutineExState(){
+  routineModalExercises.forEach((ex,i)=>{
+    ex.machineName=document.getElementById(`rex-machine-${i}`)?.value||ex.machineName;
+    ex.targetSets=parseInt(document.getElementById(`rex-sets-${i}`)?.value)||3;
+    ex.targetReps=parseInt(document.getElementById(`rex-reps-${i}`)?.value)||10;
+    ex.targetWeight=parseFloat(document.getElementById(`rex-weight-${i}`)?.value)||0;
+  });
+}
+
+function saveRoutineModal(){
+  _saveRoutineExState();
+  const name=document.getElementById("r-name")?.value?.trim();
+  if(!name){ showToast("Escribe un nombre",true); return; }
+  if(!routineModalExercises.length){ showToast("Añade al menos un ejercicio",true); return; }
+  const daysRaw=document.getElementById("r-days")?.value||"";
+  const routine={
+    id:editingRoutineIdx!==null?routines[editingRoutineIdx].id:Date.now(),
+    name, description:document.getElementById("r-desc")?.value||"",
+    estimatedDuration:parseInt(document.getElementById("r-dur")?.value)||45,
+    assignedDays:daysRaw?daysRaw.split(",").map(d=>d.trim()).filter(Boolean):[],
+    mainMuscleGroup:document.getElementById("r-muscle")?.value||"General",
+    exercises:routineModalExercises
+  };
+  if(editingRoutineIdx!==null) routines[editingRoutineIdx]=routine;
+  else routines.push(routine);
+  saveCustomData(); closeModal(); render();
+  showToast(`Rutina "${name}" guardada ✅`);
+}
+
+function deleteRoutine(idx){
+  if(!confirm("¿Eliminar esta rutina?")) return;
+  routines.splice(idx,1); saveCustomData(); render();
+  showToast("Rutina eliminada");
+}
+
+// ==================== FORMULARIO ENTRENO ====================
+let formSession=null;
+
+function renderForm(){
+  formSession=editingSession;
+  setTimeout(()=>bindForm(),0);
+  const avgScore=roundPt(getAverageScore()); const maxScore=roundPt(getMaxScore()); const effort=formSession.effort||5;
+  const effortOptions=[1,2,3,4,5,6,7,8,9,10].map(v=>{ const cls=v<=4?"effort-low":v<=7?"effort-mid":"effort-high"; const sel=v===effort?`border-width:2.5px;border-color:${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'};font-weight:900;`:''; return `<div class="effort-option ${cls}" onclick="setEffort(${v})" style="${sel}">${v}</div>`; }).join("");
+  const routinesHtml=routines.length?`<div class="form-row"><div class="form-label">📋 CARGAR RUTINA</div><select id="routine-select" class="form-input" onchange="if(this.value) applyRoutine(parseInt(this.value))"><option value="">-- Seleccionar rutina --</option>${routines.map(r=>`<option value="${r.id}">${r.name} (${r.mainMuscleGroup})</option>`).join("")}</select></div>`:"";
+  return `<div class="form-card">
+    <div class="form-stats-row">
+      <div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div>
+      <div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div>
+    </div>
+    <div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input" value="${formSession.date}"></div>
+    <div class="row-2cols">
+      <div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div>
+      <div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div>
+    </div>
+    <div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div>
+    ${routinesHtml}
+    <div id="prog-area"></div>
+  </div>
+  <div id="exercises-area"></div>
+  <div class="form-card" style="padding-top:12px">
+    <textarea id="f-notes" class="form-input" placeholder="📝 Notas...">${formSession.notes||""}</textarea>
+    <br><br>
+    <button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button>
+    <button class="btn-secondary" onclick="cancelForm()">Cancelar</button>
+    <button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina</button>
+  </div>`;
+}
+
+function applyRoutine(routineId){
+  activeRoutineId=routineId;
+  const routine=routines.find(r=>r.id==routineId);
+  if(!routine) return;
+  // rellena los pesos y reps objetivo para las máquinas que están en la rutina
+  formSession.exercises.forEach(ex=>{
+    const rex=routine.exercises.find(e=>e.machineName===ex.machine);
+    if(rex){
+      // Rellena todas las series vacías con los valores de la rutina
+      ex.sets=Array.from({length:rex.targetSets},()=>({isCardio:false,weight:String(rex.targetWeight||""),reps:String(rex.targetReps||"")}));
+      ex._routineHint=`${rex.targetSets}×${rex.targetReps} @ ${rex.targetWeight}kg`;
     }
   });
-  renderExercises();
-  showToast(`Rutina "${routine.name}" aplicada (sugerencias en cada máquina)`);
+  renderExercises(); renderProgress();
+  showToast(`Rutina "${routine.name}" cargada ✅`);
 }
 
-// ==================== FORMULARIO (con sugerencia de rutinas) ====================
-let formSession = null;
-function renderForm() {
-  formSession = editingSession;
-  setTimeout(()=>bindForm(),0);
-  const avgScore = roundPt(getAverageScore()); const maxScore = roundPt(getMaxScore()); const effort = formSession.effort||5;
-  const effortOptions = [1,2,3,4,5,6,7,8,9,10].map(v=>{ const bg=v<=4?"effort-low":v<=7?"effort-mid":"effort-high"; const selectedStyle = v===effort?`border-width:2px; border-color:${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'};`:''; return `<div class="effort-option ${bg}" data-value="${v}" onclick="setEffort(${v})" style="${selectedStyle}">${v}</div>`; }).join("");
-  const routinesHtml = routines.length ? `<div class="form-row"><div class="form-label">📋 Aplicar rutina</div><select id="routine-select" class="form-input" onchange="if(this.value) applyRoutineToCurrentSession(parseInt(this.value))"><option value="">-- Seleccionar rutina (rellena sugerencias) --</option>${routines.map(r=>`<option value="${r.id}">${r.name} (${r.mainMuscleGroup})</option>`).join("")}</select></div>` : "";
-  return `<div class="form-card"><div class="form-stats-row"><div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div><div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div></div><div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input" value="${formSession.date}"></div><div class="row-2cols"><div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div><div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div></div><div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div>${routinesHtml}<div id="prog-area"></div></div><div id="exercises-area"></div><textarea id="f-notes" class="form-input" placeholder="📝 Notas...">${formSession.notes||""}</textarea><br><br><button class="btn-primary" onclick="saveForm()">💾 Guardar entreno</button><button class="btn-secondary" onclick="cancelForm()">Cancelar</button><button class="btn-add-machine" onclick="addNewMachine()">➕ Añadir máquina</button>`;
+function setEffort(value){
+  formSession.effort=value;
+  const effortOptions=[1,2,3,4,5,6,7,8,9,10].map(v=>{ const cls=v<=4?"effort-low":v<=7?"effort-mid":"effort-high"; const sel=v===value?`border-width:2.5px;border-color:${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'};font-weight:900;`:''; return `<div class="effort-option ${cls}" onclick="setEffort(${v})" style="${sel}">${v}</div>`; }).join("");
+  const c=document.getElementById("effort-select"); if(c) c.innerHTML=effortOptions;
+  renderProgress();
 }
-function setEffort(value) { formSession.effort = value; renderProgress(); }
-function bindForm() { renderExercises(); renderProgress(); const g = document.getElementById("f-goal"); if(g) g.addEventListener("input",()=>renderProgress()); }
-function renderProgress() {
-  const goal = parseFloat(document.getElementById("f-goal")?.value)||0;
-  const total = roundPt(sessionScore(formSession));
-  const pct = goal>0?Math.min(100,(total/goal)*100):0;
-  const remaining = Math.max(0,goal-total);
-  const c = scoreColor(total,goal);
-  const area = document.getElementById("prog-area");
-  if(area) area.innerHTML = `<div class="prog-wrap"><div class="prog-labels"><span>🏆 PUNTOS: ${total}</span><span>🎯 OBJETIVO: ${goal}</span></div><div class="prog-labels"><span>${Math.round(pct)}%</span><span>${remaining>0?`faltan ${remaining} pts`:"🎉 META!"}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div></div>`;
+
+function bindForm(){ renderExercises(); renderProgress(); const g=document.getElementById("f-goal"); if(g) g.addEventListener("input",()=>renderProgress()); }
+
+function renderProgress(){
+  const goal=parseFloat(document.getElementById("f-goal")?.value)||0;
+  const total=roundPt(sessionScore(formSession));
+  const pct=goal>0?Math.min(100,(total/goal)*100):0;
+  const remaining=Math.max(0,roundPt(goal-total));
+  const c=scoreColor(total,goal);
+  const area=document.getElementById("prog-area");
+  if(area) area.innerHTML=`<div class="prog-wrap"><div class="prog-labels"><span style="font-size:13px;font-weight:800">🏆 ${total} pts</span><span style="font-size:13px;font-weight:800">🎯 ${goal} pts</span></div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-top:4px"><span style="color:${c}">${Math.round(pct)}% completado</span><span style="color:#64748b">${remaining>0?`Faltan ${remaining} pts`:"🎉 ¡Meta alcanzada!"}</span></div></div>`;
 }
-function renderExercises() {
-  const area = document.getElementById("exercises-area");
-  if(!area) return;
-  area.innerHTML = formSession.exercises.map((ex,i)=>renderExCard(ex,i)).join("");
-}
-function renderExCard(ex,i) {
-  const sc = roundPt(calcScore(ex.sets));
-  const lastRecord = getLastExerciseData(ex.machine);
-  const custom = customMachines.find(m=>m.name===ex.machine);
-  const note = ex.note || (custom ? `💡 ${custom.usualReps?`Sueles hacer ${custom.usualReps} reps · `:""}${custom.lastPRweight?`Récord: ${custom.lastPRweight}kg x ${custom.lastPRreps}`:""}` : "");
-  const rows = ex.sets.map((s,j)=>{
-    if(s.isCardio) return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" placeholder="Ej: 5,5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" class="form-input" style="padding:12px 8px;">${["min","km","kmh"].map(u=>`<option${s.unit===u?" selected":""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
-    return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},'weight',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},'reps',this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+
+function renderExercises(){ const area=document.getElementById("exercises-area"); if(!area) return; area.innerHTML=formSession.exercises.map((ex,i)=>renderExCard(ex,i)).join(""); }
+
+function renderExCard(ex,i){
+  const sc=roundPt(calcScore(ex.sets));
+  const lastRecord=getLastExerciseData(ex.machine);
+  const pr=getPRForMachine(ex.machine);
+  const prText=pr?`${pr.weight}kg×${pr.reps}`:"—";
+
+  // Buscar si hay rutina activa con hint para esta máquina
+  let routineHintHtml="";
+  if(activeRoutineId){
+    const routine=routines.find(r=>r.id==activeRoutineId);
+    if(routine){
+      const rex=routine.exercises.find(e=>e.machineName===ex.machine);
+      if(rex) routineHintHtml=`<div class="routine-hint">📋 En rutina "${routine.name}": ${rex.targetSets}×${rex.targetReps} @ ${rex.targetWeight}kg</div>`;
+    }
+  }
+
+  const rows=ex.sets.map((s,j)=>{
+    if(s.isCardio) return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" placeholder="Ej: 5.5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" class="form-input" style="padding:12px 8px;">${["min","km","kmh"].map(u=>`<option${s.unit===u?" selected":""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+    return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
   }).join("");
-  return `<div class="ex-card"><div class="ex-title"><span>${ex.machine==="Cardio"?"🏃":"🏋️"} ${ex.machine}</span><span style="font-size:12px">${sc} pts</span></div>${rows}<button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button>${note?`<div class="machine-history" style="font-size:11px; color:#64748b">📌 ${note}</div>`:""}<div class="machine-history"><span>📊 Último registro: ${lastRecord}</span><span>🏆 Récord: ${custom?.lastPRweight?`${custom.lastPRweight}kg x ${custom.lastPRreps}`:"—"}</span></div></div>`;
+
+  const custom=customMachines.find(m=>m.name===ex.machine);
+  const noteText=custom?.notes?`📌 ${custom.notes}`:"";
+
+  return `<div class="ex-card">
+    <div class="ex-header">
+      <div class="ex-title">${ex.machine==="Cardio"?"🏃":"🏋️"} ${ex.machine}</div>
+      <div class="ex-pts" id="ex-pts-${i}">${sc} pts</div>
+    </div>
+    ${routineHintHtml}
+    ${rows}
+    <button class="btn-add-set" onclick="addSet(${i})">+ Añadir serie</button>
+    ${noteText?`<div class="machine-history" style="font-size:11px">${noteText}</div>`:""}
+    <div class="machine-history">
+      <span>📊 Último: ${lastRecord}</span>
+      <span>🏆 PR: ${prText}</span>
+    </div>
+  </div>`;
 }
-function updateSetWeight(i,j,field,val){ formSession.exercises[i].sets[j][field] = val.replace(',','.'); updateExerciseUI(i); renderProgress(); }
-function updateSetReps(i,j,field,val){ formSession.exercises[i].sets[j][field] = val; updateExerciseUI(i); renderProgress(); }
-function updateSetCardio(i,j,field,val){ if(field==='value') formSession.exercises[i].sets[j][field] = val.replace(',','.'); else formSession.exercises[i].sets[j][field] = val; updateExerciseUI(i); renderProgress(); }
-function updateExerciseUI(i){ const ex = formSession.exercises[i]; const sc = roundPt(calcScore(ex.sets)); const span = document.querySelector(`.ex-pts-${i}`); if(span) span.textContent = sc+" pts"; }
-function addSet(i){ const isCardio = formSession.exercises[i].machine==="Cardio"; formSession.exercises[i].sets.push(isCardio?{isCardio:true,value:"",unit:"min"}:{isCardio:false,weight:"",reps:""}); renderExercises(); renderProgress(); }
+
+function updateSetWeight(i,j,val){ formSession.exercises[i].sets[j].weight=val.replace(',','.'); updateExercisePts(i); renderProgress(); }
+function updateSetReps(i,j,val){ formSession.exercises[i].sets[j].reps=val; updateExercisePts(i); renderProgress(); }
+function updateSetCardio(i,j,field,val){ if(field==='value') formSession.exercises[i].sets[j][field]=val.replace(',','.'); else formSession.exercises[i].sets[j][field]=val; updateExercisePts(i); renderProgress(); }
+
+function updateExercisePts(i){
+  const ex=formSession.exercises[i];
+  const sc=roundPt(calcScore(ex.sets));
+  const el=document.getElementById(`ex-pts-${i}`);
+  if(el){ el.textContent=sc+" pts"; el.style.transform="scale(1.15)"; setTimeout(()=>{ if(el) el.style.transform="scale(1)"; },200); }
+}
+
+function addSet(i){ const isCardio=formSession.exercises[i].machine==="Cardio"; formSession.exercises[i].sets.push(isCardio?{isCardio:true,value:"",unit:"min"}:{isCardio:false,weight:"",reps:""}); renderExercises(); renderProgress(); }
 function removeSet(i,j){ if(formSession.exercises[i].sets.length===1) return; formSession.exercises[i].sets.splice(j,1); renderExercises(); renderProgress(); }
-function saveForm() {
-  formSession.date = document.getElementById("f-date").value;
-  formSession.duration = document.getElementById("f-dur").value;
-  formSession.goal = parseFloat(document.getElementById("f-goal").value)||300;
-  formSession.notes = document.getElementById("f-notes").value;
-  const idx = sessions.findIndex(s=>s.id===formSession.id);
-  if(idx>=0) sessions[idx]=formSession;
-  else sessions.unshift(formSession);
+
+function saveForm(){
+  formSession.date=document.getElementById("f-date").value;
+  formSession.duration=document.getElementById("f-dur").value;
+  formSession.goal=parseFloat(document.getElementById("f-goal").value)||300;
+  formSession.notes=document.getElementById("f-notes").value;
+  const idx=sessions.findIndex(s=>s.id===formSession.id);
+  if(idx>=0) sessions[idx]=formSession; else sessions.unshift(formSession);
   sessions.sort((a,b)=>b.date.localeCompare(a.date));
-  saveAll();
-  editingSession=null; formSession=null;
+  saveAll(); editingSession=null; formSession=null; activeRoutineId=null;
   showView("history");
 }
 
-// ==================== FUNCIONES ADICIONALES ====================
-function addWeight(weight, date) { let w = parseFloat(String(weight).replace(',','.')); if(isNaN(w)||w<20||w>300){ showToast("Peso 20-300 kg",true); return; } const existing = weightEntries.findIndex(e=>e.date===date); if(existing>=0) weightEntries[existing].weight = w; else weightEntries.push({date, weight:w}); weightEntries.sort((a,b)=>a.date.localeCompare(b.date)); saveAll(); render(); showToast(`Peso ${w} kg ✅`); }
-function addNewMachine() { const name = prompt("Nombre nueva máquina:"); if(name && !MACHINES_BASE.includes(name) && name!=="Cardio"){ MACHINES_BASE.push(name); updateMachinesWithCardioLast(); saveMachines(); if(editingSession && !editingSession.exercises.find(e=>e.machine===name)) editingSession.exercises.push({ machine:name, sets:[{isCardio:false,weight:"",reps:""}] }); render(); showToast(`Máquina "${name}" añadida`); } else showToast("Ya existe o nombre inválido",true); }
-function exportData() { const backup = { sessions, weightEntries, plannedDays, MACHINES:MACHINES_BASE, customMachines, routines }; const a = document.createElement("a"); a.download = `gym_backup_${new Date().toISOString().slice(0,19)}.json`; a.href = URL.createObjectURL(new Blob([JSON.stringify(backup)], {type:"application/json"})); a.click(); showToast("Respaldo creado"); }
-function triggerImport() { document.getElementById("import-file").click(); }
-function handleImport(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = ev => { try { const data = JSON.parse(ev.target.result); if(data.sessions) sessions = data.sessions; if(data.weightEntries) weightEntries = data.weightEntries; if(data.plannedDays) plannedDays = data.plannedDays; if(data.MACHINES) MACHINES_BASE = data.MACHINES; if(data.customMachines) customMachines = data.customMachines; if(data.routines) routines = data.routines; updateMachinesWithCardioLast(); saveAll(); render(); showToast("Importado correctamente"); } catch(err) { showToast("Archivo inválido",true); } }; reader.readAsText(file); e.target.value=""; }
-function installApp() { if(deferredInstall){ deferredInstall.prompt(); deferredInstall.userChoice.then(()=>{ deferredInstall=null; render(); }); } }
-function checkFridayReminder() { const today=new Date(); if(today.getDay()===5 && localStorage.getItem("last_export_reminder")!==today.toISOString().slice(0,10) && sessions.length){ setTimeout(()=>{ if(confirm("📅 ¡Viernes! ¿Exportar copia?")) exportData(); localStorage.setItem("last_export_reminder",today.toISOString().slice(0,10)); },500); } }
-function render() {
+// ==================== EXTRAS ====================
+function addWeight(weight,date){ let w=parseFloat(String(weight).replace(',','.')); if(isNaN(w)||w<20||w>300){ showToast("Peso 20-300 kg",true); return; } const e=weightEntries.findIndex(e=>e.date===date); if(e>=0) weightEntries[e].weight=w; else weightEntries.push({date,weight:w}); weightEntries.sort((a,b)=>a.date.localeCompare(b.date)); saveAll(); render(); showToast(`Peso ${w} kg ✅`); }
+function addNewMachine(){ const name=prompt("Nombre nueva máquina:"); if(name&&!MACHINES_BASE.includes(name)&&name!=="Cardio"){ MACHINES_BASE.push(name); updateMachinesWithCardioLast(); saveMachines(); if(editingSession&&!editingSession.exercises.find(e=>e.machine===name)) editingSession.exercises.push({machine:name,sets:[{isCardio:false,weight:"",reps:""}]}); render(); showToast(`"${name}" añadida`); } else showToast("Ya existe o nombre inválido",true); }
+function exportData(){ const backup={sessions,weightEntries,plannedDays,MACHINES:MACHINES_BASE,customMachines,routines}; const a=document.createElement("a"); a.download=`gym_backup_${new Date().toISOString().slice(0,19)}.json`; a.href=URL.createObjectURL(new Blob([JSON.stringify(backup)],{type:"application/json"})); a.click(); showToast("Respaldo creado ✅"); }
+function triggerImport(){ document.getElementById("import-file").click(); }
+function handleImport(e){ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ try{ const data=JSON.parse(ev.target.result); if(data.sessions) sessions=data.sessions; if(data.weightEntries) weightEntries=data.weightEntries; if(data.plannedDays) plannedDays=data.plannedDays; if(data.MACHINES) MACHINES_BASE=data.MACHINES; if(data.customMachines) customMachines=data.customMachines; if(data.routines) routines=data.routines; updateMachinesWithCardioLast(); saveAll(); render(); showToast("Importado correctamente ✅"); }catch(err){ showToast("Archivo inválido",true); } }; reader.readAsText(file); e.target.value=""; }
+function checkFridayReminder(){ const today=new Date(); if(today.getDay()===5&&localStorage.getItem("last_export_reminder")!==today.toISOString().slice(0,10)&&sessions.length){ setTimeout(()=>{ if(confirm("📅 ¡Viernes! ¿Exportar copia?")) exportData(); localStorage.setItem("last_export_reminder",today.toISOString().slice(0,10)); },500); } }
+
+function render(){
   updateHeader();
-  const c = document.getElementById("content");
-  if(currentView==="home") c.innerHTML = renderHome();
-  else if(currentView==="history") c.innerHTML = renderHistory();
-  else if(currentView==="weekly") c.innerHTML = renderWeekly();
-  else if(currentView==="stats") { c.innerHTML = renderStats(); setTimeout(()=>initStatsCharts(),50); }
-  else if(currentView==="body") { c.innerHTML = renderBody(); setTimeout(()=>initBodyChart(),50); }
-  else if(currentView==="settings") c.innerHTML = renderSettings();
-  else if(currentView==="form") c.innerHTML = renderForm();
+  const c=document.getElementById("content");
+  if(currentView==="home") c.innerHTML=renderHome();
+  else if(currentView==="history") c.innerHTML=renderHistory();
+  else if(currentView==="weekly") c.innerHTML=renderWeekly();
+  else if(currentView==="stats"){ c.innerHTML=renderStats(); setTimeout(()=>initStatsCharts(),50); }
+  else if(currentView==="body"){ c.innerHTML=renderBody(); setTimeout(()=>initBodyChart(),50); }
+  else if(currentView==="settings") c.innerHTML=renderSettings();
+  else if(currentView==="form") c.innerHTML=renderForm();
 }
 
 // ==================== INICIO ====================
-window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferredInstall=e; });
-MACHINES = loadMachines();
-sessions = loadSessions();
-weightEntries = loadWeight();
-plannedDays = loadPlannedDays();
-customMachines = loadCustomMachines();
-routines = loadRoutines();
-const now = new Date();
-calYear = now.getFullYear();
-calMonth = now.getMonth();
-document.body.className = loadTheme();
+MACHINES=loadMachines();
+sessions=loadSessions();
+weightEntries=loadWeight();
+plannedDays=loadPlannedDays();
+customMachines=loadCustomMachines();
+routines=loadRoutines();
+const now=new Date();
+calYear=now.getFullYear();
+calMonth=now.getMonth();
+document.body.className=loadTheme();
 saveAll();
 render();
 checkFridayReminder();
