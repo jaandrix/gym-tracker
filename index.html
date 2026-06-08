@@ -353,17 +353,39 @@
     color: #64748b;
     margin-top: 2px;
   }
-  .profile-detail-row {
-    display: flex;
-    gap: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #64748b;
-    margin-top: 8px;
-    padding-top: 8px;
+  .profile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 12px;
     border-top: 1px solid #e2e8f0;
   }
-  body.dark .profile-detail-row { border-top-color: #2e2e4a; }
+  body.dark .profile-stats { border-top-color: #2e2e4a; }
+  .profile-stat-item {
+    text-align: center;
+  }
+  .profile-stat-value {
+    font-size: 18px;
+    font-weight: 900;
+  }
+  .profile-stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .profile-routine {
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #2563eb;
+    text-align: center;
+  }
+  body.dark .profile-routine { background: #252540; color: #93c5fd; }
 
   /* ===== TEMPORIZADOR DESCANSO ===== */
   .rest-timer-bar {
@@ -739,7 +761,8 @@ let userProfile = {
   age: "",
   height: "",
   weightGoal: "",
-  availableDays: ""
+  availableDays: "",
+  currentRoutineId: null
 };
 
 function loadUserProfile() {
@@ -753,9 +776,30 @@ function saveUserProfile() {
   localStorage.setItem("gym_user_profile", JSON.stringify(userProfile));
 }
 
+function getLastWeight() {
+  if(!weightEntries.length) return null;
+  const sorted = [...weightEntries].sort((a,b) => b.date.localeCompare(a.date));
+  return sorted[0].weight;
+}
+
+function calculateBMI(weightKg, heightCm) {
+  if(!weightKg || !heightCm || heightCm <= 0) return null;
+  const heightM = heightCm / 100;
+  const bmi = weightKg / (heightM * heightM);
+  return Math.round(bmi * 10) / 10;
+}
+
+function getCurrentRoutineName() {
+  if(!userProfile.currentRoutineId) return "Ninguna";
+  const routine = routines.find(r => r.id == userProfile.currentRoutineId);
+  return routine ? routine.name : "Ninguna";
+}
+
 function openProfileModal() {
+  const routinesOptions = routines.map(r => `<option value="${r.id}" ${userProfile.currentRoutineId == r.id ? 'selected' : ''}>${r.name}</option>`).join("");
+  
   const html = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-sheet">
-    <div class="modal-title">👤 Mi Perfil<button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-title">👤 Editar Perfil<button class="modal-close" onclick="closeModal()">×</button></div>
     <div class="modal-row"><label class="modal-label">Nombre</label><input id="profile-name" class="modal-input" value="${userProfile.name.replace(/"/g, '&quot;')}" placeholder="Ej: Ana"></div>
     <div class="modal-2col">
       <div class="modal-row"><label class="modal-label">Edad</label><input id="profile-age" type="number" class="modal-input" value="${userProfile.age}" placeholder="años"></div>
@@ -763,6 +807,7 @@ function openProfileModal() {
     </div>
     <div class="modal-row"><label class="modal-label">Peso objetivo (kg)</label><input id="profile-weightGoal" type="number" step="0.5" class="modal-input" value="${userProfile.weightGoal}" placeholder="Ej: 60"></div>
     <div class="modal-row"><label class="modal-label">Días disponibles para entrenar</label><input id="profile-days" class="modal-input" value="${userProfile.availableDays}" placeholder="Ej: lunes, miércoles, viernes"></div>
+    <div class="modal-row"><label class="modal-label">📋 Rutina actual</label><select id="profile-routine" class="modal-input"><option value="">-- Ninguna --</option>${routinesOptions}</select></div>
     <button class="btn-modal-primary" onclick="saveProfileModal()">💾 Guardar perfil</button>
   </div></div>`;
   document.getElementById("modal-container").innerHTML = html;
@@ -774,7 +819,8 @@ function saveProfileModal() {
     age: document.getElementById("profile-age")?.value || "",
     height: document.getElementById("profile-height")?.value || "",
     weightGoal: document.getElementById("profile-weightGoal")?.value || "",
-    availableDays: document.getElementById("profile-days")?.value || ""
+    availableDays: document.getElementById("profile-days")?.value || "",
+    currentRoutineId: document.getElementById("profile-routine")?.value || null
   };
   saveUserProfile();
   closeModal();
@@ -783,8 +829,14 @@ function saveProfileModal() {
 }
 
 function renderProfileCard() {
+  const lastWeight = getLastWeight();
+  const heightCm = parseFloat(userProfile.height);
+  const bmi = calculateBMI(lastWeight, heightCm);
+  const currentRoutine = getCurrentRoutineName();
+  
   const hasData = userProfile.name || userProfile.age || userProfile.height || userProfile.weightGoal;
-  if (!hasData) {
+  
+  if (!hasData && !lastWeight) {
     return `<div class="profile-card" onclick="openProfileModal()">
       <div class="profile-header">
         <div class="profile-avatar">👤</div>
@@ -795,21 +847,35 @@ function renderProfileCard() {
       </div>
     </div>`;
   }
-  let details = [];
-  if (userProfile.age) details.push(`${userProfile.age} años`);
-  if (userProfile.height) details.push(`${userProfile.height} cm`);
-  if (userProfile.weightGoal) details.push(`Objetivo: ${userProfile.weightGoal} kg`);
-  if (userProfile.availableDays) details.push(`📅 ${userProfile.availableDays}`);
-
+  
   return `<div class="profile-card" onclick="openProfileModal()">
     <div class="profile-header">
       <div class="profile-avatar">👤</div>
       <div class="profile-info">
         <div class="profile-name">${userProfile.name || "Sin nombre"} <span style="font-size:10px;opacity:0.6">✎</span></div>
-        <div class="profile-badge">Toca para editar</div>
+        <div class="profile-badge">${userProfile.age ? userProfile.age + " años" : ""} ${userProfile.height ? "· " + userProfile.height + " cm" : ""}</div>
       </div>
     </div>
-    ${details.length ? `<div class="profile-detail-row">${details.join(" · ")}</div>` : ""}
+    <div class="profile-stats">
+      <div class="profile-stat-item">
+        <div class="profile-stat-value">${lastWeight || "—"}</div>
+        <div class="profile-stat-label">Peso actual (kg)</div>
+      </div>
+      <div class="profile-stat-item">
+        <div class="profile-stat-value">${bmi || "—"}</div>
+        <div class="profile-stat-label">IMC</div>
+      </div>
+      ${userProfile.weightGoal ? `<div class="profile-stat-item">
+        <div class="profile-stat-value">${userProfile.weightGoal}</div>
+        <div class="profile-stat-label">Objetivo (kg)</div>
+      </div>` : ''}
+      ${userProfile.availableDays ? `<div class="profile-stat-item">
+        <div class="profile-stat-value">📅</div>
+        <div class="profile-stat-label">${userProfile.availableDays.substring(0, 20)}${userProfile.availableDays.length > 20 ? '…' : ''}</div>
+      </div>` : ''}
+    </div>
+    ${currentRoutine !== "Ninguna" ? `<div class="profile-routine">📋 Rutina actual: ${currentRoutine}</div>` : ''}
+    <div style="text-align:center; margin-top:10px; font-size:10px; color:#64748b;">👆 Toca para editar</div>
   </div>`;
 }
 
@@ -2210,7 +2276,10 @@ function renderHome(){
       <div class="tr-arrow">›</div>
     </div>`;
   }
-  return `${streakHtml}${routineTodayHtml}${renderRecoveryCard()}${renderNutriCheckCard()}${renderWeeklyVolumePanel()}${renderCalendar()}
+  
+  // NUEVO ORDEN: Calendario primero, luego el resto, luego Últimas sesiones al final
+  return `${renderCalendar()}
+  ${streakHtml}${routineTodayHtml}${renderRecoveryCard()}${renderNutriCheckCard()}${renderWeeklyVolumePanel()}
   <div class="stats-grid"><div class="stat-card"><div class="stat-val">${lastScore}</div><div style="font-size:11px;font-weight:700">Última sesión</div></div><div class="stat-card"><div class="stat-val">${avgScore}</div><div style="font-size:11px;font-weight:700">Media global</div></div><div class="stat-card"><div class="stat-val">${roundPt(monthStats.avgPoints)}</div><div style="font-size:11px;font-weight:700">Media mes</div></div></div>
   <div class="theme-selector"><div class="theme-btn ${activeTheme==='dark'?'active':''}" onclick="toggleTheme('dark')">🌙 Oscuro</div><div class="theme-btn ${activeTheme==='light'?'active':''}" onclick="toggleTheme('light')">☀️ Claro</div><div class="theme-btn ${activeTheme==='mint'?'active':''}" onclick="toggleTheme('mint')">🌿 Menta</div><div class="theme-btn ${activeTheme==='purple'?'active':''}" onclick="toggleTheme('purple')">🔮 Morado</div></div>
   <div class="goal-meter"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet?'#16a34a':'#d97706'}"></div></div><div class="goal-meter-header"><span>⏱ Tiempo semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev?`<div style="margin-top:8px;text-align:center;font-size:12px;font-weight:700">vs semana pasada ${comparison.diff>0?`<span class="trend-up">▲ +${comparison.diff} pts</span>`:comparison.diff<0?`<span class="trend-down">▼ ${comparison.diff} pts</span>`:"= Sin cambios"}</div>`:""}</div>
@@ -2480,7 +2549,7 @@ function openMachineModal(name){
           <td><b>${h.maxWeight}kg × ${h.reps}</b>${isPR?' 🏆':''}</td>
           <td>${h.sets} series</td>
           <td style="color:#2563eb;font-weight:800">${h.totalScore} pts</td>
-         </tr>`;
+        </tr>`;
       }).join("");
       historyHtml = `<div class="modal-row">
         <label class="modal-label">📈 Progresión de peso máximo</label>
@@ -2887,7 +2956,6 @@ function render(){
 }
 
 // ==================== INICIO ====================
-// Cargar rutinas iniciales si no existen (Módulo 1)
 function loadInitialRoutines() {
   if(routines.length === 0) {
     routines = [
@@ -2944,8 +3012,8 @@ weightEntries=loadWeight();
 plannedDays=loadPlannedDays();
 customMachines=loadCustomMachines();
 routines=loadRoutines();
-loadInitialRoutines(); // <-- Módulo 1: carga las rutinas si no existen
-loadUserProfile();     // <-- Cargar perfil del usuario
+loadInitialRoutines();
+loadUserProfile();
 const now=new Date();
 calYear=now.getFullYear();
 calMonth=now.getMonth();
