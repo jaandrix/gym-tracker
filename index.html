@@ -259,13 +259,56 @@
   .chrono-btn.reset { background: #dc2626; color: #fff; }
   body.dark .chrono-btn.reset { background: #dc2626; color: #fff; }
 
-  /* FECHA INPUT ARREGLADO */
-  .form-input[type="date"] {
-    min-height: 44px;
-    padding: 11px;
+  /* ===== FIX #2: FECHA INPUT ===== */
+  input[type="date"].form-input {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
     font-size: 15px;
-    background: inherit;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    line-height: 1.4;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
   }
+
+  /* ===== COSTE GYM CARD ===== */
+  .gym-cost-card {
+    border: 1.5px solid #fde68a;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 14px;
+    background: linear-gradient(135deg, #fefce8, #fef9c3);
+  }
+  body.dark .gym-cost-card {
+    background: linear-gradient(135deg, #1c1800, #27200a);
+    border-color: #92400e;
+  }
+  .gym-cost-title {
+    font-size: 13px; font-weight: 900; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 7px; color: #78350f;
+  }
+  body.dark .gym-cost-title { color: #fcd34d; }
+  .gym-cost-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;
+  }
+  .gym-cost-stat {
+    background: rgba(255,255,255,0.7); border-radius: 12px; padding: 10px 8px;
+    text-align: center; border: 1px solid #fde68a;
+  }
+  body.dark .gym-cost-stat { background: rgba(255,255,255,0.07); border-color: #92400e44; }
+  .gym-cost-val { font-size: 18px; font-weight: 900; color: #92400e; }
+  body.dark .gym-cost-val { color: #fcd34d; }
+  .gym-cost-lbl { font-size: 10px; font-weight: 700; color: #78350f; margin-top: 3px; }
+  body.dark .gym-cost-lbl { color: #fbbf24; }
+  .gym-cost-motivator {
+    background: rgba(255,255,255,0.6); border-radius: 10px; padding: 10px 12px;
+    font-size: 12px; font-weight: 700; color: #78350f; text-align: center;
+    border: 1px solid #fde68a;
+  }
+  body.dark .gym-cost-motivator { background: rgba(0,0,0,0.2); color: #fcd34d; border-color: #92400e44; }
 
   /* TEMAS */
   body.dark { background: #0a0a0f; color: #e2e8f0; }
@@ -428,6 +471,70 @@
   .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .ex-title { font-weight: 800; font-size: 14px; }
   .ex-pts { font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 8px; background: #f1f5f9; color: #0f172a; transition: all 0.2s; }
+
+  /* ===== SHARE CARD VISUAL (FIX #1) ===== */
+  .share-visual-card {
+    position: fixed;
+    left: -9999px;
+    top: 0;
+    width: 390px;
+    padding: 28px 24px 24px;
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(145deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+    color: #fff;
+    border-radius: 24px;
+    box-sizing: border-box;
+  }
+  .svc-header {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
+  }
+  .svc-app-name {
+    font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+    color: #64748b; margin-bottom: 6px;
+  }
+  .svc-date { font-size: 22px; font-weight: 900; line-height: 1.1; }
+  .svc-day { font-size: 13px; font-weight: 700; color: #94a3b8; margin-top: 3px; }
+  .svc-score-bubble {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 16px; padding: 12px 16px; text-align: center; min-width: 90px;
+  }
+  .svc-score-num { font-size: 26px; font-weight: 900; line-height: 1; }
+  .svc-score-lbl { font-size: 10px; font-weight: 700; color: #93c5fd; margin-top: 3px; }
+  .svc-meta {
+    display: flex; gap: 10px; margin-bottom: 20px;
+  }
+  .svc-meta-item {
+    flex: 1; background: rgba(255,255,255,0.07); border-radius: 12px;
+    padding: 10px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.08);
+  }
+  .svc-meta-val { font-size: 17px; font-weight: 900; }
+  .svc-meta-lbl { font-size: 10px; font-weight: 700; color: #94a3b8; margin-top: 2px; }
+  .svc-goal-bar-wrap { margin-bottom: 20px; }
+  .svc-goal-bar-labels { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; }
+  .svc-goal-bar-bg { height: 8px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; }
+  .svc-goal-bar-fill { height: 100%; border-radius: 99px; }
+  .svc-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin-bottom: 16px; }
+  .svc-machines-title { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #64748b; margin-bottom: 12px; }
+  .svc-machine-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    gap: 8px;
+  }
+  .svc-machine-row:last-child { border-bottom: none; }
+  .svc-machine-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .svc-machine-icon { font-size: 16px; flex-shrink: 0; }
+  .svc-machine-name { font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .svc-machine-detail { font-size: 10px; font-weight: 600; color: #94a3b8; margin-top: 1px; }
+  .svc-machine-right { text-align: right; flex-shrink: 0; }
+  .svc-machine-pts { font-size: 13px; font-weight: 900; color: #60a5fa; }
+  .svc-machine-vs { font-size: 10px; font-weight: 700; margin-top: 2px; }
+  .svc-machine-vs.above { color: #4ade80; }
+  .svc-machine-vs.below { color: #f87171; }
+  .svc-machine-vs.equal { color: #94a3b8; }
+  .svc-footer {
+    margin-top: 18px; text-align: center; font-size: 10px; font-weight: 700;
+    color: #475569; letter-spacing: 1px;
+  }
 </style>
 </head>
 <body>
@@ -457,10 +564,80 @@ let calYear, calMonth, openWeeks = {};
 let activeRoutineId = null;
 let chartModes = { points:'total', effort:'total', attendance:'total', duration:'total' };
 
-// Estado del cronómetro (persistente)
-let chronoSeconds = 0;
-let chronoActive = false;
+// ==================== FIX #3: CRONÓMETRO CON TIMESTAMP ====================
+// Guardamos el momento de inicio en localStorage para sobrevivir a salidas de app
 let chronoInterval = null;
+
+function chronoGetElapsed(){
+  const startTs = localStorage.getItem("chrono_start_ts");
+  const pausedSecs = parseInt(localStorage.getItem("chrono_paused_secs") || "0");
+  const active = localStorage.getItem("chrono_active") === "1";
+  if(active && startTs){
+    return Math.floor((Date.now() - parseInt(startTs)) / 1000) + pausedSecs;
+  }
+  return pausedSecs;
+}
+
+function chronoIsActive(){
+  return localStorage.getItem("chrono_active") === "1";
+}
+
+function chronoFormat(secs){
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+
+function startChrono(){
+  if(chronoIsActive()) return;
+  const pausedSecs = parseInt(localStorage.getItem("chrono_paused_secs") || "0");
+  localStorage.setItem("chrono_start_ts", String(Date.now() - pausedSecs * 1000));
+  localStorage.setItem("chrono_active", "1");
+  _startChronoInterval();
+}
+
+function stopChrono(){
+  if(!chronoIsActive()) return;
+  const elapsed = chronoGetElapsed();
+  localStorage.setItem("chrono_paused_secs", String(elapsed));
+  localStorage.removeItem("chrono_start_ts");
+  localStorage.setItem("chrono_active", "0");
+  if(chronoInterval){ clearInterval(chronoInterval); chronoInterval = null; }
+  _updateChronoDisplay();
+}
+
+function resetChrono(){
+  localStorage.removeItem("chrono_start_ts");
+  localStorage.setItem("chrono_paused_secs", "0");
+  localStorage.setItem("chrono_active", "0");
+  if(chronoInterval){ clearInterval(chronoInterval); chronoInterval = null; }
+  const el = document.getElementById('chrono-display');
+  if(el) el.textContent = '00:00';
+  const dur = document.getElementById('f-dur');
+  if(dur){ dur.value = 0; dur.dispatchEvent(new Event('input')); }
+}
+
+function _updateChronoDisplay(){
+  const secs = chronoGetElapsed();
+  const mins = Math.floor(secs / 60);
+  const el = document.getElementById('chrono-display');
+  if(el) el.textContent = chronoFormat(secs);
+  // Actualizar duración en formulario en tiempo real
+  const dur = document.getElementById('f-dur');
+  if(dur){ dur.value = mins; dur.dispatchEvent(new Event('input')); }
+}
+
+function _startChronoInterval(){
+  if(chronoInterval) clearInterval(chronoInterval);
+  chronoInterval = setInterval(_updateChronoDisplay, 1000);
+}
+
+// Al arrancar la app, si el cronómetro estaba activo, reanudar el ticker
+function resumeChronoIfActive(){
+  if(chronoIsActive()){
+    _startChronoInterval();
+  }
+}
 
 // AI Suggester state
 let aiMusclePriorities = {};
@@ -473,7 +650,9 @@ const MONTHS = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto
 const DAYS_ES = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 const DAYS_SHORT = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 const GYM_PRICE = 26.99;
- 
+const GYM_START_MONTH = 0; // enero = 0
+const GYM_START_YEAR = 2026; // ajusta si empezaste en otro año
+
 // ==================== STORAGE ====================
 function loadCustomMachines(){ try{ return JSON.parse(localStorage.getItem("gym_custom_machines")||"[]"); }catch(e){ return []; } }
 function loadRoutines(){ try{ return JSON.parse(localStorage.getItem("gym_routines")||"[]"); }catch(e){ return []; } }
@@ -532,7 +711,6 @@ function getWeekStreak(){
   });
   const currentWeek = weekStart(new Date().toISOString().slice(0,10));
   const prevWeek = (() => { const d = new Date(currentWeek+"T12:00:00"); d.setDate(d.getDate()-7); return d.toISOString().slice(0,10); })();
-  const sortedWeeks = Object.keys(weekDays).sort((a,b) => b.localeCompare(a));
   const currentWeekDays = (weekDays[currentWeek]||new Set()).size;
   const startFrom = currentWeekDays >= 3 ? currentWeek : prevWeek;
   let streak = 0;
@@ -629,6 +807,64 @@ function getCardioStats(){
     });
   });
   return{totalKm:tk,totalMin:tm,totalKmh:tkmh,avgKmh:countKmh?tkmh/countKmh:0};
+}
+
+// ==================== FIX #4: COSTE ACUMULADO GYM ====================
+function getGymCostStats(){
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  // Calcular meses completos desde GYM_START_MONTH/GYM_START_YEAR hasta hoy (incluido el mes actual)
+  const monthsElapsed = (currentYear - GYM_START_YEAR) * 12 + (currentMonth - GYM_START_MONTH) + 1;
+  const totalPaid = roundPt(monthsElapsed * GYM_PRICE);
+  const totalSessions = sessions.length;
+  const costPerSession = totalSessions > 0 ? roundPt(totalPaid / totalSessions) : null;
+  // Cuántas sesiones más necesito para bajar de distintos umbrales
+  const nextMilestone = costPerSession !== null ? Math.ceil(totalPaid / (Math.floor(costPerSession) - 0.01)) : null;
+  return { monthsElapsed, totalPaid, totalSessions, costPerSession, nextMilestone };
+}
+
+function renderGymCostCard(){
+  const { monthsElapsed, totalPaid, totalSessions, costPerSession } = getGymCostStats();
+  if(totalSessions === 0){
+    return `<div class="gym-cost-card">
+      <div class="gym-cost-title">💰 Rentabilidad del gimnasio</div>
+      <div style="text-align:center;padding:12px;font-size:13px;font-weight:600;opacity:0.7">Añade sesiones para ver el coste por visita</div>
+    </div>`;
+  }
+  const costStr = costPerSession !== null ? costPerSession.toFixed(2)+"€" : "—";
+  const monthlyEfficiency = totalSessions > 0 ? roundPt(totalSessions / monthsElapsed) : 0;
+  // Motivación: si el coste por sesión es menor que 5€ es excelente, menor que 8 es bueno
+  let motivatorMsg = "";
+  if(costPerSession !== null){
+    if(costPerSession <= 3) motivatorMsg = "🏆 ¡Eficiencia brutal! Sacas el máximo del gimnasio.";
+    else if(costPerSession <= 5) motivatorMsg = "🔥 ¡Muy bien! Coste muy bajo por sesión.";
+    else if(costPerSession <= 8) motivatorMsg = "💪 Bien, pero puedes mejorar la rentabilidad yendo más.";
+    else if(costPerSession <= 12) motivatorMsg = "📈 Intenta ir más seguido para reducir el coste por sesión.";
+    else motivatorMsg = "⚠️ ¡El gimnasio te sale caro! Cada sesión extra lo abarata mucho.";
+  }
+  return `<div class="gym-cost-card">
+    <div class="gym-cost-title">💰 Rentabilidad del gimnasio</div>
+    <div class="gym-cost-grid">
+      <div class="gym-cost-stat">
+        <div class="gym-cost-val">${totalPaid.toFixed(2)}€</div>
+        <div class="gym-cost-lbl">Total pagado</div>
+      </div>
+      <div class="gym-cost-stat">
+        <div class="gym-cost-val">${totalSessions}</div>
+        <div class="gym-cost-lbl">Sesiones totales</div>
+      </div>
+      <div class="gym-cost-stat">
+        <div class="gym-cost-val" style="${costPerSession && costPerSession <= 5 ? 'color:#16a34a' : costPerSession && costPerSession <= 8 ? 'color:#d97706' : 'color:#dc2626'}">${costStr}</div>
+        <div class="gym-cost-lbl">Coste/sesión</div>
+      </div>
+    </div>
+    <div class="gym-cost-stat" style="background:rgba(255,255,255,0.5);border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border:1px solid #fde68a;margin-bottom:10px">
+      <span style="font-size:11px;font-weight:700;color:#78350f">${monthsElapsed} meses × ${GYM_PRICE}€/mes</span>
+      <span style="font-size:11px;font-weight:800;color:#92400e">${roundPt(monthsElapsed * GYM_PRICE).toFixed(2)}€</span>
+    </div>
+    <div class="gym-cost-motivator">${motivatorMsg}</div>
+  </div>`;
 }
 
 // ==================== STATS MES ANTERIOR ====================
@@ -753,7 +989,7 @@ function renderMonthCompare(){
   </div>`;
 }
 
-// ==================== AI ROUTINE SUGGESTER (LOCAL - CORREGIDO) ====================
+// ==================== AI ROUTINE SUGGESTER ====================
 function toggleMusclePriority(muscle){
   const current = aiMusclePriorities[muscle] || "none";
   const cycle = ["none","high","med","low"];
@@ -887,10 +1123,7 @@ async function generateAISuggestion(){
     const sets = 4 + (aiGoalMode === 'max' ? 1 : 0);
     const pts = sets * reps * targetWeight;
     totalPts += pts;
-    suggestedExercises.push({
-      machine, isCardio: false, sets, reps, weight: targetWeight, pts,
-      note: `Prioridad alta: ${muscle}.`
-    });
+    suggestedExercises.push({ machine, isCardio: false, sets, reps, weight: targetWeight, pts, note: `Prioridad alta: ${muscle}.` });
   }
   
   for (const muscle of medPriorityMuscles.slice(0, 2)) {
@@ -905,10 +1138,7 @@ async function generateAISuggestion(){
     const sets = 3;
     const pts = sets * reps * targetWeight;
     totalPts += pts;
-    suggestedExercises.push({
-      machine, isCardio: false, sets, reps, weight: targetWeight, pts,
-      note: `Prioridad media: ${muscle}.`
-    });
+    suggestedExercises.push({ machine, isCardio: false, sets, reps, weight: targetWeight, pts, note: `Prioridad media: ${muscle}.` });
   }
   
   for (const muscle of lowPriorityMuscles.slice(0, 2)) {
@@ -921,10 +1151,7 @@ async function generateAISuggestion(){
     const sets = 3;
     const pts = sets * reps * baseWeight;
     totalPts += pts;
-    suggestedExercises.push({
-      machine, isCardio: false, sets, reps, weight: baseWeight, pts,
-      note: `Mantenimiento: ${muscle}.`
-    });
+    suggestedExercises.push({ machine, isCardio: false, sets, reps, weight: baseWeight, pts, note: `Mantenimiento: ${muscle}.` });
   }
   
   if(suggestedExercises.length < 3){
@@ -933,14 +1160,10 @@ async function generateAISuggestion(){
       if(suggestedExercises.some(e => e.machine === machine)) continue;
       const pr = machinePRs[machine];
       const baseWeight = pr ? pr.weight : 25;
-      const reps = 10;
-      const sets = 3;
+      const reps = 10; const sets = 3;
       const pts = sets * reps * baseWeight;
       totalPts += pts;
-      suggestedExercises.push({
-        machine, isCardio: false, sets, reps, weight: baseWeight, pts,
-        note: `Ejercicio equilibrado.`
-      });
+      suggestedExercises.push({ machine, isCardio: false, sets, reps, weight: baseWeight, pts, note: `Ejercicio equilibrado.` });
       if(suggestedExercises.length >= 5) break;
     }
   }
@@ -951,12 +1174,7 @@ async function generateAISuggestion(){
     if(priorities["Cardio"] === "med") cardioMin = 20;
     const cardioPts = cardioMin * 5;
     totalPts += cardioPts;
-    suggestedExercises.push({
-      machine: "Cardio", isCardio: true,
-      cardioDetail: `${cardioMin} min a ritmo moderado`,
-      pts: cardioPts,
-      note: priorities["Cardio"] === "high" ? "Cardio intenso" : "Cardio de recuperación"
-    });
+    suggestedExercises.push({ machine: "Cardio", isCardio: true, cardioDetail: `${cardioMin} min a ritmo moderado`, pts: cardioPts, note: priorities["Cardio"] === "high" ? "Cardio intenso" : "Cardio de recuperación" });
   }
   
   let targetTotal = totalPts;
@@ -1000,15 +1218,10 @@ function useSuggestionAsSession(){
   if(!aiSuggestion || !aiSuggestion.exercises) return;
   const today = new Date().toISOString().slice(0,10);
   const newSession = {
-    id: Date.now(),
-    date: today,
-    duration: 60,
+    id: Date.now(), date: today, duration: 60,
     goal: Math.round(aiSuggestion.totalPts * 0.95),
-    effort: 5,
-    notes: `Sesión generada: ${aiSuggestion.title}`,
-    exercises: []
+    effort: 5, notes: `Sesión generada: ${aiSuggestion.title}`, exercises: []
   };
-
   aiSuggestion.exercises.forEach(ex => {
     const sets = [];
     if(ex.isCardio){
@@ -1022,18 +1235,14 @@ function useSuggestionAsSession(){
     }
     newSession.exercises.push({ machine: ex.machine, sets });
   });
-
   MACHINES.forEach(m=>{
     if(!newSession.exercises.find(e=>e.machine===m)){
       newSession.exercises.push({machine:m, sets:[m==="Cardio"?{isCardio:true,value:"",unit:"min"}:{isCardio:false,weight:"",reps:""}]});
     }
   });
-
   editingSession = newSession;
-  activeRoutineId = null;
-  currentView = "form";
-  aiSuggestion = null;
-  render();
+  activeRoutineId = null; currentView = "form";
+  aiSuggestion = null; render();
   showToast("✅ Sesión cargada en el formulario");
 }
 
@@ -1065,23 +1274,161 @@ function renderCalendar(){
   return `<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()">‹</button><span>${MONTHS[calMonth]} ${calYear}</span><button onclick="calNext()">›</button></div><div class="cal-grid">${cells}</div><div style="display:flex;gap:12px;justify-content:center;margin-top:12px;font-size:10px;font-weight:700"><span>🟡 Supera media</span><span>⚪ Iguala</span><span>🔴 Debajo</span><span>📅 Planeado</span></div></div>`;
 }
  
-// ==================== COMPARTIR IMAGEN ====================
+// ==================== FIX #1: COMPARTIR IMAGEN MEJORADA ====================
+function getMachineAvgScore(machineName){
+  // Media histórica de puntos para esa máquina
+  let total = 0, count = 0;
+  sessions.forEach(s => {
+    const ex = s.exercises.find(e => e.machine === machineName);
+    if(ex){
+      const sc = calcScore(ex.sets);
+      if(sc > 0){ total += sc; count++; }
+    }
+  });
+  return count > 0 ? roundPt(total / count) : 0;
+}
+
 async function shareSessionAsImage(sessionId){
   const session = sessions.find(s => s.id === sessionId);
   if(!session) return;
-  
-  const cardElement = document.getElementById(`share-card-${sessionId}`);
-  if(!cardElement) return;
-  
+
   showToast("Generando imagen...");
+
+  // Construir la tarjeta visual off-screen
+  const d = new Date(session.date + "T12:00:00");
+  const dateLabel = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  const dayLabel = DAYS_ES[d.getDay()];
+  const sc = roundPt(sessionScore(session));
+  const goal = parseFloat(session.goal) || 0;
+  const pct = goal > 0 ? Math.min(100, Math.round((sc / goal) * 100)) : 0;
+  const barColor = scoreColor(sc, goal);
+
+  // Solo máquinas con datos reales
+  const usedExercises = session.exercises.filter(ex =>
+    ex.sets.some(s => s.isCardio
+      ? (parseFloat(fixDecimal(s.value)) || 0) > 0
+      : (parseFloat(fixDecimal(s.weight)) || 0) > 0 || (parseFloat(fixDecimal(s.reps)) || 0) > 0
+    )
+  );
+
+  const machineRowsHtml = usedExercises.map(ex => {
+    const exSc = roundPt(calcScore(ex.sets));
+    const avg = getMachineAvgScore(ex.machine);
+    const isCardio = ex.machine === "Cardio";
+    const icon = isCardio ? "🏃" : "🏋️";
+    // Detalle de serie más destacada
+    let detail = "";
+    if(isCardio){
+      const cardioSet = ex.sets.find(s => s.isCardio && (parseFloat(fixDecimal(s.value)) || 0) > 0);
+      if(cardioSet) detail = `${fixDecimal(cardioSet.value)} ${cardioSet.unit}`;
+    } else {
+      const validSets = ex.sets.filter(s => !s.isCardio && (parseFloat(fixDecimal(s.weight)) || 0) > 0);
+      if(validSets.length){
+        const maxW = Math.max(...validSets.map(s => parseFloat(fixDecimal(s.weight)) || 0));
+        const bestSet = validSets.find(s => parseFloat(fixDecimal(s.weight)) === maxW);
+        detail = `${validSets.length} series · max ${maxW}kg × ${fixDecimal(bestSet.reps)||0}`;
+      }
+    }
+    // Comparación vs media
+    let vsClass = "equal", vsText = "= media";
+    if(avg > 0 && exSc > 0){
+      const diff = roundPt(exSc - avg);
+      const pctDiff = Math.round(((exSc - avg) / avg) * 100);
+      if(diff > 0){ vsClass = "above"; vsText = `▲ +${pctDiff}% vs media`; }
+      else if(diff < 0){ vsClass = "below"; vsText = `▼ ${pctDiff}% vs media`; }
+      else { vsClass = "equal"; vsText = "= media"; }
+    } else {
+      vsText = "sin histórico";
+    }
+    return `<div class="svc-machine-row">
+      <div class="svc-machine-left">
+        <span class="svc-machine-icon">${icon}</span>
+        <div>
+          <div class="svc-machine-name">${ex.machine}</div>
+          <div class="svc-machine-detail">${detail}</div>
+        </div>
+      </div>
+      <div class="svc-machine-right">
+        <div class="svc-machine-pts">${exSc} pts</div>
+        <div class="svc-machine-vs ${vsClass}">${vsText}</div>
+      </div>
+    </div>`;
+  }).join("");
+
+  const effortHtml = session.effort
+    ? `<div class="svc-meta-item"><div class="svc-meta-val">${session.effort}/10</div><div class="svc-meta-lbl">Esfuerzo</div></div>`
+    : "";
+
+  const cardHtml = `<div class="share-visual-card" id="__share_render__">
+    <div class="svc-header">
+      <div>
+        <div class="svc-app-name">💪 Train-tracker</div>
+        <div class="svc-date">${dateLabel}</div>
+        <div class="svc-day">${dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1)}</div>
+      </div>
+      <div class="svc-score-bubble">
+        <div class="svc-score-num">${sc}</div>
+        <div class="svc-score-lbl">puntos</div>
+      </div>
+    </div>
+    <div class="svc-meta">
+      <div class="svc-meta-item">
+        <div class="svc-meta-val">${session.duration || "—"}</div>
+        <div class="svc-meta-lbl">minutos</div>
+      </div>
+      <div class="svc-meta-item">
+        <div class="svc-meta-val">${usedExercises.length}</div>
+        <div class="svc-meta-lbl">ejercicios</div>
+      </div>
+      ${effortHtml}
+    </div>
+    ${goal > 0 ? `
+    <div class="svc-goal-bar-wrap">
+      <div class="svc-goal-bar-labels">
+        <span>Objetivo: ${goal} pts</span>
+        <span>${pct}% completado</span>
+      </div>
+      <div class="svc-goal-bar-bg">
+        <div class="svc-goal-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+      </div>
+    </div>` : ""}
+    <hr class="svc-divider">
+    <div class="svc-machines-title">Ejercicios · comparativa vs media personal</div>
+    ${machineRowsHtml}
+    <div class="svc-footer">Generado con Train-tracker</div>
+  </div>`;
+
+  // Insertar temporalmente en el DOM
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = cardHtml;
+  document.body.appendChild(wrapper);
+
+  const cardEl = document.getElementById("__share_render__");
+
   try {
-    const canvas = await html2canvas(cardElement, {
-      scale: 2,
-      backgroundColor: document.body.classList.contains('dark') ? '#1a1a2e' : '#ffffff',
+    // Esperar a que los estilos se apliquen
+    await new Promise(r => setTimeout(r, 80));
+    const canvas = await html2canvas(cardEl, {
+      scale: 2.5,
+      backgroundColor: null,
       logging: false,
-      useCORS: false
+      useCORS: false,
+      allowTaint: true
     });
+    document.body.removeChild(wrapper);
+
     const imageUrl = canvas.toDataURL('image/png');
+    // Intentar Web Share API con imagen
+    try {
+      const blob = await (await fetch(imageUrl)).blob();
+      const file = new File([blob], `entreno_${session.date}.png`, { type: 'image/png' });
+      if(navigator.share && navigator.canShare && navigator.canShare({ files: [file] })){
+        await navigator.share({ files: [file], title: `Entreno ${dateLabel}`, text: `${sc} pts · ${DAYS_ES[d.getDay()]}` });
+        showToast("✅ Imagen compartida");
+        return;
+      }
+    } catch(e){ /* fallback a descarga */ }
+
     const link = document.createElement('a');
     link.download = `entreno_${session.date}_train-tracker.png`;
     link.href = imageUrl;
@@ -1089,6 +1436,7 @@ async function shareSessionAsImage(sessionId){
     showToast("✅ Imagen guardada");
   } catch(err){
     console.error(err);
+    document.body.removeChild(wrapper);
     showToast("Error al generar la imagen", true);
   }
 }
@@ -1102,9 +1450,7 @@ function renderSessionCard(s){
   const exercisesHtml=s.exercises.map(ex=>{ const exSc=roundPt(calcScore(ex.sets)); const chips=ex.sets.map(st=>st.isCardio?`<span class="set-chip">${fixDecimal(st.value)||0} ${st.unit}</span>`:`<span class="set-chip">${fixDecimal(st.weight)||0}kg × ${fixDecimal(st.reps)||0}</span>`).join(""); return `<div style="margin-bottom:9px"><div style="font-weight:800;font-size:12px;margin-bottom:4px">${ex.machine} → ${exSc} pts</div>${chips}</div>`; }).join("");
   const notesHtml=s.notes?`<div style="margin-top:9px;padding:9px;border-radius:11px;font-size:12px;background:#fffbeb;color:#92400e">📝 ${s.notes}</div>`:"";
   
-  const shareId = `share-card-${s.id}`;
-  
-  return `<div id="${shareId}" class="card" style="padding:12px;margin-bottom:12px">
+  return `<div class="card" style="padding:12px;margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div><div style="font-weight:800;font-size:15px">${dateLabel} <span style="font-size:11px;opacity:0.7">${DAYS_ES[d.getDay()]}</span></div><div style="font-size:11px;margin-top:3px;font-weight:600">⏱ ${s.duration} min · 🎯 ${s.goal} pts</div>${effortHtml}</div>${badgeHtml(sc,s.goal)}
     </div>
@@ -1171,55 +1517,8 @@ function useTemplate(sessionId){
 }
  
 function cancelForm(){ 
-  if(chronoInterval) clearInterval(chronoInterval);
-  chronoActive = false;
-  chronoSeconds = 0;
+  stopChrono();
   editingSession=null; activeRoutineId=null; showView("home"); 
-}
-
-// ==================== CRONÓMETRO ====================
-function startChrono(){
-  if(chronoActive) return;
-  chronoActive = true;
-  if(chronoInterval) clearInterval(chronoInterval);
-  chronoInterval = setInterval(() => {
-    if(!chronoActive) return;
-    chronoSeconds++;
-    const mins = Math.floor(chronoSeconds / 60);
-    const secs = chronoSeconds % 60;
-    const chronoDisplay = document.getElementById('chrono-display');
-    const durationInput = document.getElementById('f-dur');
-    if(chronoDisplay){
-      chronoDisplay.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-    }
-    if(durationInput){
-      durationInput.value = mins;
-      // Disparar evento para actualizar progreso
-      const event = new Event('input');
-      durationInput.dispatchEvent(event);
-    }
-  }, 1000);
-}
-
-function stopChrono(){
-  chronoActive = false;
-  if(chronoInterval) clearInterval(chronoInterval);
-  chronoInterval = null;
-}
-
-function resetChrono(){
-  chronoSeconds = 0;
-  const chronoDisplay = document.getElementById('chrono-display');
-  const durationInput = document.getElementById('f-dur');
-  if(chronoDisplay) chronoDisplay.textContent = '00:00';
-  if(durationInput){
-    durationInput.value = 0;
-    const event = new Event('input');
-    durationInput.dispatchEvent(event);
-  }
-  if(chronoActive){
-    startChrono();
-  }
 }
 
 // ==================== VIEWS ====================
@@ -1384,6 +1683,7 @@ function renderStats(){
   <div class="chart-card"><div class="chart-title">🏆 Mejores marcas</div>${recordsHtml||"Sin registros"}</div>
   <div class="chart-card"><div class="chart-title">💪 Distribución muscular</div>${muscleHtml||"Sin datos"}</div>
   <div class="chart-card"><div class="chart-title">🏃 Cardio</div><div class="stats-grid"><div class="stat-card"><div class="stat-val">${cardioStats.totalKm.toFixed(1)}</div><div style="font-size:11px;font-weight:700">Km totales</div></div><div class="stat-card"><div class="stat-val">${Math.round(cardioStats.totalMin)}</div><div style="font-size:11px;font-weight:700">Min totales</div></div><div class="stat-card"><div class="stat-val">${cardioStats.avgKmh.toFixed(1)}</div><div style="font-size:11px;font-weight:700">Vel. media</div></div></div></div>
+  ${renderGymCostCard()}
   <button class="btn-import-export" onclick="exportData()">💾 Exportar copia</button>
   <button class="btn-import-export" onclick="triggerImport()">📂 Importar copia</button>`;
 }
@@ -1638,7 +1938,7 @@ function deleteRoutine(idx){
   showToast("Rutina eliminada");
 }
  
-// ==================== FORMULARIO ENTRENO (con cronómetro y teclado numérico) ====================
+// ==================== FORMULARIO ENTRENO ====================
 let formSession=null;
  
 function renderForm(){
@@ -1648,26 +1948,38 @@ function renderForm(){
   const effortOptions=[1,2,3,4,5,6,7,8,9,10].map(v=>{ const cls=v<=4?"effort-low":v<=7?"effort-mid":"effort-high"; const sel=v===effort?`border-width:2.5px;border-color:${v<=4?'#dc2626':v<=7?'#d97706':'#16a34a'};font-weight:900;`:''; return `<div class="effort-option ${cls}" onclick="setEffort(${v})" style="${sel}">${v}</div>`; }).join("");
   const routinesHtml=routines.length?`<div class="form-row"><div class="form-label">📋 CARGAR RUTINA</div><select id="routine-select" class="form-input" onchange="if(this.value) applyRoutine(parseInt(this.value))"><option value="">-- Seleccionar rutina --</option>${routines.map(r=>`<option value="${r.id}">${r.name} (${r.mainMuscleGroup})</option>`).join("")}</select></div>`:"";
   
+  // FIX #3: Mostrar el tiempo real del cronómetro al renderizar
+  const currentChronoSecs = chronoGetElapsed();
+  const chronoDisplayVal = chronoFormat(currentChronoSecs);
+  const isChronoRunning = chronoIsActive();
+
   // Cronómetro HTML
   const chronoHtml = `<div class="chrono-box">
-    <div class="chrono-display" id="chrono-display">00:00</div>
+    <div class="chrono-display" id="chrono-display">${chronoDisplayVal}</div>
     <div class="chrono-buttons">
-      <button class="chrono-btn" onclick="startChrono()">▶ Iniciar</button>
+      <button class="chrono-btn" onclick="startChrono()">${isChronoRunning ? '▶ En curso' : '▶ Iniciar'}</button>
       <button class="chrono-btn" onclick="stopChrono()">⏸ Pausa</button>
       <button class="chrono-btn reset" onclick="resetChrono()">🔄 Reset</button>
     </div>
   </div>`;
   
+  // FIX #3: Duración inicial del form = tiempo del cronómetro (en minutos)
+  const chronoMins = Math.floor(currentChronoSecs / 60);
+  const durValue = chronoMins > 0 ? chronoMins : formSession.duration;
+
   return `<div class="form-card">
     <div class="form-stats-row">
       <div class="form-stat"><div class="form-stat-value">${avgScore}</div><div class="form-stat-label">Media global</div></div>
       <div class="form-stat"><div class="form-stat-value">${maxScore}</div><div class="form-stat-label">Récord global</div></div>
     </div>
     ${chronoHtml}
-    <div class="form-row"><div class="form-label">📅 FECHA</div><input type="date" id="f-date" class="form-input" value="${formSession.date}"></div>
+    <div class="form-row">
+      <div class="form-label">📅 FECHA</div>
+      <input type="date" id="f-date" class="form-input" value="${formSession.date}">
+    </div>
     <div class="row-2cols">
-      <div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" id="f-dur" class="form-input" value="${formSession.duration}"></div>
-      <div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" id="f-goal" class="form-input" value="${formSession.goal}"></div>
+      <div class="form-row"><div class="form-label">⏱ DURACIÓN (min)</div><input type="number" inputmode="decimal" id="f-dur" class="form-input" value="${durValue}"></div>
+      <div class="form-row"><div class="form-label">🎯 OBJETIVO (pts)</div><input type="number" inputmode="decimal" id="f-goal" class="form-input" value="${formSession.goal}"></div>
     </div>
     <div class="form-row"><div class="form-label">💪 ESFUERZO (1-10)</div><div class="effort-select" id="effort-select">${effortOptions}</div></div>
     ${routinesHtml}
@@ -1705,7 +2017,7 @@ function setEffort(value){
   renderProgress();
 }
  
-function bindForm(){ renderExercises(); renderProgress(); const g=document.getElementById("f-goal"); if(g) g.addEventListener("input",()=>renderProgress()); }
+function bindForm(){ renderExercises(); renderProgress(); const g=document.getElementById("f-goal"); if(g) g.addEventListener("input",()=>renderProgress()); if(chronoIsActive()) _startChronoInterval(); }
  
 function renderProgress(){
   const goal=parseFloat(document.getElementById("f-goal")?.value)||0;
@@ -1737,9 +2049,10 @@ function renderExCard(ex,i){
       if(rex) routineHintHtml=`<div class="routine-hint">📋 En rutina "${routine.name}": ${rex.targetSets}×${rex.targetReps} @ ${rex.targetWeight}kg</div>`;
     }
   }
+  // FIX #5: inputmode="decimal" en todos los inputs numéricos para que aparezca la coma
   const rows=ex.sets.map((s,j)=>{
     if(s.isCardio) return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Ej: 5.5" value="${fixDecimal(s.value)}" oninput="updateSetCardio(${i},${j},'value',this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><select onchange="updateSetCardio(${i},${j},'unit',this.value)" class="form-input" style="padding:12px 8px;">${["min","km","kmh"].map(u=>`<option${s.unit===u?" selected":""}>${u}</option>`).join("")}</select></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
-    return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" inputmode="numeric" pattern="\d*" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" inputmode="numeric" pattern="\d*" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
+    return `<div class="set-row"><span class="set-num">S${j+1}</span><div class="set-input"><input type="text" inputmode="decimal" placeholder="Peso kg" value="${fixDecimal(s.weight)}" oninput="updateSetWeight(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><div class="set-input-small"><input type="text" inputmode="decimal" placeholder="Reps" value="${fixDecimal(s.reps)}" oninput="updateSetReps(${i},${j},this.value)" class="form-input" style="padding:12px 10px;"></div><button class="btn-icon" onclick="removeSet(${i},${j})">✕</button></div>`;
   }).join("");
   const custom=customMachines.find(m=>m.name===ex.machine);
   const noteText=custom?.notes?`📌 ${custom.notes}`:"";
@@ -1775,17 +2088,21 @@ function removeSet(i,j){ if(formSession.exercises[i].sets.length===1) return; fo
  
 function saveForm(){
   formSession.date=document.getElementById("f-date").value;
-  formSession.duration=document.getElementById("f-dur").value;
+  // FIX #3: La duración guardada es siempre la del cronómetro (si > 0), si no la del campo
+  const chronoMins = Math.floor(chronoGetElapsed() / 60);
+  formSession.duration = chronoMins > 0 ? chronoMins : (parseInt(document.getElementById("f-dur").value) || 0);
   formSession.goal=parseFloat(document.getElementById("f-goal").value)||300;
   formSession.notes=document.getElementById("f-notes").value;
   const idx=sessions.findIndex(s=>s.id===formSession.id);
   if(idx>=0) sessions[idx]=formSession; else sessions.unshift(formSession);
   sessions.sort((a,b)=>b.date.localeCompare(a.date));
   saveAll();
-  // Detener cronómetro al guardar
-  if(chronoInterval) clearInterval(chronoInterval);
-  chronoActive = false;
-  chronoSeconds = 0;
+  // Detener y resetear cronómetro al guardar
+  stopChrono();
+  localStorage.setItem("chrono_paused_secs", "0");
+  localStorage.setItem("chrono_active", "0");
+  localStorage.removeItem("chrono_start_ts");
+  if(chronoInterval){ clearInterval(chronoInterval); chronoInterval = null; }
   editingSession=null; formSession=null; activeRoutineId=null;
   showView("history");
 }
@@ -1851,6 +2168,7 @@ calYear=now.getFullYear();
 calMonth=now.getMonth();
 document.body.className=loadTheme();
 saveAll();
+resumeChronoIfActive(); // FIX #3: reanudar ticker si estaba corriendo
 render();
 checkFridayReminder();
 </script>
