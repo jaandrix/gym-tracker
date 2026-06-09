@@ -411,28 +411,6 @@
     letter-spacing: 1px;
   }
 
-  /* ===== CHECK NUTRICIONAL ===== */
-  .nutri-dots {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 16px;
-  }
-  .nutri-dot {
-    flex: 1;
-    text-align: center;
-  }
-  .nutri-dot-circle {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin: 0 auto 3px;
-  }
-  .nutri-dot-label {
-    font-size: 8px;
-    font-weight: 700;
-    opacity: 0.5;
-  }
-
   /* ===== SUEÑO ===== */
   .sleep-bars {
     display: flex;
@@ -1009,108 +987,139 @@ function updateRestTimerUI(secs) {
   }
 }
 
-// ==================== CHECK NUTRICIONAL ====================
-const NUTRI_TARGET_KCAL = 2500;
-const NUTRI_TARGET_PROTEIN = 130;
-
-function loadNutriChecks() {
-  try { return JSON.parse(localStorage.getItem("gym_nutri_checks") || "{}"); }
+// ==================== TRACKER CALÓRICO ====================
+function loadCalorieLog() {
+  try { return JSON.parse(localStorage.getItem("gym_calorie_log") || "{}"); }
   catch(e) { return {}; }
 }
 
-function saveNutriCheck(date, data) {
-  const checks = loadNutriChecks();
-  checks[date] = data;
-  localStorage.setItem("gym_nutri_checks", JSON.stringify(checks));
+function saveCalorieEntry(date, kcal) {
+  const log = loadCalorieLog();
+  log[date] = parseFloat(kcal);
+  localStorage.setItem("gym_calorie_log", JSON.stringify(log));
 }
 
-function getNutriCheck(date) {
-  const checks = loadNutriChecks();
-  return checks[date] || null;
+function getCalorieGoal() {
+  return parseFloat(localStorage.getItem("gym_calorie_goal") || "2800");
 }
 
-function clearNutriCheck(date) {
-  const checks = loadNutriChecks();
-  delete checks[date];
-  localStorage.setItem("gym_nutri_checks", JSON.stringify(checks));
+function saveCalorieGoal(val) {
+  localStorage.setItem("gym_calorie_goal", String(parseFloat(val)));
+}
+
+function saveCalorieFromForm() {
+  const kcalInput = document.getElementById("cal-kcal-input");
+  const kcal = parseFloat(kcalInput?.value);
+  if (isNaN(kcal) || kcal < 0 || kcal > 15000) { showToast("Introduce unas kcal válidas", true); return; }
+  const today = new Date().toISOString().slice(0, 10);
+  saveCalorieEntry(today, kcal);
   render();
+  showToast("✅ Calorías guardadas");
 }
 
-function saveNutriCheckFromForm() {
-  const today = new Date().toISOString().slice(0,10);
-  saveNutriCheck(today, {
-    protein: document.getElementById("nc-protein")?.checked || false,
-    calories: document.getElementById("nc-calories")?.checked || false,
-    postWorkout: document.getElementById("nc-post")?.checked || false
-  });
+function saveCalorieGoalFromForm() {
+  const val = parseFloat(document.getElementById("cal-goal-input")?.value);
+  if (isNaN(val) || val < 500 || val > 15000) { showToast("Objetivo entre 500 y 15000 kcal", true); return; }
+  saveCalorieGoal(val);
   render();
-  showToast("✅ Check nutricional guardado");
+  showToast(`🎯 Objetivo calórico: ${val} kcal`);
 }
 
-function renderNutriCheckCard() {
-  const today = new Date().toISOString().slice(0,10);
-  const todayCheck = getNutriCheck(today);
+function renderCalorieTrackerCard() {
+  const today = new Date().toISOString().slice(0, 10);
+  const log = loadCalorieLog();
+  const goal = getCalorieGoal();
+  const todayKcal = log[today] || "";
 
-  const last7 = [];
-  for(let i = 0; i < 7; i++) {
+  const last14 = [];
+  for (let i = 13; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0,10);
-    const check = getNutriCheck(dateStr);
-    last7.push({ date: dateStr, check });
+    const dateStr = d.toISOString().slice(0, 10);
+    last14.push({ date: dateStr, kcal: log[dateStr] || null });
   }
 
-  const completedDays = last7.filter(d => d.check && d.check.protein && d.check.calories).length;
+  const daysWithData = last14.filter(d => d.kcal !== null).length;
+  const daysAboveGoal = last14.filter(d => d.kcal !== null && d.kcal >= goal).length;
+  const avgKcal = daysWithData
+    ? Math.round(last14.filter(d => d.kcal !== null).reduce((a, b) => a + b.kcal, 0) / daysWithData)
+    : null;
 
-  const dotsHtml = last7.reverse().map(({date, check}) => {
-    const ok = check && check.protein && check.calories;
-    const partial = check && (check.protein || check.calories);
-    const color = ok ? "#c8f135" : partial ? "#f1a435" : "#2a2a2a";
+  const barsHtml = last14.map(({ date, kcal }) => {
+    const maxDisplay = goal * 1.3;
+    const pct = kcal ? Math.min(100, (kcal / maxDisplay) * 100) : 0;
+    const isAbove = kcal && kcal >= goal;
+    const color = !kcal ? "#e2e8f0" : isAbove ? "#16a34a" : "#dc2626";
     const d = new Date(date + "T12:00:00");
-    return `<div class="nutri-dot">
-      <div class="nutri-dot-circle" style="background:${color}"></div>
-      <div class="nutri-dot-label">${["D","L","M","X","J","V","S"][d.getDay()]}</div>
+    const dayLabel = ["D","L","M","X","J","V","S"][d.getDay()];
+    const isToday = date === today;
+    return `<div style="flex:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px">
+      <div style="font-size:9px;font-weight:800;color:${isAbove?'#16a34a':kcal?'#dc2626':'#94a3b8'}">${kcal ? Math.round(kcal/100)/10+'k' : ''}</div>
+      <div style="width:100%;max-width:22px;height:50px;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${Math.max(pct,kcal?3:0)}%;background:${color};border-radius:3px 3px 0 0;min-height:${kcal?3:0}px"></div>
+      </div>
+      <div style="font-size:9px;font-weight:${isToday?'900':'700'};color:${isToday?'#0f172a':'#94a3b8'}">${dayLabel}</div>
     </div>`;
   }).join("");
 
-  const checkForm = todayCheck
-    ? `<div style="background:#c8f13510;border:1px solid #c8f13525;border-radius:10px;padding:12px;font-size:12px;font-weight:700;color:#c8f135">
-        ✅ Check de hoy completado
-        <div style="font-size:11px;font-weight:600;color:#aaa;margin-top:4px">
-          Proteína: ${todayCheck.protein ? "✓" : "✗"} &nbsp;|&nbsp;
-          Calorías: ${todayCheck.calories ? "✓" : "✗"} &nbsp;|&nbsp;
-          Post-entreno: ${todayCheck.postWorkout ? "✓" : "✗"}
-        </div>
-        <button onclick="clearNutriCheck('${today}')" style="margin-top:8px;background:none;border:1px solid #c8f13530;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;color:#c8f135;cursor:pointer">Editar</button>
-      </div>`
-    : `<div style="display:flex;flex-direction:column;gap:10px">
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12px;font-weight:700">
-          <input type="checkbox" id="nc-protein" style="width:16px;height:16px;accent-color:#c8f135">
-          🥩 Comí +130g de proteína hoy
-        </label>
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12px;font-weight:700">
-          <input type="checkbox" id="nc-calories" style="width:16px;height:16px;accent-color:#c8f135">
-          🍽 Comí suficiente (superávit ~2500 kcal)
-        </label>
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12px;font-weight:700">
-          <input type="checkbox" id="nc-post" style="width:16px;height:16px;accent-color:#c8f135">
-          ⚡ Comí proteína en la hora post-entreno
-        </label>
-        <button onclick="saveNutriCheckFromForm()" style="
-          width:100%;background:#c8f135;color:#000;border:none;border-radius:10px;
-          padding:11px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:4px">
-          Guardar check del día
-        </button>
-      </div>`;
-
   return `
   <div class="card" style="padding:16px;margin-bottom:12px">
-    <div style="font-size:13px;font-weight:900;margin-bottom:4px">🥗 Check nutricional</div>
+    <div style="font-size:13px;font-weight:900;margin-bottom:4px">🍽 Calorías diarias</div>
     <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:14px">
-      ${completedDays}/7 días con nutrición completa esta semana
+      ${daysWithData > 0 ? `${daysAboveGoal}/${daysWithData} días cumpliendo objetivo · media ${avgKcal} kcal` : 'Empieza a registrar tus calorías diarias'}
     </div>
-    <div class="nutri-dots">${dotsHtml}</div>
-    ${checkForm}
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:flex-end">
+      <div style="flex:1">
+        <div class="form-label">Objetivo calórico (kcal)</div>
+        <input type="number" id="cal-goal-input" min="500" max="15000" step="50"
+          value="${goal}" class="form-input" style="font-size:15px;font-weight:800">
+      </div>
+      <button onclick="saveCalorieGoalFromForm()" style="
+        background:#475569;color:#fff;border:none;border-radius:12px;
+        padding:12px 16px;font-weight:800;font-size:12px;cursor:pointer;
+        font-family:'Nunito',sans-serif;flex-shrink:0;margin-bottom:0">
+        Fijar objetivo
+      </button>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:flex-end">
+      <div style="flex:1">
+        <div class="form-label">Calorías de hoy (desde Yazio)</div>
+        <input type="number" id="cal-kcal-input" min="0" max="15000" step="10"
+          value="${todayKcal}" placeholder="Ej: 2950"
+          class="form-input" style="font-size:16px;font-weight:800">
+      </div>
+      <button onclick="saveCalorieFromForm()" style="
+        background:#0f172a;color:#fff;border:none;border-radius:12px;
+        padding:12px 18px;font-weight:800;font-size:13px;cursor:pointer;
+        font-family:'Nunito',sans-serif;flex-shrink:0">
+        Guardar
+      </button>
+    </div>
+
+    <div style="position:relative;padding-top:4px">
+      <div style="display:flex;gap:3px;align-items:flex-end;height:70px;position:relative">
+        <div style="position:absolute;bottom:${Math.round((goal/(goal*1.3))*50)}px;left:0;right:0;border-top:1.5px dashed #2563eb;z-index:1;pointer-events:none">
+          <span style="position:absolute;right:0;top:-14px;font-size:9px;font-weight:800;color:#2563eb;background:white;padding:0 3px">${Math.round(goal/1000*10)/10}k</span>
+        </div>
+        ${barsHtml}
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;font-weight:700">
+        <span style="color:#dc2626">🔴 Por debajo del objetivo</span>
+        <span style="color:#16a34a">🟢 Objetivo cumplido</span>
+      </div>
+    </div>
+
+    ${todayKcal && todayKcal >= goal
+      ? `<div style="margin-top:12px;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:700;color:#15803d">
+          ✅ ¡Hoy cumples el objetivo! ${Math.round(todayKcal - goal)} kcal de superávit
+        </div>`
+      : todayKcal
+      ? `<div style="margin-top:12px;background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:700;color:#dc2626">
+          ⚠️ Faltan ${Math.round(goal - todayKcal)} kcal para el objetivo de hoy
+        </div>`
+      : ''}
   </div>`;
 }
 
@@ -2352,7 +2361,7 @@ function renderHome(){
   
   // NUEVO ORDEN: Calendario primero, luego el resto, luego Últimas sesiones al final
   return `${renderCalendar()}
-  ${streakHtml}${routineTodayHtml}${renderRecoveryCard()}${renderNutriCheckCard()}${renderWeeklyVolumePanel()}
+  ${streakHtml}${routineTodayHtml}${renderRecoveryCard()}${renderCalorieTrackerCard()}${renderWeeklyVolumePanel()}
   <div class="stats-grid"><div class="stat-card"><div class="stat-val">${lastScore}</div><div style="font-size:11px;font-weight:700">Última sesión</div></div><div class="stat-card"><div class="stat-val">${avgScore}</div><div style="font-size:11px;font-weight:700">Media global</div></div><div class="stat-card"><div class="stat-val">${roundPt(monthStats.avgPoints)}</div><div style="font-size:11px;font-weight:700">Media mes</div></div></div>
   <div class="theme-selector"><div class="theme-btn ${activeTheme==='dark'?'active':''}" onclick="toggleTheme('dark')">🌙 Oscuro</div><div class="theme-btn ${activeTheme==='light'?'active':''}" onclick="toggleTheme('light')">☀️ Claro</div><div class="theme-btn ${activeTheme==='mint'?'active':''}" onclick="toggleTheme('mint')">🌿 Menta</div><div class="theme-btn ${activeTheme==='purple'?'active':''}" onclick="toggleTheme('purple')">🔮 Morado</div></div>
   <div class="goal-meter"><div class="goal-meter-header"><span>🎯 Meta semanal: 3 días</span><span>${daysTrained}/3</span></div><div class="goal-meter-bar"><div class="goal-meter-fill" style="width:${goalPercent}%;background:${goalMet?'#16a34a':'#d97706'}"></div></div><div class="goal-meter-header"><span>⏱ Tiempo semana</span><span>${totalMinutes} min</span></div>${comparison.hasPrev?`<div style="margin-top:8px;text-align:center;font-size:12px;font-weight:700">vs semana pasada ${comparison.diff>0?`<span class="trend-up">▲ +${comparison.diff} pts</span>`:comparison.diff<0?`<span class="trend-down">▼ ${comparison.diff} pts</span>`:"= Sin cambios"}</div>`:""}</div>
@@ -2576,7 +2585,17 @@ function renderSettings(){
 
   return `${renderProfileCard()}
   <div class="settings-card"><div class="section-title">🏋️ Mis máquinas</div>${machinesHtml}<button class="btn-add-machine" onclick="openMachineModal(null)">➕ Añadir máquina</button></div>
-  <div class="settings-card"><div class="section-title">📋 Mis rutinas</div>${routinesHtml||'<div style="padding:12px;text-align:center;font-size:13px;font-weight:600;opacity:0.6">Aún no tienes rutinas</div>'}<button class="btn-add-routine" onclick="openRoutineModal(null)">➕ Crear rutina</button></div>
+  <div class="settings-card"><div class="section-title">📋 Mis rutinas</div>${routinesHtml||'<div style="padding:12px;text-align:center;font-size:13px;font-weight:600;opacity:0.6">Aún no tienes rutinas</div>'}<button class="btn-add-routine" onclick="openRoutineModal(null)">➕ Crear rutina</button>
+  <div style="margin-top:14px;border-top:1px solid #e2e8f022;padding-top:14px">
+    <div class="section-title">📥 Importar rutinas desde JSON</div>
+    <textarea id="routine-json-input" class="form-input" rows="4"
+      placeholder='Pega aquí el JSON con el formato {"routines":[...]} y pulsa Importar'
+      style="font-size:12px;font-family:monospace;margin-bottom:8px"></textarea>
+    <button onclick="importRoutinesFromJSON()" class="btn-add-routine" style="margin-top:0">
+      📥 Importar rutinas
+    </button>
+  </div>
+  </div>
   ${renderAISuggester()}
   <div class="settings-card"><div class="section-title">💾 Copia de seguridad</div>
     <button class="btn-import-export" onclick="exportData()">💾 Exportar datos</button>
@@ -2768,6 +2787,28 @@ function _saveRoutineExState(){
   });
 }
 
+function importRoutinesFromJSON() {
+  const raw = document.getElementById("routine-json-input")?.value?.trim();
+  if (!raw) { showToast("Pega un JSON primero", true); return; }
+  try {
+    const data = JSON.parse(raw);
+    const incoming = data.routines || (Array.isArray(data) ? data : null);
+    if (!incoming || !incoming.length) { showToast("No se encontraron rutinas en el JSON", true); return; }
+    let added = 0, updated = 0;
+    incoming.forEach(r => {
+      const idx = routines.findIndex(existing => existing.id === r.id);
+      if (idx >= 0) { routines[idx] = r; updated++; }
+      else { routines.push(r); added++; }
+    });
+    saveCustomData();
+    document.getElementById("routine-json-input").value = "";
+    render();
+    showToast(`✅ ${added} añadidas, ${updated} actualizadas`);
+  } catch(e) {
+    showToast("JSON inválido — revisa el formato", true);
+  }
+}
+
 function saveRoutineModal(){
   _saveRoutineExState();
   const name=document.getElementById("r-name")?.value?.trim();
@@ -2895,6 +2936,21 @@ function renderExercises(){ const area=document.getElementById("exercises-area")
 
 function renderExCard(ex,i){
   const sc=roundPt(calcScore(ex.sets));
+  // Badge de orden según rutina activa
+  let orderBadgeHtml = "";
+  if (activeRoutineId) {
+    const activeRoutine = routines.find(r => r.id == activeRoutineId);
+    if (activeRoutine) {
+      const routineEx = activeRoutine.exercises.find(e => e.machineName === ex.machine);
+      if (routineEx && routineEx.order) {
+        orderBadgeHtml = `<span style="
+          display:inline-flex;align-items:center;justify-content:center;
+          background:#facc15;color:#000;font-size:11px;font-weight:900;
+          border-radius:50%;width:20px;height:20px;margin-right:6px;
+          flex-shrink:0;line-height:1">${routineEx.order}</span>`;
+      }
+    }
+  }
   const avgStats = getMachineAverageStats(ex.machine);
   const avgText = avgStats ? `📊 Media: ${avgStats.avgSets} series de ${avgStats.avgReps} reps con ${avgStats.avgWeight} kg` : "📊 Sin datos suficientes";
   
@@ -2935,7 +2991,7 @@ function renderExCard(ex,i){
   const noteText=custom?.notes?`📌 ${custom.notes}`:"";
   return `<div class="ex-card">
     <div class="ex-header">
-      <div class="ex-title">${ex.machine==="Cardio"?"🏃":"🏋️"} ${ex.machine}</div>
+      <div class="ex-title" style="display:flex;align-items:center">${orderBadgeHtml}${ex.machine==="Cardio"?"🏃":"🏋️"} ${ex.machine}</div>
       <div class="ex-pts" id="ex-pts-${i}">${sc} pts</div>
     </div>
     <div class="machine-history" style="margin-bottom:8px;background:#f1f5f9;border-radius:10px;padding:8px;font-size:11px">${avgText}</div>
@@ -3047,10 +3103,10 @@ function loadInitialRoutines() {
         mainMuscleGroup: "Pecho",
         assignedDays: ["lunes", "jueves"],
         exercises: [
-          { machineName: "Chest Press",    targetSets: 4, targetReps: 10, targetWeight: 20 },
-          { machineName: "Pectoral",       targetSets: 3, targetReps: 12, targetWeight: 7  },
-          { machineName: "Shoulder Press", targetSets: 4, targetReps: 8,  targetWeight: 10 },
-          { machineName: "Cardio",         targetSets: 1, targetReps: 1,  targetWeight: 0  }
+          { machineName: "Chest Press",    targetSets: 4, targetReps: 10, targetWeight: 20, order: 1 },
+          { machineName: "Pectoral",       targetSets: 3, targetReps: 12, targetWeight: 7, order: 2 },
+          { machineName: "Shoulder Press", targetSets: 4, targetReps: 8,  targetWeight: 10, order: 3 },
+          { machineName: "Cardio",         targetSets: 1, targetReps: 1,  targetWeight: 0, order: 4 }
         ]
       },
       {
@@ -3061,10 +3117,10 @@ function loadInitialRoutines() {
         mainMuscleGroup: "Espalda",
         assignedDays: ["miércoles"],
         exercises: [
-          { machineName: "Low Row",    targetSets: 4, targetReps: 10, targetWeight: 30 },
-          { machineName: "Pull Down",  targetSets: 4, targetReps: 10, targetWeight: 25 },
-          { machineName: "Dual Pully", targetSets: 3, targetReps: 12, targetWeight: 10 },
-          { machineName: "Cardio",     targetSets: 1, targetReps: 1,  targetWeight: 0  }
+          { machineName: "Low Row",    targetSets: 4, targetReps: 10, targetWeight: 30, order: 1 },
+          { machineName: "Pull Down",  targetSets: 4, targetReps: 10, targetWeight: 25, order: 2 },
+          { machineName: "Dual Pully", targetSets: 3, targetReps: 12, targetWeight: 10, order: 3 },
+          { machineName: "Cardio",     targetSets: 1, targetReps: 1,  targetWeight: 0, order: 4 }
         ]
       },
       {
@@ -3075,10 +3131,10 @@ function loadInitialRoutines() {
         mainMuscleGroup: "General",
         assignedDays: ["viernes"],
         exercises: [
-          { machineName: "Chest Press",    targetSets: 3, targetReps: 12, targetWeight: 15 },
-          { machineName: "Low Row",        targetSets: 3, targetReps: 12, targetWeight: 25 },
-          { machineName: "Shoulder Press", targetSets: 3, targetReps: 10, targetWeight: 10 },
-          { machineName: "Cardio",         targetSets: 1, targetReps: 1,  targetWeight: 0  }
+          { machineName: "Chest Press",    targetSets: 3, targetReps: 12, targetWeight: 15, order: 1 },
+          { machineName: "Low Row",        targetSets: 3, targetReps: 12, targetWeight: 25, order: 2 },
+          { machineName: "Shoulder Press", targetSets: 3, targetReps: 10, targetWeight: 10, order: 3 },
+          { machineName: "Cardio",         targetSets: 1, targetReps: 1,  targetWeight: 0, order: 4 }
         ]
       }
     ];
