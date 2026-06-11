@@ -897,37 +897,6 @@ function renderProfileCard() {
     <div style="text-align:center; margin-top:10px; font-size:10px; color:#64748b;">👆 Toca para editar</div>
   </div>`;
 }
-  
-  return `<div class="profile-card" onclick="openProfileModal()">
-    <div class="profile-header">
-      <div class="profile-avatar">👤</div>
-      <div class="profile-info">
-        <div class="profile-name">${userProfile.name || "Sin nombre"} <span style="font-size:10px;opacity:0.6">✎</span></div>
-        <div class="profile-badge">${userProfile.age ? userProfile.age + " años" : ""} ${userProfile.height ? "· " + userProfile.height + " cm" : ""}</div>
-      </div>
-    </div>
-    <div class="profile-stats">
-      <div class="profile-stat-item">
-        <div class="profile-stat-value">${lastWeight || "—"}</div>
-        <div class="profile-stat-label">Peso actual (kg)</div>
-      </div>
-      <div class="profile-stat-item">
-        <div class="profile-stat-value">${bmi || "—"}</div>
-        <div class="profile-stat-label">IMC</div>
-      </div>
-      ${userProfile.weightGoal ? `<div class="profile-stat-item">
-        <div class="profile-stat-value">${userProfile.weightGoal}</div>
-        <div class="profile-stat-label">Objetivo (kg)</div>
-      </div>` : ''}
-      ${userProfile.availableDays ? `<div class="profile-stat-item">
-        <div class="profile-stat-value">📅</div>
-        <div class="profile-stat-label">${userProfile.availableDays.substring(0, 20)}${userProfile.availableDays.length > 20 ? '…' : ''}</div>
-      </div>` : ''}
-    </div>
-    ${currentRoutine !== "Ninguna" ? `<div class="profile-routine">📋 Rutina actual: ${currentRoutine}</div>` : ''}
-    <div style="text-align:center; margin-top:10px; font-size:10px; color:#64748b;">👆 Toca para editar</div>
-  </div>`;
-}
 
 // ==================== CRONÓMETRO ====================
 let chronoInterval = null;
